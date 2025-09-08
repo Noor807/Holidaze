@@ -1,26 +1,30 @@
 // src/context/authContext.tsx
-import { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
+
+export interface Media { url: string; alt?: string }
 
 export interface AuthData {
   accessToken: string;
   name: string;
   email: string;
-  avatar?: string;
   venueManager: boolean;
   id: string;
+  bio?: string;
+  avatar?: Media | null;
+  banner?: Media | null;
 }
 
 interface AuthContextProps {
   user: AuthData | null;
   login: (data: AuthData) => void;
   logout: () => void;
+  setUser: (data: AuthData) => void;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AuthData | null>(() => {
+  const [user, setUserState] = useState<AuthData | null>(() => {
     const stored = localStorage.getItem("auth");
     if (!stored) return null;
     try {
@@ -31,17 +35,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const login = (data: AuthData) => {
-    setUser(data);
+    setUserState(data);
     localStorage.setItem("auth", JSON.stringify(data));
   };
 
   const logout = () => {
-    setUser(null);
+    setUserState(null);
     localStorage.removeItem("auth");
   };
 
+  const setUser = (data: AuthData) => {
+    setUserState(data);
+    localStorage.setItem("auth", JSON.stringify(data));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

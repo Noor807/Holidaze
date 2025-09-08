@@ -1,13 +1,8 @@
+// src/api/auth.ts
 import axios from "axios";
-import {
-  API_REGISTER,
-  API_LOGIN,
-  API_PROFILES,
-} from "../constants/apiEndpoints";
+import { API_REGISTER, API_LOGIN, API_PROFILES } from "../constants/apiEndpoints";
+import type { AuthData } from "../context/authContext";
 
-// -------------------------
-// Interfaces
-// -------------------------
 export interface RegisterData {
   name: string;
   email: string;
@@ -18,88 +13,61 @@ export interface RegisterData {
   banner?: string;
 }
 
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  accessToken: string;
-  name: string;
-  email: string;
-  venueManager: boolean;
-  id: string;
-  avatar?: string; // ✅ add this
-}
-
+export interface LoginData { email: string; password: string; }
 
 // -------------------------
-// Register User
+// Register
 // -------------------------
-export const registerUser = async (
-  data: RegisterData
-): Promise<AuthResponse> => {
-  try {
-    // Step 1: Register
-    const { bio, avatar, banner, ...registerPayload } = data;
-    const response = await axios.post(API_REGISTER, registerPayload, {
-      headers: { "Content-Type": "application/json" },
-    });
+export const registerUser = async (data: RegisterData): Promise<AuthData> => {
+  const { bio, avatar, banner, ...registerPayload } = data;
 
-    const user = response.data as AuthResponse;
+  const response = await axios.post(API_REGISTER, registerPayload, {
+    headers: { "Content-Type": "application/json" },
+  });
 
-    if (bio || avatar || banner) {
-      try {
-        await axios.put(
-          `${API_PROFILES}/${user.name}`,
-          { bio, avatar, banner },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.accessToken}`,
-            },
-          }
-        );
-      } catch (err) {
-        console.warn("Profile update failed:", err);
-      }
+  const user: AuthData = response.data;
+
+  if (bio || avatar || banner) {
+    try {
+      await axios.put(
+        `${API_PROFILES}/${user.name}`,
+        {
+          bio,
+          avatar: avatar ? { url: avatar, alt: "Avatar" } : undefined,
+          banner: banner ? { url: banner, alt: "Banner" } : undefined,
+        },
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
+      );
+
+      if (bio) user.bio = bio;
+      if (avatar) user.avatar = { url: avatar, alt: "Avatar" };
+      if (banner) user.banner = { url: banner, alt: "Banner" };
+    } catch (err) {
+      console.warn("Profile update failed:", err);
     }
-
-    return user;
-  } catch (error: any) {
-    console.error("Axios error:", error.response || error.message);
-    throw new Error(error.response?.data?.message || "Registration failed");
   }
+
+  return user;
 };
 
 // -------------------------
-// Login User
+// Login
 // -------------------------
-export const loginUser = async (data: LoginData): Promise<AuthResponse> => {
-  try {
-    const response = await axios.post(API_LOGIN, data, {
-      headers: { "Content-Type": "application/json" },
-    });
+export const loginUser = async (data: LoginData): Promise<AuthData> => {
+  const response = await axios.post(API_LOGIN, data, {
+    headers: { "Content-Type": "application/json" },
+  });
 
-    // Some APIs wrap the user in "data", so check both
-    const user = response.data.data || response.data;
+  const payload = response.data?.data ?? response.data;
 
-    if (!user.accessToken) {
-      throw new Error("Login failed: No access token returned");
-    }
-
-    return {
-      accessToken: user.accessToken,
-      name: user.name,
-      email: user.email,
-      venueManager: user.venueManager,
-      id: user.id,
-      avatar: user.avatar || "",
-    };
-  } catch (error: any) {
-    console.error("Login API error:", error.response || error.message);
-    throw new Error(error.response?.data?.message || "Login failed");
-  }
+  return {
+    accessToken: payload.accessToken,
+    name: payload.name,
+    email: payload.email,
+    venueManager: payload.venueManager,
+    id: payload.id,
+    avatar: payload.avatar ? { url: payload.avatar, alt: "Avatar" } : null,
+    banner: payload.banner ? { url: payload.banner, alt: "Banner" } : null,
+    bio: payload.bio || "",
+  };
 };
-
-

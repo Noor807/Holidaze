@@ -3,7 +3,6 @@ import { useState } from "react";
 import { registerUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAuth } from "../context/authContext"; // optional if you want auto-login
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -12,33 +11,76 @@ const RegisterPage = () => {
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState("");
   const [banner, setBanner] = useState("");
-  const [venueManager, setVenueManager] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth(); // optional, for auto-login after register
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent, isVenueManager: boolean) => {
     e.preventDefault();
     setError("");
-    try {
-      const user = await registerUser({ name, email, password, bio, avatar, banner, venueManager });
 
-      // Optional: auto-login after registration
-      login({ ...user, avatar }); // store avatar in context
-      toast.success(`Welcome, ${user.name}!`);
-      navigate("/"); // redirect to homepage
+    // Email validation
+    if (!email.endsWith("@stud.noroff.no")) {
+      setError("Email must be a @stud.noroff.no address");
+      return;
+    }
+
+    // Password validation
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
+    // Warn if password lacks special character
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      toast.warn("Consider adding special characters (!@#$ etc.) to your password");
+    }
+
+    // URL validation
+    if (avatar && !isValidUrl(avatar)) {
+      setError("Invalid Avatar URL");
+      return;
+    }
+    if (banner && !isValidUrl(banner)) {
+      setError("Invalid Banner URL");
+      return;
+    }
+
+    try {
+      // 1️⃣ Register user
+      await registerUser({
+        name,
+        email,
+        password,
+        venueManager: isVenueManager,
+        bio: bio || undefined,
+        avatar: avatar || undefined,
+        banner: banner || undefined,
+      });
+
+      // 2️⃣ Success toast
+      toast.success("Registration successful! Please log in.");
+
+      // 3️⃣ Redirect to login page
+      navigate("/login");
     } catch (err: any) {
-      setError(err.message);
+      console.error("Registration failed:", err.response || err.message);
+      setError(err.message || "Registration failed");
     }
   };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-r from-green-200 to-blue-200 px-4 py-8 flex justify-center">
       <div className="w-full max-w-md">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-xl p-6 sm:p-8 md:p-10"
-        >
+        <form className="bg-white shadow-lg rounded-xl p-6 sm:p-8 md:p-10">
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
             Create Account
           </h2>
@@ -50,25 +92,25 @@ const RegisterPage = () => {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+            className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
             required
           />
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email (@stud.noroff.no)"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+            className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
             required
           />
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Password (min 8 chars)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+            className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
             required
           />
 
@@ -76,7 +118,7 @@ const RegisterPage = () => {
             placeholder="Tell us about yourself..."
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+            className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
             rows={3}
           />
 
@@ -85,7 +127,7 @@ const RegisterPage = () => {
             placeholder="Avatar image URL"
             value={avatar}
             onChange={(e) => setAvatar(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+            className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
           />
 
           <input
@@ -93,37 +135,26 @@ const RegisterPage = () => {
             placeholder="Banner image URL"
             value={banner}
             onChange={(e) => setBanner(e.target.value)}
-            className="w-full mb-6 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+            className="w-full mb-6 p-3 border border-gray-300 rounded-lg"
           />
 
-          <div className="mb-6 flex justify-around text-gray-700">
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                checked={!venueManager}
-                onChange={() => setVenueManager(false)}
-                className="accent-green-500"
-              />
-              <span>Customer</span>
-            </label>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition text-lg font-semibold"
+              onClick={(e) => handleSubmit(e, false)}
+            >
+              Register as Customer
+            </button>
 
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                checked={venueManager}
-                onChange={() => setVenueManager(true)}
-                className="accent-green-500"
-              />
-              <span>Venue Manager</span>
-            </label>
+            <button
+              type="submit"
+              className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition text-lg font-semibold"
+              onClick={(e) => handleSubmit(e, true)}
+            >
+              Register as Venue Manager
+            </button>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition text-lg font-semibold"
-          >
-            Register
-          </button>
 
           <p className="text-sm text-center mt-4 text-gray-600">
             Already have an account?{" "}

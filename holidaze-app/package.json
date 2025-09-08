@@ -15,6 +15,7 @@
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "google-map-react": "^2.2.5",
+    "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-datepicker": "^8.7.0",
     "react-day-picker": "^9.9.0",

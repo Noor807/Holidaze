@@ -5,11 +5,7 @@ import Logo from "../assets/logo.png";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/authContext";
 
-interface NavbarProps {
-  onSearch?: (query: string) => void;
-}
-
-const Navbar = ({ onSearch }: NavbarProps) => {
+const Navbar = ({ onSearch }: { onSearch?: (query: string) => void }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -75,34 +71,38 @@ const Navbar = ({ onSearch }: NavbarProps) => {
               aria-expanded={dropdownOpen}
             >
               <img
-  src={
-    typeof user.avatar === "string" && user.avatar.trim() !== ""
-      ? user.avatar
-      : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`
-  }
-  alt="Avatar"
-  className="w-10 h-10 rounded-full border-2 border-green-400 object-cover"
-/>
-
+                src={
+                  typeof user.avatar === "string" && user.avatar.trim() !== ""
+                    ? user.avatar
+                    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`
+                }
+                alt="Avatar"
+                className="w-10 h-10 rounded-full border-2 border-green-400 object-cover"
+              />
               <span className="hidden sm:inline">{user.name}</span>
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-50">
+              <div className="absolute right-0 mt-2 w-52 bg-white text-black rounded-md shadow-lg z-50">
                 <Link
-                  to={`/profile/${user.name}`}
+                  to={`/profile`}
                   className="block px-4 py-2 hover:bg-gray-100"
                   onClick={() => setDropdownOpen(false)}
                 >
                   My Profile
                 </Link>
-                <Link
-                  to={`/my-venues`}
-                  className="block px-4 py-2 hover:bg-gray-100"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  My Venues
-                </Link>
+
+                {/* My Venues only for Venue Managers */}
+                {user.venueManager && (
+                  <Link
+                    to={`/my-venues`}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    My Venues
+                  </Link>
+                )}
+
                 <Link
                   to={`/my-bookings`}
                   className="block px-4 py-2 hover:bg-gray-100"
@@ -110,6 +110,18 @@ const Navbar = ({ onSearch }: NavbarProps) => {
                 >
                   My Bookings
                 </Link>
+
+                {/* Create Venue button only for Venue Managers */}
+                {user.venueManager && (
+                  <Link
+                    to={`/venues/create`}
+                    className="block px-4 py-2 text-blue-600 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    Create Venue
+                  </Link>
+                )}
+
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"

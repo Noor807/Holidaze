@@ -6,6 +6,7 @@ import {
   FaPaw,
   FaStar,
   FaRegStar,
+  FaImage,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -14,15 +15,8 @@ interface Props {
 }
 
 const VenueCard = ({ venue }: Props) => {
-  const defaultImage = "https://via.placeholder.com/300?text=No+Image";
-  const imageUrl =
-    venue.media?.length && venue.media[0]?.url
-      ? venue.media[0].url
-      : defaultImage;
-  const imageAlt =
-    venue.media?.length && venue.media[0]?.alt
-      ? venue.media[0].alt
-      : venue.name;
+  const imageUrl = venue.media?.length && venue.media[0]?.url ? venue.media[0].url : null;
+  const imageAlt = venue.media?.length && venue.media[0]?.alt ? venue.media[0].alt : venue.name;
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -44,19 +38,37 @@ const VenueCard = ({ venue }: Props) => {
   return (
     <Link
       to={`/venues/${venue.id}`}
-      className="block w-[260px] h-[330px] bg-white text-gray-800 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+      className="block w-[260px] h-[340px] bg-white text-gray-800 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
       aria-label={`View details for ${venue.name}`}
     >
-      <img
-        src={imageUrl}
-        alt={imageAlt}
-        className="w-full h-[170px] object-cover"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = defaultImage;
-        }}
-      />
+      {/* Image / Placeholder */}
+      <div className="relative h-[160px] w-full flex items-center justify-center bg-gray-200">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={imageAlt}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-full bg-gray-300 text-gray-600">
+            <FaImage className="w-8 h-8 mb-1" />
+            <span className="font-semibold text-center px-2">No Image Available</span>
+          </div>
+        )}
+      </div>
 
-      <div className="p-2 flex flex-col mt-6 justify-between h-[calc(100%-130px)]">
+      {/* Price Tag under image */}
+      <div className="p-2">
+        <p className="text-sm font-bold text-white bg-black/70 px-3 py-1 rounded-lg inline-block">
+          ${venue.price?.toLocaleString() ?? "N/A"} / night
+        </p>
+      </div>
+
+      {/* Venue Info */}
+      <div className="p-2 flex flex-col justify-between h-[calc(100%-220px)]">
         <div>
           <h3 className="text-sm font-semibold truncate">{venue.name}</h3>
           <p className="text-xs text-gray-600 truncate">
@@ -81,21 +93,11 @@ const VenueCard = ({ venue }: Props) => {
 
           <div className="flex space-x-3 mt-2 text-blue-600 text-sm">
             {venue.meta?.wifi && <FaWifi className="w-4 h-4" title="WiFi" />}
-            {venue.meta?.parking && (
-              <FaParking className="w-4 h-4" title="Parking" />
-            )}
-            {venue.meta?.breakfast && (
-              <FaCoffee className="w-4 h-4" title="Breakfast" />
-            )}
-            {venue.meta?.pets && (
-              <FaPaw className="w-4 h-4" title="Pets allowed" />
-            )}
+            {venue.meta?.parking && <FaParking className="w-4 h-4" title="Parking" />}
+            {venue.meta?.breakfast && <FaCoffee className="w-4 h-4" title="Breakfast" />}
+            {venue.meta?.pets && <FaPaw className="w-4 h-4" title="Pets allowed" />}
           </div>
         </div>
-
-        <p className="text-sm font-semibold mt-2">
-          ${venue.price ?? "N/A"} / night
-        </p>
       </div>
     </Link>
   );

@@ -33,37 +33,38 @@ const BookingForm = ({ venueId, initialDate }: Props) => {
     }
   }, [initialDate]);
 
-  const handleIncrement = (type: keyof Guests) =>
-    setGuests(g => ({ ...g, [type]: g[type] + 1 }));
-  const handleDecrement = (type: keyof Guests) =>
-    setGuests(g => ({ ...g, [type]: Math.max(0, g[type] - 1) }));
+  const handleIncrement = (type: keyof Guests) => setGuests(prev => ({ ...prev, [type]: prev[type] + 1 }));
+  const handleDecrement = (type: keyof Guests) => setGuests(prev => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return toast.error("Please log in to book");
-
+  
     setLoading(true);
     try {
       await createBooking(
         {
           venueId,
-          dateFrom,
-          dateTo,
-          guests: guests.adults + guests.children + guests.infants + guests.pets,
+          dateFrom: new Date(dateFrom).toISOString(),
+          dateTo: new Date(dateTo).toISOString(),
+          guests: Object.values(guests).reduce((a, b) => a + b, 0),
         },
-        user.accessToken // ✅ Use token from context
+        user.accessToken
       );
+  
       toast.success("Booking successful!");
       setDateFrom("");
       setDateTo("");
       setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
       setShowGuests(false);
     } catch (err: any) {
+      console.error("Booking error:", err);
       toast.error(err.message || "Booking failed");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <form onSubmit={handleBooking} className="bg-white p-4 rounded shadow-md space-y-4 mt-6">

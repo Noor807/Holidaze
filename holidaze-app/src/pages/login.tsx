@@ -5,8 +5,9 @@ import { toast } from "react-toastify";
 import { loginUser } from "../api/auth";
 import { API_PROFILES } from "../constants/apiEndpoints";
 import { useAuth } from "../context/authContext";
+import { getAuthHeaders } from "../api/api";
 
-// Define type for location state
+// Type for location state
 interface LocationState {
   from?: string;
   selectedDate?: string;
@@ -15,7 +16,7 @@ interface LocationState {
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation() as { state?: LocationState }; // ✅ Type-safe
+  const location = useLocation() as { state?: LocationState };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,13 +26,14 @@ const LoginPage = () => {
     setError("");
 
     try {
+      // 1️⃣ Login user
       const user = await loginUser({ email, password });
 
-      // Fetch avatar safely
+      // 2️⃣ Fetch avatar using centralized headers
       let avatar = "";
       try {
         const profileRes = await fetch(`${API_PROFILES}/${user.name}`, {
-          headers: { Authorization: `Bearer ${user.accessToken}` },
+          headers: getAuthHeaders(user.accessToken),
         });
         if (profileRes.ok) {
           const profileJson = await profileRes.json();
@@ -41,7 +43,7 @@ const LoginPage = () => {
         console.warn("Could not fetch avatar", err);
       }
 
-      // Store user in context
+      // 3️⃣ Store user in context
       login({
         accessToken: user.accessToken,
         name: user.name,
@@ -53,7 +55,7 @@ const LoginPage = () => {
 
       toast.success(`Welcome back, ${user.name}!`);
 
-      // Redirect to previous page (if any) or home
+      // 4️⃣ Redirect to previous page (if any) or home
       const redirectTo = location.state?.from || "/";
       navigate(redirectTo, {
         state: { selectedDate: location.state?.selectedDate || undefined },
