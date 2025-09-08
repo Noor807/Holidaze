@@ -1,4 +1,5 @@
-import type { Venue } from "../types/venue";
+// src/components/VenueCard.tsx
+import type { Venue } from "../api/venues";
 import {
   FaWifi,
   FaParking,
@@ -12,9 +13,10 @@ import { Link } from "react-router-dom";
 
 interface Props {
   venue: Venue;
+  showBookings?: boolean; // optional prop to display upcoming bookings
 }
 
-const VenueCard = ({ venue }: Props) => {
+const VenueCard = ({ venue, showBookings = false }: Props) => {
   const imageUrl = venue.media?.length && venue.media[0]?.url ? venue.media[0].url : null;
   const imageAlt = venue.media?.length && venue.media[0]?.alt ? venue.media[0].alt : venue.name;
 
@@ -38,7 +40,7 @@ const VenueCard = ({ venue }: Props) => {
   return (
     <Link
       to={`/venues/${venue.id}`}
-      className="block w-[260px] h-[340px] bg-white text-gray-800 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+      className="block w-[260px] h-auto bg-white text-gray-800 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
       aria-label={`View details for ${venue.name}`}
     >
       {/* Image / Placeholder */}
@@ -60,7 +62,7 @@ const VenueCard = ({ venue }: Props) => {
         )}
       </div>
 
-      {/* Price Tag under image */}
+      {/* Price Tag */}
       <div className="p-2">
         <p className="text-sm font-bold text-white bg-black/70 px-3 py-1 rounded-lg inline-block">
           ${venue.price?.toLocaleString() ?? "N/A"} / night
@@ -68,7 +70,7 @@ const VenueCard = ({ venue }: Props) => {
       </div>
 
       {/* Venue Info */}
-      <div className="p-2 flex flex-col justify-between h-[calc(100%-220px)]">
+      <div className="p-2 flex flex-col justify-between">
         <div>
           <h3 className="text-sm font-semibold truncate">{venue.name}</h3>
           <p className="text-xs text-gray-600 truncate">
@@ -80,7 +82,7 @@ const VenueCard = ({ venue }: Props) => {
             {venue.description || "No description available."}
           </p>
 
-          {venue.rating > 0 ? (
+          {venue.rating && venue.rating > 0 ? (
             <div className="flex items-center space-x-1 mt-1">
               {renderStars(venue.rating)}
               <span className="text-xs text-gray-500 ml-1">
@@ -97,6 +99,21 @@ const VenueCard = ({ venue }: Props) => {
             {venue.meta?.breakfast && <FaCoffee className="w-4 h-4" title="Breakfast" />}
             {venue.meta?.pets && <FaPaw className="w-4 h-4" title="Pets allowed" />}
           </div>
+
+          {/* Show upcoming bookings if requested */}
+          {showBookings && venue.bookings?.length ? (
+            <div className="mt-2 text-xs text-gray-600">
+              <p className="font-semibold">Upcoming Bookings:</p>
+              <ul>
+                {venue.bookings.map((b) => (
+                  <li key={b.id}>
+                    {new Date(b.dateFrom).toLocaleDateString()} -{" "}
+                    {new Date(b.dateTo).toLocaleDateString()} ({b.guests} guests)
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       </div>
     </Link>

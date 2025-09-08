@@ -2,7 +2,10 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { API_BASE } from "../constants/apiEndpoints";
 
-export interface Media { url: string; alt?: string }
+export interface Media {
+  url: string;
+  alt?: string;
+}
 
 export interface AuthData {
   accessToken: string;
@@ -46,11 +49,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (data: AuthData) => {
+    // save basic login first
     setUser(data);
 
     try {
       const res = await fetch(`${API_BASE}/holidaze/profiles/${data.name}`, {
-        headers: { Authorization: `Bearer ${data.accessToken}` },
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY, // ✅ correct header
+        },
       });
 
       if (!res.ok) throw new Error("Failed to fetch full profile");
@@ -58,11 +65,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const json = await res.json();
       const profileData = json.data;
 
+      // merge login data with full profile
       setUser({
         ...data,
         bio: profileData.bio ?? data.bio,
         avatar: profileData.avatar ?? data.avatar ?? null,
         banner: profileData.banner ?? data.banner ?? null,
+        venueManager: profileData.venueManager ?? data.venueManager,
       });
     } catch (err) {
       console.warn("Could not fetch full profile, using basic login info", err);

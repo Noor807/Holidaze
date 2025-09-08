@@ -13,23 +13,24 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import MyBookings from "./pages/myBookings";
 import ProfilePage from "./pages/profilePage"; 
+import MyVenuesPage from "./pages/myVenues";
+
+import CreateVenueModal from "./components/createVenueModal";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Import the modal form
-import CreateVenueModal from "./components/createVenueModal";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateVenue, setShowCreateVenue] = useState(false);
 
+  const handleOpenCreateVenue = () => setShowCreateVenue(true);
   const handleCloseCreateVenue = () => setShowCreateVenue(false);
 
   return (
     <>
       {/* Navbar */}
-      <Navbar onSearch={setSearchTerm} />
+      <Navbar onSearch={setSearchTerm} onCreateVenue={handleOpenCreateVenue} />
 
       {/* Create Venue Modal */}
       {showCreateVenue && <CreateVenueModal onClose={handleCloseCreateVenue} />}
@@ -43,9 +44,6 @@ function App() {
               <Header onSearch={setSearchTerm} />
               <main className="pt-6 max-w-7xl mx-auto px-4">
                 <Home searchTerm={searchTerm} />
-                <p className="text-center mt-4 text-pink-500 text-lg">
-                  🌸 Welcome to Holidaze! Your cozy adventure awaits! 🌸
-                </p>
               </main>
             </>
           }
@@ -57,9 +55,6 @@ function App() {
           element={
             <main className="pt-6 max-w-7xl mx-auto px-4">
               <AllVenues searchTerm={searchTerm} />
-              <p className="text-center mt-4 text-purple-500 text-sm">
-                ✨ Browse all our lovely venues! ✨
-              </p>
             </main>
           }
         />
@@ -70,6 +65,16 @@ function App() {
           element={
             <main className="pt-6 max-w-7xl mx-auto px-4">
               <MyBookings />
+            </main>
+          }
+        />
+
+        {/* My Venues */}
+        <Route
+          path="/my-venues"
+          element={
+            <main className="pt-6 max-w-7xl mx-auto px-4">
+              <MyVenuesPage />
             </main>
           }
         />
@@ -90,17 +95,12 @@ function App() {
           element={
             <main className="pt-6 max-w-7xl mx-auto px-4">
               <ProfilePage />
-              <p className="text-center mt-4 text-green-400 text-sm">
-                🌟 Keep your profile cute and cozy! 🌟
-              </p>
             </main>
           }
         />
 
-        {/* Login Page */}
+        {/* Login & Register */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Register Page */}
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
 
