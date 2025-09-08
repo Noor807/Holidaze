@@ -1,5 +1,6 @@
 // src/context/authContext.tsx
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { API_BASE } from "../constants/apiEndpoints";
 
 export interface Media { url: string; alt?: string }
 
@@ -16,7 +17,7 @@ export interface AuthData {
 
 interface AuthContextProps {
   user: AuthData | null;
-  login: (data: AuthData) => void;
+  login: (data: AuthData) => Promise<void>;
   logout: () => void;
   setUser: (data: AuthData) => void;
 }
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
-  const login = (data: AuthData) => {
+  const setUser = (data: AuthData) => {
     setUserState(data);
     localStorage.setItem("auth", JSON.stringify(data));
   };
@@ -44,9 +45,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("auth");
   };
 
-  const setUser = (data: AuthData) => {
-    setUserState(data);
-    localStorage.setItem("auth", JSON.stringify(data));
+  const login = async (data: AuthData) => {
+    setUser(data);
+
+    try {
+      const res = await fetch(`${API_BASE}/holidaze/profiles/${data.name}`, {
+        headers: { Authorization: `Bearer ${data.accessToken}` },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch full profile");
+
+      const json = await res.json();
+      const profileData = json.data;
+
+      setUser({
+        ...data,
+        bio: profileData.bio ?? data.bio,
+        avatar: profileData.avatar ?? data.avatar ?? null,
+        banner: profileData.banner ?? data.banner ?? null,
+      });
+    } catch (err) {
+      console.warn("Could not fetch full profile, using basic login info", err);
+    }
   };
 
   return (

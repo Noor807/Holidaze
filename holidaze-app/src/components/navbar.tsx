@@ -27,6 +27,12 @@ const Navbar = ({ onSearch }: { onSearch?: (query: string) => void }) => {
     navigate("/login");
   };
 
+  const avatarUrl = user?.avatar?.url
+    ? `${user.avatar.url}?t=${Date.now()}` // cache-busting
+    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+        user?.name ?? "user"
+      )}`;
+
   return (
     <nav className="w-full flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-black/90 backdrop-blur-md shadow-md gap-4 sm:gap-0 sticky top-0 z-50">
       {/* Logo */}
@@ -71,11 +77,7 @@ const Navbar = ({ onSearch }: { onSearch?: (query: string) => void }) => {
               aria-expanded={dropdownOpen}
             >
               <img
-                src={
-                  typeof user.avatar === "string" && user.avatar.trim() !== ""
-                    ? user.avatar
-                    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`
-                }
+                src={avatarUrl}
                 alt="Avatar"
                 className="w-10 h-10 rounded-full border-2 border-green-400 object-cover"
               />
@@ -92,7 +94,6 @@ const Navbar = ({ onSearch }: { onSearch?: (query: string) => void }) => {
                   My Profile
                 </Link>
 
-                {/* My Venues only for Venue Managers */}
                 {user.venueManager && (
                   <Link
                     to={`/my-venues`}
@@ -111,7 +112,6 @@ const Navbar = ({ onSearch }: { onSearch?: (query: string) => void }) => {
                   My Bookings
                 </Link>
 
-                {/* Create Venue button only for Venue Managers */}
                 {user.venueManager && (
                   <Link
                     to={`/venues/create`}

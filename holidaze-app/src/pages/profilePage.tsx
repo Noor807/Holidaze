@@ -1,4 +1,4 @@
-// src/pages/profilePage.tsx
+// src/pages/ProfilePage.tsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { getUserBookingsWithVenue, type BookingWithVenue } from "../api/bookings";
@@ -39,9 +39,9 @@ const ProfilePage = () => {
   return (
     <div className="max-w-6xl mx-auto mt-8">
       {/* Banner */}
-      <div className="relative w-full h-64 bg-gray-200">
+      <div className="relative w-full h-72 bg-gray-200">
         <img
-          src={user.banner?.url || defaultBanner}
+          src={user.banner?.url ?? defaultBanner}
           alt="Banner"
           className="w-full h-full object-cover"
         />
@@ -50,19 +50,19 @@ const ProfilePage = () => {
       {/* Avatar & Info */}
       <div className="relative -mt-20 flex items-center px-6">
         <img
-          src={user.avatar?.url || defaultAvatar}
+          src={user.avatar?.url ?? defaultAvatar}
           alt="Avatar"
           className="w-32 h-32 rounded-full border-4 border-white shadow object-cover"
         />
-        <div className="ml-6 flex flex-col justify-center">
+        <div className="ml-6 flex flex-col mt-24 justify-center">
           <h1 className="text-3xl font-bold">{user.name}</h1>
-          <p className="text-gray-600 mt-1">{user.bio || "No bio yet..."}</p>
+          <p className="text-gray-600 mt-1">{user.bio ?? "No bio yet..."}</p>
         </div>
         <button
-          className="ml-auto px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 flex items-center gap-2"
+          className="ml-auto px-4 py-2 border-1 bg-gray-200 text-black font-bold rounded shadow hover:bg-blue-700 flex items-center gap-2"
           onClick={() => setIsEditing(true)}
         >
-          <PencilIcon className="w-4 h-4" /> Edit Profile
+          <PencilIcon className="w-4 h-4" /> Edit 
         </button>
       </div>
 
@@ -78,29 +78,31 @@ const ProfilePage = () => {
             </button>
             <h3 className="text-xl font-bold mb-4 text-center">Edit Profile</h3>
             <ProfileForm
-              userName={user.name}
-              token={user.accessToken}
-              initialBio={user.bio}
-              initialAvatar={user.avatar ?? undefined}
-              initialBanner={user.banner ?? undefined}
-              onUpdate={(updatedProfile) => {
-                setUser({
-                  ...user,
-                  bio: updatedProfile.bio ?? user.bio,
-                  avatar: updatedProfile.avatar ?? user.avatar,
-                  banner: updatedProfile.banner ?? user.banner,
-                });
-                toast.success("Profile updated successfully!");
-                setIsEditing(false);
-              }}
-              onClose={() => setIsEditing(false)}
-            />
+  userName={user.name}
+  token={user.accessToken}
+  initialBio={user.bio ?? ""}
+  initialAvatar={user.avatar ?? undefined}  // ✅ null -> undefined
+  initialBanner={user.banner ?? undefined}  // ✅ null -> undefined
+  onUpdate={(updatedProfile) => {
+    // Convert null values to undefined
+    const cleanedProfile = {
+      bio: updatedProfile.bio ?? undefined,
+      avatar: updatedProfile.avatar ?? undefined,
+      banner: updatedProfile.banner ?? undefined,
+    };
+    setUser({ ...user, ...cleanedProfile });
+    toast.success("Profile updated successfully!");
+    setIsEditing(false);
+  }}
+  onClose={() => setIsEditing(false)}
+/>
+
           </div>
         </div>
       )}
 
       {/* Bookings Section */}
-      <div className="px-6 mt-8 space-y-6">
+      <div className="px-6 mt-24 space-y-6">
         <h2 className="text-2xl font-bold mb-4">Upcoming Bookings</h2>
         {loadingBookings ? (
           <p>Loading bookings...</p>
@@ -115,8 +117,8 @@ const ProfilePage = () => {
                 className="bg-white rounded-lg shadow hover:shadow-md transition p-4 flex flex-col"
               >
                 <img
-                  src={b.venue?.media?.[0]?.url || defaultBanner}
-                  alt={b.venue?.name || ""}
+                  src={b.venue?.media?.[0]?.url ?? defaultBanner}
+                  alt={b.venue?.name ?? ""}
                   className="w-full h-40 object-cover rounded mb-2"
                 />
                 <h4 className="font-semibold">{b.venue?.name}</h4>

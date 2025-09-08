@@ -1,9 +1,7 @@
 // src/components/profileForm.tsx
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
+import { updateUserProfile, type Media, type UserProfileUpdate } from "../api/profiles";
 import { toast } from "react-toastify";
-import { updateUserProfile, type UserProfileUpdate, type ProfileResponse } from "../api/profiles";
-
-interface Media { url: string }
 
 interface ProfileFormProps {
   userName: string;
@@ -11,42 +9,48 @@ interface ProfileFormProps {
   initialBio?: string;
   initialAvatar?: Media;
   initialBanner?: Media;
-  onUpdate: (updatedProfile: ProfileResponse) => void;
-  onClose?: () => void;
+  onUpdate: (updatedProfile: UserProfileUpdate) => void;
+  onClose: () => void;
 }
 
 const ProfileForm = ({
   userName,
   token,
-  initialBio = "",
+  initialBio,
   initialAvatar,
   initialBanner,
   onUpdate,
   onClose,
 }: ProfileFormProps) => {
-  const [bio, setBio] = useState(initialBio);
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatar?.url || "");
-  const [bannerUrl, setBannerUrl] = useState(initialBanner?.url || "");
+  const [bio, setBio] = useState(initialBio || "");
+  const [avatar, setAvatar] = useState<Media | undefined>(initialAvatar);
+  const [banner, setBanner] = useState<Media | undefined>(initialBanner);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+
+    const formData: UserProfileUpdate = {
+      bio: bio || undefined,
+      avatar: avatar || undefined,
+      banner: banner || undefined,
+    };
 
     try {
-      const updateData: UserProfileUpdate = {
-        bio,
-        avatar: avatarUrl ? { url: avatarUrl } : undefined,
-        banner: bannerUrl ? { url: bannerUrl } : undefined,
-      };
+      setLoading(true);
+      const updatedProfile = await updateUserProfile(userName, token, formData);
 
-      const updatedProfile = await updateUserProfile(userName, token, updateData);
-      onUpdate(updatedProfile);
-      toast.success("Profile updated successfully!");
-      if (onClose) onClose();
-    } catch (err: any) {
-      console.error("Profile update error:", err);
-      toast.error(err.message || "Failed to update profile");
+      // Map null to undefined for TypeScript safety
+      onUpdate({
+        bio: updatedProfile.bio ?? undefined,
+        avatar: updatedProfile.avatar ?? undefined,
+        banner: updatedProfile.banner ?? undefined,
+      });
+
+      toast.success("Profile updated!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -56,71 +60,70 @@ const ProfileForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Bio */}
       <div>
-        <label className="block font-semibold mb-1">Bio</label>
+        <label className="block mb-1 font-medium">Bio</label>
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
-          className="w-full p-2 border rounded"
-          rows={3}
+          className="w-full px-3 py-2 border rounded"
+          rows={4}
         />
       </div>
 
       {/* Avatar URL */}
       <div>
-        <label className="block font-semibold mb-1">Avatar URL</label>
+        <label className="block mb-1 font-medium">Avatar URL</label>
         <input
-          type="url"
-          value={avatarUrl}
-          onChange={(e) => setAvatarUrl(e.target.value)}
-          placeholder="https://example.com/avatar.jpg"
-          className="w-full p-2 border rounded"
+          type="text"
+          value={avatar?.url || ""}
+          onChange={(e) => setAvatar({ url: e.target.value })}
+          placeholder="Paste avatar image URL"
+          className="w-full px-3 py-2 border rounded"
         />
-        {avatarUrl && (
+        {avatar?.url && (
           <img
-            src={avatarUrl}
-            alt="Avatar Preview"
-            className="w-20 h-20 rounded-full object-cover mt-2"
+            src={avatar.url}
+            alt="Avatar preview"
+            className="w-20 h-20 rounded-full mt-2 object-cover"
           />
         )}
       </div>
 
       {/* Banner URL */}
       <div>
-        <label className="block font-semibold mb-1">Banner URL</label>
+        <label className="block mb-1 font-medium">Banner URL</label>
         <input
-          type="url"
-          value={bannerUrl}
-          onChange={(e) => setBannerUrl(e.target.value)}
-          placeholder="https://example.com/banner.jpg"
-          className="w-full p-2 border rounded"
+          type="text"
+          value={banner?.url || ""}
+          onChange={(e) => setBanner({ url: e.target.value })}
+          placeholder="Paste banner image URL"
+          className="w-full px-3 py-2 border rounded"
         />
-        {bannerUrl && (
+        {banner?.url && (
           <img
-            src={bannerUrl}
-            alt="Banner Preview"
-            className="w-full h-40 object-cover rounded mt-2"
+            src={banner.url}
+            alt="Banner preview"
+            className="w-full h-32 mt-2 object-cover rounded"
           />
         )}
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex justify-end gap-2 mt-4">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 border rounded hover:bg-gray-100"
+          disabled={loading}
+        >
+          Cancel
+        </button>
         <button
           type="submit"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           disabled={loading}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
         >
-          {loading ? "Updating..." : "Update Profile"}
+          {loading ? "Saving..." : "Save"}
         </button>
-        {onClose && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-        )}
       </div>
     </form>
   );

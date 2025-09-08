@@ -6,10 +6,11 @@ export interface Media {
   alt?: string;
 }
 
-export interface UserProfileUpdate {
+export interface ProfileData {
   bio?: string;
   avatar?: Media;
   banner?: Media;
+  venueManager?: boolean;
 }
 
 export interface ProfileResponse {
@@ -22,8 +23,12 @@ export interface ProfileResponse {
   id: string;
 }
 
-// Make sure your .env has: VITE_API_KEY=your_api_key_here
-const API_KEY = import.meta.env.VITE_API_KEY;
+export interface UserProfileUpdate {
+  bio?: string;
+  avatar?: Media;
+  banner?: Media;
+  venueManager?: boolean;
+}
 
 export const updateUserProfile = async (
   username: string,
@@ -35,14 +40,11 @@ export const updateUserProfile = async (
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY,          
-        Authorization: `Bearer ${token}`, 
+        "Authorization": `Bearer ${token}`,
+        "X-Noroff-API-Key": import.meta.env.VITE_API_KEY, 
       },
-      body: JSON.stringify({
-        bio: data.bio,
-        avatar: data.avatar ? { url: data.avatar.url } : undefined,
-        banner: data.banner ? { url: data.banner.url } : undefined,
-      }),
+      
+      body: JSON.stringify(data),
     });
 
     const json = await res.json().catch(() => null);
@@ -50,14 +52,16 @@ export const updateUserProfile = async (
     if (!res.ok) {
       console.error("Update failed:", json || res.statusText);
       throw new Error(
-        (json && json.errors?.[0]?.message) ||
-        `Failed to update profile: ${res.status}`
+        (json?.errors?.[0]?.message as string) || `Failed to update profile: ${res.status}`
       );
     }
 
-    return json;
+    return json.data; // API returns updated profile in `data` object
   } catch (err) {
     console.error("Network error:", err);
     throw new Error(err instanceof Error ? err.message : "Unknown error");
   }
 };
+
+// Alias to keep importing UserProfile if needed
+export type UserProfile = ProfileResponse;
