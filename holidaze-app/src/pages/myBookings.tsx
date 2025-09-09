@@ -75,7 +75,7 @@ const MyBookingsPage = () => {
             onClick={() => sortBookings(true)}
             className={`px-4 py-2 rounded transition ${
               sortLatest
-                ? "bg-blue-600 text-white"
+                ? "bg-gray-600 text-white"
                 : "bg-gray-200 text-gray-700"
             }`}
           >
@@ -85,7 +85,7 @@ const MyBookingsPage = () => {
             onClick={() => sortBookings(false)}
             className={`px-4 py-2 rounded transition ${
               !sortLatest
-                ? "bg-blue-600 text-white"
+                ? "bg-gray-600 text-white"
                 : "bg-gray-200 text-gray-700"
             }`}
           >
@@ -96,9 +96,9 @@ const MyBookingsPage = () => {
           {user.venueManager && (
             <button
               onClick={() => setShowCreateVenue(true)}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+              className="bg-white border-1 text-gray px-4 py-2 rounded hover:bg-green-400 transition"
             >
-              Create Venue
+              + Venue
             </button>
           )}
         </div>

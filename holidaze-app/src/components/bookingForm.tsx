@@ -14,10 +14,11 @@ interface Guests {
 
 interface Props {
   venueId: string;
+  venueOwner: string; // ✅ NEW
   initialDate?: Date | null;
 }
 
-const BookingForm = ({ venueId, initialDate }: Props) => {
+const BookingForm = ({ venueId, venueOwner, initialDate }: Props) => {
   const { user } = useAuth();
   const [dateFrom, setDateFrom] = useState(initialDate ? initialDate.toISOString().split("T")[0] : "");
   const [dateTo, setDateTo] = useState(initialDate ? initialDate.toISOString().split("T")[0] : "");
@@ -39,7 +40,13 @@ const BookingForm = ({ venueId, initialDate }: Props) => {
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return toast.error("Please log in to book");
-  
+
+    // ✅ Prevent managers from booking their own venues
+    if (user.name === venueOwner) {
+      toast.error("You cannot book your own venue.");
+      return;
+    }
+
     setLoading(true);
     try {
       await createBooking(
@@ -51,7 +58,7 @@ const BookingForm = ({ venueId, initialDate }: Props) => {
         },
         user.accessToken
       );
-  
+
       toast.success("Booking successful!");
       setDateFrom("");
       setDateTo("");
@@ -64,7 +71,6 @@ const BookingForm = ({ venueId, initialDate }: Props) => {
       setLoading(false);
     }
   };
-  
 
   return (
     <form onSubmit={handleBooking} className="bg-white p-4 rounded shadow-md space-y-4 mt-6">

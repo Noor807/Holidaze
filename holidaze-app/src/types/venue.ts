@@ -1,43 +1,52 @@
 // src/types/venue.ts
-
 export interface Media {
   url: string;
-  alt: string;
+  alt?: string;
 }
 
 export interface Booking {
   id: string;
-  dateFrom: string; // ISO string
-  dateTo: string;   // ISO string
+  dateFrom: string;
+  dateTo: string;
   guests: number;
   created: string;
   updated: string;
 }
 
-export interface Venue {
-  id: string;
+export interface VenuePayload {
   name: string;
   description: string;
-  media: Media[];
+  media?: Media[];
   price: number;
   maxGuests: number;
-  rating: number;
+  rating?: number;
+  meta?: {
+    wifi?: boolean;
+    parking?: boolean;
+    breakfast?: boolean;
+    pets?: boolean;
+  };
+  location?: {
+    address?: string;
+    city?: string;
+    zip?: string;
+    country?: string;
+    continent?: string;
+    lat?: number;
+    lng?: number;
+  };
+}
+
+export interface Venue extends VenuePayload {
+  id: string;
+  owner: {
+    id: string | undefined; name: string 
+};
   created: string;
   updated: string;
-  meta: {
-    wifi: boolean;
-    parking: boolean;
-    breakfast: boolean;
-    pets: boolean;
-  };
-  location: {
-    address: string;
-    city: string;
-    zip: string;
-    country: string;
-    continent: string;
-    lat: number;
-    lng: number;
-  };
-  bookings: Booking[]; // ✅ correct type
+  bookings?: Booking[];
+  rating: number;  
+  media: Media[];  
+  meta: Required<VenuePayload["meta"]>; 
+  location: Required<VenuePayload["location"]>; 
 }

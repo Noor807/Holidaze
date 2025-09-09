@@ -1,6 +1,6 @@
-// src/pages/myVenues.tsx
 import { useEffect, useState } from "react";
-import { getMyVenues, deleteVenue, type Venue, updateVenue, createVenue } from "../api/venues";
+import { getMyVenues, deleteVenue } from "../api/venues";
+import type { Venue, VenuePayload } from "../types/venue";
 import { useAuth } from "../context/authContext";
 import VenueCard from "../components/venueCard";
 import CreateVenueModal from "../components/createVenueModal";
@@ -8,14 +8,16 @@ import { toast } from "react-toastify";
 
 const MyVenuesPage = () => {
   const { user } = useAuth();
+  const token = user?.accessToken;
+
   const [venues, setVenues] = useState<Venue[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
 
   const fetchVenues = async () => {
-    if (!user) return;
+    if (!token || !user) return;
     try {
-      const data = await getMyVenues(user.name, user.accessToken);
+      const data = await getMyVenues(user.name, token);
       setVenues(data);
     } catch (err: any) {
       toast.error(err.message || "Failed to fetch your venues");
@@ -24,7 +26,7 @@ const MyVenuesPage = () => {
 
   useEffect(() => {
     fetchVenues();
-  }, [user]);
+  }, [user?.name, token]);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -39,37 +41,25 @@ const MyVenuesPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!user) return;
+    if (!token) return;
     if (!window.confirm("Are you sure you want to delete this venue?")) return;
 
     try {
-      await deleteVenue(id, user.accessToken);
-      toast.success("Venue deleted successfully!");
+      await deleteVenue(id, token);
       setVenues((prev) => prev.filter((v) => v.id !== id));
+      toast.success("Venue deleted successfully!");
     } catch (err: any) {
       toast.error(err.message || "Failed to delete venue");
     }
   };
 
-  const handleSubmit = async (formData: any) => {
-    if (!user) return;
-    try {
-      if (editingVenue) {
-        // Update
-        const updated = await updateVenue(editingVenue.id, formData, user.accessToken);
-        setVenues((prev) =>
-          prev.map((v) => (v.id === editingVenue.id ? updated : v))
-        );
-        toast.success("Venue updated successfully!");
-      } else {
-        // Create
-        const created = await createVenue(formData, user.accessToken);
-        setVenues((prev) => [created, ...prev]);
-      }
-      handleCloseModal();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to save venue");
+  const handleSubmit = (venue: Venue) => {
+    if (editingVenue) {
+      setVenues((prev) => prev.map((v) => (v.id === venue.id ? venue : v)));
+    } else {
+      setVenues((prev) => (prev.find((v) => v.id === venue.id) ? prev : [venue, ...prev]));
     }
+    handleCloseModal();
   };
 
   if (!user) return <p className="text-center mt-6">Please log in to manage your venues.</p>;
@@ -89,7 +79,6 @@ const MyVenuesPage = () => {
       {showModal && (
         <CreateVenueModal
           onClose={handleCloseModal}
-          // Pass editing venue data for edit functionality
           initialData={editingVenue || undefined}
           onSubmit={handleSubmit}
         />
@@ -98,25 +87,14 @@ const MyVenuesPage = () => {
       {venues.length === 0 ? (
         <p className="text-center text-gray-500">You have no venues yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {venues.map((venue) => (
-            <div key={venue.id} className="relative">
-              <VenueCard venue={venue} />
-              <div className="absolute top-2 right-2 flex gap-2">
-                <button
-                  onClick={() => handleEdit(venue)}
-                  className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(venue.id)}
-                  className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+            <VenueCard
+              key={venue.id}
+              venue={venue}
+              onEdit={() => handleEdit(venue)}
+              onDelete={() => handleDelete(venue.id)}
+            />
           ))}
         </div>
       )}

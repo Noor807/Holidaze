@@ -1,132 +1,88 @@
-// src/api/venues.ts
-import { API_VENUES, API_BASE } from "../constants/apiEndpoints";
-import { getAuthHeaders } from "./api";
+import type { Venue, VenuePayload } from "../types/venue";
+import { API_VENUES, API_PROFILES } from "../constants/apiEndpoints";
 
-// Media type
-export interface Media {
-  url: string;
-  alt?: string;
-}
+const normalizeVenue = (venue: any): Venue => ({
+  ...venue,
+  media: venue.media ?? [],
+  meta: {
+    wifi: venue.meta?.wifi ?? false,
+    parking: venue.meta?.parking ?? false,
+    breakfast: venue.meta?.breakfast ?? false,
+    pets: venue.meta?.pets ?? false,
+  },
+  location: {
+    address: venue.location?.address ?? "",
+    city: venue.location?.city ?? "",
+    zip: venue.location?.zip ?? "",
+    country: venue.location?.country ?? "",
+    continent: venue.location?.continent ?? "",
+    lat: venue.location?.lat ?? 0,
+    lng: venue.location?.lng ?? 0,
+  },
+  bookings: venue.bookings ?? [],
+});
 
-// Booking type
-export interface Booking {
-  id: string;
-  dateFrom: string;
-  dateTo: string;
-  guests: number;
-  created: string;
-  updated: string;
-  customer: {
-    name: string;
-    email: string;
-    bio?: string;
-    avatar?: Media;
-    banner?: Media;
-  };
-}
+// Public: Get all venues
+export const getVenues = async (): Promise<Venue[]> => {
+  const res = await fetch(API_VENUES);
+  if (!res.ok) throw new Error("Failed to fetch venues");
+  const json = await res.json();
+  return json.data.map(normalizeVenue);
+};
 
-// Venue payload for create/update
-export interface VenuePayload {
-  name: string;
-  description: string;
-  media?: Media[];
-  price: number;
-  maxGuests: number;
-  rating?: number;
-  meta?: {
-    wifi?: boolean;
-    parking?: boolean;
-    breakfast?: boolean;
-    pets?: boolean;
-  };
-  location?: {
-    address?: string;
-    city?: string;
-    zip?: string;
-    country?: string;
-    continent?: string;
-    lat?: number;
-    lng?: number;
-  };
-}
+// Protected: Get my venues
+export const getMyVenues = async (username: string, token: string): Promise<Venue[]> => {
+  const res = await fetch(`${API_PROFILES}/${username}/venues`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch your venues");
+  const json = await res.json();
+  return json.data.map(normalizeVenue);
+};
 
-// Venue type
-export interface Venue extends VenuePayload {
-  id: string;
-  owner: { name: string };
-  created: string;
-  updated: string;
-  bookings: Booking[]; // always present, can be empty
-}
-
-// ✅ Create a venue
-export const createVenue = async (data: VenuePayload, token: string): Promise<Venue> => {
+// Protected: Create venue
+export const createVenue = async (payload: VenuePayload, token: string): Promise<Venue> => {
   const res = await fetch(API_VENUES, {
     method: "POST",
-    headers: getAuthHeaders(token),
-    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
+    },
+    body: JSON.stringify(payload),
   });
-
+  if (!res.ok) throw new Error("Failed to create venue");
   const json = await res.json();
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || "Failed to create venue");
-  return { ...json.data, bookings: json.data.bookings ?? [] };
+  return normalizeVenue(json.data);
 };
 
-// ✅ Get all venues owned by logged-in manager
-export const getMyVenues = async (userName: string, token: string): Promise<Venue[]> => {
-  const res = await fetch(`${API_BASE}/holidaze/profiles/${userName}/venues`, {
-    headers: getAuthHeaders(token),
-  });
-
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || "Failed to fetch venues");
-
-  return json.data.map((venue: any) => ({ ...venue, bookings: venue.bookings ?? [] }));
-};
-
-// ✅ Get a single venue with bookings
-export const getVenueWithBookings = async (venueId: string, token: string): Promise<Venue> => {
-  const res = await fetch(`${API_VENUES}/${venueId}?_bookings=true`, {
-    headers: getAuthHeaders(token),
-  });
-
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || "Failed to fetch venue with bookings");
-
-  return { ...json.data, bookings: json.data.bookings ?? [] };
-};
-
-// ✅ Update a venue
-export const updateVenue = async (id: string, data: VenuePayload, token: string): Promise<Venue> => {
+// Protected: Update venue
+export const updateVenue = async (id: string, payload: VenuePayload, token: string): Promise<Venue> => {
   const res = await fetch(`${API_VENUES}/${id}`, {
     method: "PUT",
-    headers: getAuthHeaders(token),
-    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
+    },
+    body: JSON.stringify(payload),
   });
-
+  if (!res.ok) throw new Error("Failed to update venue");
   const json = await res.json();
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || "Failed to update venue");
-
-  return { ...json.data, bookings: json.data.bookings ?? [] };
+  return normalizeVenue(json.data);
 };
 
-// ✅ Delete a venue
+// Protected: Delete venue
 export const deleteVenue = async (id: string, token: string): Promise<void> => {
   const res = await fetch(`${API_VENUES}/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(token),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
+    },
   });
-
-  if (!res.ok) {
-    const json = await res.json();
-    throw new Error(json.errors?.[0]?.message || "Failed to delete venue");
-  }
-};
-
-// ✅ Search venues
-export const searchVenues = async (query: string): Promise<Venue[]> => {
-  const res = await fetch(`${API_VENUES}/search?q=${encodeURIComponent(query)}`);
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || "Failed to search venues");
-  return json.data.map((venue: any) => ({ ...venue, bookings: venue.bookings ?? [] }));
+  if (!res.ok) throw new Error("Failed to delete venue");
 };

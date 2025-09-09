@@ -1,17 +1,19 @@
-// src/components/CreateVenueModal.tsx
 import { useState } from "react";
-import { createVenue, updateVenue, type VenuePayload, type Venue } from "../api/venues";
+import type { Venue, VenuePayload } from "../types/venue";
+import { createVenue, updateVenue } from "../api/venues";
 import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 
 interface Props {
   onClose: () => void;
-  initialData?: Venue; // if provided, modal works in "edit mode"
-  onSubmit?: (data: VenuePayload) => Promise<void>; // optional callback
+  initialData?: Venue;
+  onSubmit?: (venue: Venue) => void;
 }
 
 const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
   const { user } = useAuth();
+  const token = user?.accessToken;
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -33,17 +35,7 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
   const [breakfast, setBreakfast] = useState(initialData?.meta?.breakfast || false);
   const [pets, setPets] = useState(initialData?.meta?.pets || false);
 
-  if (!user) return null;
-
-  const StepCircle = ({ num }: { num: number }) => (
-    <div
-      className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white z-10 ${
-        step >= num ? "bg-green-500" : "bg-gray-400"
-      }`}
-    >
-      {num}
-    </div>
-  );
+  if (!token) return null;
 
   const handleNext = () => {
     if (step === 1 && (!name || !description || !price || !maxGuests)) {
@@ -62,8 +54,14 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!wifi && !parking && !breakfast && !pets) {
-      toast.error("Please select at least one facility");
+    // Enforce Step 3 completion
+    if (step < 3) {
+      toast.error("Please complete all steps before submitting");
+      return;
+    }
+
+    if (!mediaUrl && !wifi && !parking && !breakfast && !pets) {
+      toast.error("Please fill at least one field or select a facility in Step 3");
       return;
     }
 
@@ -80,15 +78,16 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
 
     setLoading(true);
     try {
+      let venue: Venue;
       if (initialData) {
-        await updateVenue(initialData.id, payload, user.accessToken);
+        venue = await updateVenue(initialData.id, payload, token);
         toast.success("Venue updated successfully!");
       } else {
-        await createVenue(payload, user.accessToken);
+        venue = await createVenue(payload, token);
         toast.success("Venue created successfully!");
       }
 
-      if (onSubmit) await onSubmit(payload);
+      if (onSubmit) onSubmit(venue);
       onClose();
     } catch (err: any) {
       toast.error(err.message || "Failed to save venue");
@@ -103,7 +102,6 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-red-600 hover:text-red-500 font-extrabold text-2xl leading-none select-none"
-          aria-label="Close modal"
         >
           ✕
         </button>
@@ -112,23 +110,8 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
           {initialData ? "Edit Venue" : "Create New Venue"}
         </h2>
 
-        {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-4 mb-6 relative">
-          <div className="absolute top-4 left-8 right-8 h-1 bg-gray-300 z-0 rounded"></div>
-          <div
-            className="absolute top-4 h-1 bg-green-500 z-10 rounded transition-all duration-300"
-            style={{
-              width: step === 1 ? "0%" : step === 2 ? "50%" : "100%",
-              left: "8px",
-            }}
-          ></div>
-          <StepCircle num={1} />
-          <StepCircle num={2} />
-          <StepCircle num={3} />
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Step 1 */}
+          {/* Step 1: Basic Info */}
           {step === 1 && (
             <div className="space-y-3">
               <input
@@ -176,7 +159,7 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
             </div>
           )}
 
-          {/* Step 2 */}
+          {/* Step 2: Location */}
           {step === 2 && (
             <div className="space-y-3">
               <input
@@ -198,7 +181,7 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
             </div>
           )}
 
-          {/* Step 3 */}
+          {/* Step 3: Media & Facilities */}
           {step === 3 && (
             <div className="space-y-3">
               <input

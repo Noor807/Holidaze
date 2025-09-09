@@ -8,6 +8,7 @@ export interface Media {
 }
 
 export interface AuthData {
+  role: string;
   accessToken: string;
   name: string;
   email: string;
