@@ -40,6 +40,7 @@ export interface VenuePayload {
 export interface Venue extends VenuePayload {
   id: string;
   owner: {
+    avatar: any;
     id: string | undefined; name: string 
 };
   created: string;

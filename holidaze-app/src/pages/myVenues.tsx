@@ -70,9 +70,9 @@ const MyVenuesPage = () => {
         <h1 className="text-2xl font-bold">My Venues</h1>
         <button
           onClick={handleCreate}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          className="px-4 py-2 bg-gray-100 text-black border-1 rounded hover:bg-gray-400"
         >
-          + Add Venue
+          + Venue
         </button>
       </div>
 

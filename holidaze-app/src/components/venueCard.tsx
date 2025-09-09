@@ -29,7 +29,7 @@ const VenueCard = ({ venue, onEdit, onDelete }: Props) => {
   };
 
   return (
-    <div className="border rounded-lg shadow hover:shadow-lg overflow-hidden flex flex-col cursor-pointer">
+    <div className="rounded-lg bg-gray-100 shadow hover:shadow-lg overflow-hidden flex flex-col cursor-pointer">
       {/* Image */}
       {venue.media.length > 0 && (
         <img
@@ -59,7 +59,7 @@ const VenueCard = ({ venue, onEdit, onDelete }: Props) => {
           {onEdit && (
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(); }}
-              className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+              className="px-3 py-1 border-1 bg-gray-200 text-black text-sm rounded hover:bg-gray-400"
             >
               Edit
             </button>
@@ -67,7 +67,7 @@ const VenueCard = ({ venue, onEdit, onDelete }: Props) => {
           {onDelete && (
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+              className="px-3 py-1 bg-gray-800 text-white text-sm rounded hover:bg-gray-600"
             >
               Delete
             </button>
