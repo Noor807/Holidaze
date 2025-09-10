@@ -1,4 +1,4 @@
-// VenueMap.tsx
+// src/components/VenueMap.tsx
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -12,27 +12,36 @@ L.Icon.Default.mergeOptions({
 });
 
 interface VenueMapProps {
-  lat: number;
-  lng: number;
-  venueName: string;
+  lat?: number;          // optional
+  lng?: number;          // optional
+  venueName?: string;
+  height?: string;       // optional
 }
 
-const VenueMap = ({ lat, lng, venueName }: VenueMapProps) => {
+const DEFAULT_POSITION = { lat: 51.505, lng: -0.09 }; // fallback: London
+
+const VenueMap = ({ lat, lng, venueName, height = "200px" }: VenueMapProps) => {
+  const position = { lat: lat ?? DEFAULT_POSITION.lat, lng: lng ?? DEFAULT_POSITION.lng };
+
   return (
-    <MapContainer
-      center={[lat, lng]}
-      zoom={14}
-      scrollWheelZoom={false}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[lat, lng]}>
-        <Popup>{venueName}</Popup>
-      </Marker>
-    </MapContainer>
+    <div className="w-full rounded-lg overflow-hidden shadow-md" style={{ height }}>
+      <MapContainer
+        center={[position.lat, position.lng]}
+        zoom={lat && lng ? 14 : 2} // zoom out if default
+        scrollWheelZoom={false}
+        style={{ width: "100%", height: "100%" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {lat && lng && venueName && (
+          <Marker position={[lat, lng]}>
+            <Popup>{venueName}</Popup>
+          </Marker>
+        )}
+      </MapContainer>
+    </div>
   );
 };
 
