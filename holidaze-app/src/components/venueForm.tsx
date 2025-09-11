@@ -1,6 +1,6 @@
 // src/components/venueForm.tsx
 import { useState } from "react";
-import type { VenuePayload } from "../api/venues";
+import type { VenuePayload } from "../types/venue";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -13,11 +13,16 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
   const [formData, setFormData] = useState<VenuePayload>({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    media: initialData?.media || [],
+    media: initialData?.media || [], // multiple images now
     price: initialData?.price || 0,
     maxGuests: initialData?.maxGuests || 1,
     rating: initialData?.rating || 0,
-    meta: initialData?.meta || { wifi: false, parking: false, breakfast: false, pets: false },
+    meta: initialData?.meta || {
+      wifi: false,
+      parking: false,
+      breakfast: false,
+      pets: false,
+    },
     location: initialData?.location || {
       address: "",
       city: "",
@@ -32,24 +37,66 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field: keyof VenuePayload, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleMetaChange = (key: keyof NonNullable<VenuePayload["meta"]>, value: boolean) => {
+  const handleMetaChange = (
+    key: keyof NonNullable<VenuePayload["meta"]>,
+    value: boolean
+  ) => {
     setFormData((prev) => ({
       ...prev,
-      meta: { ...prev.meta, [key]: value },
+      meta: {
+        wifi: false,
+        parking: false,
+        breakfast: false,
+        pets: false,
+        ...prev.meta, // keep existing values
+        [key]: value,
+      },
     }));
   };
-
+  
   const handleLocationChange = (
     key: keyof NonNullable<VenuePayload["location"]>,
     value: any
   ) => {
     setFormData((prev) => ({
       ...prev,
-      location: { ...prev.location!, [key]: value },
+      location: {
+        address: "",
+        city: "",
+        zip: "",
+        country: "",
+        continent: "",
+        lat: 0,
+        lng: 0,
+        ...prev.location, // keep existing values
+        [key]: value,
+      },
     }));
+  };
+  
+
+  // Handle image changes
+  const handleImageChange = (index: number, value: string) => {
+    const updated = [...(formData.media || [])];
+    updated[index] = { url: value, alt: formData.name || "Venue image" };
+    handleChange("media", updated);
+  };
+
+  const addImageField = () => {
+    handleChange("media", [
+      ...(formData.media || []),
+      { url: "", alt: formData.name || "Venue image" },
+    ]);
+  };
+
+  const removeImageField = (index: number) => {
+    handleChange(
+      "media",
+      (formData.media || []).filter((_, i) => i !== index)
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,16 +153,37 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
         className="w-full px-3 py-2 border rounded"
       />
 
-      {/* Media URL */}
-      <input
-        type="text"
-        placeholder="Image URL (first image will be main)"
-        value={formData.media?.[0]?.url || ""}
-        onChange={(e) =>
-          handleChange("media", [{ url: e.target.value, alt: formData.name }])
-        }
-        className="w-full px-3 py-2 border rounded"
-      />
+      {/* Media (multiple images) */}
+      <div>
+        <h3 className="font-semibold mb-2">Venue Images</h3>
+        {formData.media?.map((img, index) => (
+          <div key={index} className="flex items-center space-x-2 mb-2">
+            <input
+              type="text"
+              placeholder={`Image URL ${index + 1}`}
+              value={img.url}
+              onChange={(e) => handleImageChange(index, e.target.value)}
+              className="flex-1 px-3 py-2 border rounded"
+            />
+            {index > 0 && (
+              <button
+                type="button"
+                onClick={() => removeImageField(index)}
+                className="px-2 py-1 bg-red-500 text-white rounded"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addImageField}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          + Add Image
+        </button>
+      </div>
 
       {/* Meta */}
       <div className="flex gap-4">
