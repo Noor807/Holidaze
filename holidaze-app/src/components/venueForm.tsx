@@ -1,6 +1,6 @@
 // src/components/venueForm.tsx
 import { useState } from "react";
-import type { VenuePayload } from "../types/venue";
+import type { VenuePayload, Media } from "../types/venue";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -13,7 +13,11 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
   const [formData, setFormData] = useState<VenuePayload>({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    media: initialData?.media || [], // multiple images now
+    media: initialData?.media || [
+      { url: "", alt: "Venue image 1" },
+      { url: "", alt: "Venue image 2" },
+      { url: "", alt: "Venue image 3" },
+    ],
     price: initialData?.price || 0,
     maxGuests: initialData?.maxGuests || 1,
     rating: initialData?.rating || 0,
@@ -36,61 +40,48 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
 
   const [loading, setLoading] = useState(false);
 
+  // Generic field updater
   const handleChange = (field: keyof VenuePayload, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleMetaChange = (
-    key: keyof NonNullable<VenuePayload["meta"]>,
-    value: boolean
-  ) => {
-    setFormData((prev) => ({
+  // Meta (checkboxes)
+  const handleMetaChange = (key: keyof NonNullable<VenuePayload["meta"]>, value: boolean) => {
+    setFormData(prev => ({
       ...prev,
       meta: {
-        wifi: false,
-        parking: false,
-        breakfast: false,
-        pets: false,
-        ...prev.meta, // keep existing values
+        ...prev.meta,
         [key]: value,
       },
     }));
   };
-  
-  const handleLocationChange = (
-    key: keyof NonNullable<VenuePayload["location"]>,
-    value: any
-  ) => {
-    setFormData((prev) => ({
+
+  // Location fields
+  const handleLocationChange = (key: keyof NonNullable<VenuePayload["location"]>, value: any) => {
+    setFormData(prev => ({
       ...prev,
       location: {
-        address: "",
-        city: "",
-        zip: "",
-        country: "",
-        continent: "",
-        lat: 0,
-        lng: 0,
-        ...prev.location, // keep existing values
+        ...prev.location,
         [key]: value,
       },
     }));
   };
-  
 
-  // Handle image changes
+  // Media handling
   const handleImageChange = (index: number, value: string) => {
-    const updated = [...(formData.media || [])];
-    updated[index] = { url: value, alt: formData.name || "Venue image" };
+    const updated: Media[] = [...(formData.media || [])];
+    updated[index] = { url: value, alt: formData.name || `Venue image ${index + 1}` };
     handleChange("media", updated);
   };
 
   const addImageField = () => {
+    const currentLength = formData.media?.length ?? 0; // safely get length
     handleChange("media", [
       ...(formData.media || []),
-      { url: "", alt: formData.name || "Venue image" },
+      { url: "", alt: formData.name || `Venue image ${currentLength + 1}` },
     ]);
   };
+  
 
   const removeImageField = (index: number) => {
     handleChange(
@@ -99,6 +90,7 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
     );
   };
 
+  // Form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -153,7 +145,7 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
         className="w-full px-3 py-2 border rounded"
       />
 
-      {/* Media (multiple images) */}
+      {/* Media (multiple images with preview) */}
       <div>
         <h3 className="font-semibold mb-2">Venue Images</h3>
         {formData.media?.map((img, index) => (
@@ -165,6 +157,13 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
               onChange={(e) => handleImageChange(index, e.target.value)}
               className="flex-1 px-3 py-2 border rounded"
             />
+            {img.url && (
+              <img
+                src={img.url}
+                alt={img.alt || `Venue image ${index + 1}`}
+                className="w-16 h-16 object-cover rounded border"
+              />
+            )}
             {index > 0 && (
               <button
                 type="button"
@@ -187,55 +186,33 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
 
       {/* Meta */}
       <div className="flex gap-4">
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.meta?.wifi || false}
-            onChange={(e) => handleMetaChange("wifi", e.target.checked)}
-          />{" "}
-          WiFi
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.meta?.parking || false}
-            onChange={(e) => handleMetaChange("parking", e.target.checked)}
-          />{" "}
-          Parking
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.meta?.breakfast || false}
-            onChange={(e) => handleMetaChange("breakfast", e.target.checked)}
-          />{" "}
-          Breakfast
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.meta?.pets || false}
-            onChange={(e) => handleMetaChange("pets", e.target.checked)}
-          />{" "}
-          Pets
-        </label>
+        {["wifi", "parking", "breakfast", "pets"].map((metaKey) => (
+          <label key={metaKey}>
+            <input
+              type="checkbox"
+              checked={formData.meta?.[metaKey as keyof typeof formData.meta] || false}
+              onChange={(e) =>
+                handleMetaChange(metaKey as keyof NonNullable<VenuePayload["meta"]>, e.target.checked)
+              }
+            />{" "}
+            {metaKey.charAt(0).toUpperCase() + metaKey.slice(1)}
+          </label>
+        ))}
       </div>
 
       {/* Location */}
-      <input
-        type="text"
-        placeholder="City"
-        value={formData.location?.city || ""}
-        onChange={(e) => handleLocationChange("city", e.target.value)}
-        className="w-full px-3 py-2 border rounded"
-      />
-      <input
-        type="text"
-        placeholder="Country"
-        value={formData.location?.country || ""}
-        onChange={(e) => handleLocationChange("country", e.target.value)}
-        className="w-full px-3 py-2 border rounded"
-      />
+      {["address", "city", "zip", "country", "continent"].map((locKey) => (
+        <input
+          key={locKey}
+          type="text"
+          placeholder={locKey.charAt(0).toUpperCase() + locKey.slice(1)}
+          value={formData.location?.[locKey as keyof typeof formData.location] || ""}
+          onChange={(e) =>
+            handleLocationChange(locKey as keyof NonNullable<VenuePayload["location"]>, e.target.value)
+          }
+          className="w-full px-3 py-2 border rounded"
+        />
+      ))}
 
       {/* Submit */}
       <button

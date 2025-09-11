@@ -26,7 +26,6 @@ const DetailedVenuePage = () => {
   const { user } = useAuth();
   const isLoggedIn = Boolean(user);
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
-  
 
   // Fetch venue details
   useEffect(() => {
@@ -62,7 +61,10 @@ const DetailedVenuePage = () => {
   }, [id]);
 
   if (loading) return <p className="text-center">Loading venue...</p>;
-  if (error || !venue) return <p className="text-center text-red-600">{error || "Venue not found"}</p>;
+  if (error || !venue)
+    return (
+      <p className="text-center text-red-600">{error || "Venue not found"}</p>
+    );
 
   const isOwner = user?.name === venue?.owner?.name;
 
@@ -83,12 +85,36 @@ const DetailedVenuePage = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
-      {/* Venue image */}
+      {/* Venue images gallery */}
+{venue.media && venue.media.length > 0 ? (
+  <div className="grid grid-cols-3 grid-rows-2 gap-2 h-96 rounded-lg overflow-hidden">
+    {/* Big main image */}
+    <div className="col-span-2 row-span-2">
       <img
-        src={venue.media?.[0]?.url || "https://via.placeholder.com/600x400"}
-        alt={venue.media?.[0]?.alt || "Venue image"}
-        className="w-full h-96 object-cover rounded-lg"
+        src={venue.media[0].url}
+        alt={venue.media[0].alt || "Venue image"}
+        className="w-full h-full object-cover rounded-lg"
       />
+    </div>
+
+    {/* Smaller images (next 3) */}
+    {venue.media.slice(1, 4).map((img, idx) => (
+      <img
+        key={idx}
+        src={img.url}
+        alt={img.alt || `Venue image ${idx + 2}`}
+        className="w-full h-full object-cover rounded-lg"
+      />
+    ))}
+  </div>
+) : (
+  <img
+    src="https://via.placeholder.com/600x400"
+    alt="Placeholder venue image"
+    className="w-full h-96 object-cover rounded-lg"
+  />
+)}
+
 
       {/* Title, rating, price, host */}
       <div className="mt-4 space-y-2">
@@ -120,7 +146,9 @@ const DetailedVenuePage = () => {
 
       {/* Description */}
       <section className="mt-6">
-        <h2 className="text-xl text-gray-500 font-semibold mb-2">About This Venue</h2>
+        <h2 className="text-xl text-gray-500 font-semibold mb-2">
+          About This Venue
+        </h2>
         <p>{venue.description}</p>
       </section>
 
@@ -128,7 +156,9 @@ const DetailedVenuePage = () => {
       <section className="mt-6">
         {isLoggedIn ? (
           isOwner ? (
-            <p className="text-red-600 font-semibold">You cannot book your own venue.</p>
+            <p className="text-red-600 font-semibold">
+              You cannot book your own venue.
+            </p>
           ) : (
             <BookingForm
               venueId={venue.id}
@@ -138,7 +168,9 @@ const DetailedVenuePage = () => {
           )
         ) : (
           <div className="space-y-4">
-            <p className="text-gray-600">Log in or register to book this venue</p>
+            <p className="text-gray-600">
+              Log in or register to book this venue
+            </p>
             <div className="flex space-x-4">
               <Link
                 to="/login"
@@ -161,10 +193,30 @@ const DetailedVenuePage = () => {
       <section className="mt-8">
         <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
         <ul className="space-y-2 text-gray-600 text-lg">
-          {venue.meta?.wifi && <li className="flex items-center space-x-2"><FaWifi /><span>WiFi</span></li>}
-          {venue.meta?.parking && <li className="flex items-center space-x-2"><FaParking /><span>Parking</span></li>}
-          {venue.meta?.breakfast && <li className="flex items-center space-x-2"><FaCoffee /><span>Breakfast</span></li>}
-          {venue.meta?.pets && <li className="flex items-center space-x-2"><FaPaw /><span>Pets allowed</span></li>}
+          {venue.meta?.wifi && (
+            <li className="flex items-center space-x-2">
+              <FaWifi />
+              <span>WiFi</span>
+            </li>
+          )}
+          {venue.meta?.parking && (
+            <li className="flex items-center space-x-2">
+              <FaParking />
+              <span>Parking</span>
+            </li>
+          )}
+          {venue.meta?.breakfast && (
+            <li className="flex items-center space-x-2">
+              <FaCoffee />
+              <span>Breakfast</span>
+            </li>
+          )}
+          {venue.meta?.pets && (
+            <li className="flex items-center space-x-2">
+              <FaPaw />
+              <span>Pets allowed</span>
+            </li>
+          )}
         </ul>
       </section>
 
