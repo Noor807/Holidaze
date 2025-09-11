@@ -112,158 +112,20 @@ const EditVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-red-600 hover:text-red-500 font-extrabold text-2xl leading-none select-none"
-        >
-          ✕
-        </button>
+  return ( <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"> <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative"> <button onClick={onClose} className="absolute top-2 right-2 text-red-600 hover:text-red-500 font-extrabold text-2xl leading-none select-none" > ✕ </button>   <h2 className="text-2xl font-bold mb-4">Edit Venue</h2>   {/* Step 1 */} {step === 1 && ( <form onSubmit={(e) => { e.preventDefault(); handleNext(); }} className="space-y-3"> <input type="text" placeholder="Venue Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border rounded" required /> <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full px-3 py-2 border rounded" required /> <div className="flex gap-4"> <input type="number" placeholder="Price per night" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full px-3 py-2 border rounded" required /> <input type="number" placeholder="Max Guests" value={maxGuests} onChange={(e) => setMaxGuests(e.target.value)} className="w-full px-3 py-2 border rounded" required /> <input type="number" placeholder="Rating" value={rating} min={0} max={5} onChange={(e) => setRating(e.target.value)} className="w-full px-3 py-2 border rounded" /> </div> <div className="flex justify-end mt-4"> <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded"> Next </button> </div> </form> )}   {/* Step 2 */} {step === 2 && ( <form onSubmit={(e) => { e.preventDefault(); handleNext(); }} className="space-y-3"> <input type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="w-full px-3 py-2 border rounded" required /> <input type="text" placeholder="Country" value={country} onChange={(e) => setCountry(e.target.value)} className="w-full px-3 py-2 border rounded" required /> <div className="flex justify-between mt-4"> <button type="button" onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded" > Previous </button> <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded"> Next </button> </div> </form> )}   {/* Step 3 */} {step === 3 && ( <form onSubmit={handleSubmit} className="space-y-3"> <h3 className="font-semibold mb-2">Venue Images</h3> {media.map((img) => ( <div key={img.id} className="flex items-center space-x-2 mb-2"> <input type="text" placeholder={`Image URL`} value={img.url} onChange={(e) => handleMediaChange(img.id, e.target.value)} className="flex-1 px-3 py-2 border rounded" /> {img.url && <img src={img.url} alt={img.alt} className="w-16 h-16 object-cover rounded border" />} {media.length > 1 && ( <button type="button" onClick={() => removeMediaField(img.id)} className="px-2 py-1 bg-red-500 text-white rounded" > ✕ </button> )} </div> ))} <button type="button" onClick={addMediaField} className="px-4 py-2 bg-blue-500 text-white rounded" > + Add Image </button>   <div className="flex gap-4 mt-4"> <label> <input type="checkbox" checked={wifi} onChange={() => setWifi(!wifi)} />{" "} Wifi </label> <label> <input type="checkbox" checked={parking} onChange={() => setParking(!parking)} />{" "} Parking </label> <label> <input type="checkbox" checked={breakfast} onChange={() => setBreakfast(!breakfast)} />{" "} Breakfast </label> <label> <input type="checkbox" checked={pets} onChange={() => setPets(!pets)} />{" "} Pets </label> </div>   <div className="flex justify-between mt-4"> <button type="button" onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded" > Previous </button> <button type="submit" disabled={loading} className="px-4 py-2 bg-green-500 text-white rounded" > {loading ? "Saving..." : "Update Venue"} </button> </div> </form> )} </div> </div> );
 
-        <h2 className="text-2xl font-bold mb-4">Edit Venue</h2>
 
-        {/* Step 1 */}
-        {step === 1 && (
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              handleNext();
-            }}
-            className="space-y-3"
-          >
-            <input
-              type="text"
-              placeholder="Venue Name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
-            />
-            <textarea
-              placeholder="Description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
-            />
-            <div className="flex gap-4">
-              <input
-                type="number"
-                placeholder="Price per night"
-                value={price}
-                onChange={e => setPrice(e.target.value)}
-                className="w-full px-3 py-2 border rounded"
-              />
-              <input
-                type="number"
-                placeholder="Max Guests"
-                value={maxGuests}
-                onChange={e => setMaxGuests(e.target.value)}
-                className="w-full px-3 py-2 border rounded"
-              />
-              <input
-                type="number"
-                placeholder="Rating"
-                value={rating}
-                min={0}
-                max={5}
-                onChange={e => setRating(e.target.value)}
-                className="w-full px-3 py-2 border rounded"
-              />
-            </div>
-            <div className="flex justify-end mt-4">
-              <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">
-                Next
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Step 2 */}
-        {step === 2 && (
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              handleNext();
-            }}
-            className="space-y-3"
-          >
-            <input
-              type="text"
-              placeholder="City"
-              value={city}
-              onChange={e => setCity(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Country"
-              value={country}
-              onChange={e => setCountry(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
-            />
-            <div className="flex justify-between mt-4">
-              <button type="button" onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded">
-                Previous
-              </button>
-              <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">
-                Next
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Step 3 */}
-        {step === 3 && (
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-            className="space-y-3"
-          >
-            <h3 className="font-semibold mb-2">Venue Images</h3>
-            {media.map(img => (
-              <div key={img.id} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  placeholder={`Image URL`}
-                  value={img.url}
-                  onChange={e => handleMediaChange(img.id, e.target.value)}
-                  className="flex-1 px-3 py-2 border rounded"
-                />
-                {img.url && <img src={img.url} alt={img.alt} className="w-16 h-16 object-cover rounded border" />}
-                {media.length > 1 && (
-                  <button type="button" onClick={() => removeMediaField(img.id)} className="px-2 py-1 bg-red-500 text-white rounded">
-                    ✕
-                  </button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={addMediaField} className="px-4 py-2 bg-blue-500 text-white rounded">
-              + Add Image
-            </button>
-
-            <div className="flex gap-4 mt-4">
-              <label><input type="checkbox" checked={wifi} onChange={() => setWifi(!wifi)} /> Wifi</label>
-              <label><input type="checkbox" checked={parking} onChange={() => setParking(!parking)} /> Parking</label>
-              <label><input type="checkbox" checked={breakfast} onChange={() => setBreakfast(!breakfast)} /> Breakfast</label>
-              <label><input type="checkbox" checked={pets} onChange={() => setPets(!pets)} /> Pets</label>
-            </div>
-
-            <div className="flex justify-between mt-4">
-              <button type="button" onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded">
-                Previous
-              </button>
-              <button type="submit" disabled={loading} className="px-4 py-2 bg-green-500 text-white rounded">
-                {loading ? "Saving..." : "Update Venue"}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
-  );
 };
 
 export default EditVenueModal;
+
+
+
+
+
+
+
+
+
+
+

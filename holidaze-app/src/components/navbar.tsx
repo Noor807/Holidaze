@@ -3,18 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/authContext";
+import SearchBar from "./searchBar";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
   onCreateVenue?: () => void; // Prop to trigger CreateVenueModal
 }
 
-const Navbar = ({ onSearch, onCreateVenue }: NavbarProps) => {
+const Navbar = ({ onCreateVenue }: NavbarProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const isHomePage = location.pathname === '/';
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -44,15 +45,15 @@ const Navbar = ({ onSearch, onCreateVenue }: NavbarProps) => {
         <span className="text-white text-lg font-semibold hidden sm:inline">Holidaze</span>
       </Link>
 
-      {/* Search */}
-      <div className="w-full max-w-md flex-grow sm:mx-4">
-        <input
-          type="text"
-          placeholder="Search venues..."
-          onChange={(e) => onSearch?.(e.target.value.trim())}
-          className="w-full px-4 py-2 rounded-full border border-gray-300 bg-white/90 text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
-        />
-      </div>
+     {/* Search */}
+<div className="w-full max-w-md flex-grow sm:mx-4">
+  {!isHomePage && (
+    <div className="w-full max-w-sm">
+      <SearchBar />
+    </div>
+  )}
+</div>
+
 
       {/* Right side */}
       <div className="relative flex items-center space-x-3 text-white">

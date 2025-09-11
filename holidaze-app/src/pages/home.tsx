@@ -3,6 +3,7 @@ import VenueCarousel from "../components/venueCarousel";
 import { fetchVenues } from "../api/fetchVenues";
 import type { Venue } from "../types/venue";
 
+
 interface HomeProps {
   searchTerm: string;
 }
@@ -11,6 +12,7 @@ const Home = ({ searchTerm }: HomeProps) => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+console.log(searchTerm);
 
   useEffect(() => {
     const loadVenues = async () => {
