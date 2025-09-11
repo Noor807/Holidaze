@@ -98,7 +98,7 @@ const DetailedVenuePage = () => {
 
         {/* Host Card */}
         {venue.owner && (
-          <div className="flex items-center space-x-4 mt-4 p-2 border rounded-lg shadow-sm bg-white hover:shadow-lg transition-shadow duration-200 max-w-xs">
+          <div className="flex items-center space-x-4 mt-4 p-2 border  rounded-lg shadow-sm bg-white hover:shadow-lg transition-shadow duration-200 max-w-xs">
             <img
               src={venue.owner.avatar?.url || "https://via.placeholder.com/60"}
               alt={venue.owner.avatar?.alt || "Host avatar"}
@@ -169,7 +169,7 @@ const DetailedVenuePage = () => {
       </section>
 
       {/* Map */}
-      <section className="mt-6">
+      <section className="mt-16">
         <VenueMap lat={mapLat} lng={mapLng} venueName={venue.name} />
       </section>
     </div>

@@ -89,7 +89,7 @@ const BookingForm = ({ venueId, venueOwner, unavailableDates = [] }: Props) => {
   return (
     <form
       onSubmit={handleBooking}
-      className="bg-white p-4 rounded shadow-md space-y-4 mt-6"
+      className="bg-gray-100 p-4 rounded shadow-md space-y-4 mt-6"
     >
       {/* Date Range Picker */}
       <div>
