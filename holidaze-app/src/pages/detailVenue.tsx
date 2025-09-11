@@ -85,11 +85,11 @@ const DetailedVenuePage = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
-      {/* Venue images gallery */}
+     {/* Venue images gallery */}
 {venue.media && venue.media.length > 0 ? (
-  <div className="grid grid-cols-3 grid-rows-2 gap-2 h-96 rounded-lg overflow-hidden">
+  <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-4 md:grid-rows-2 gap-2 rounded-lg overflow-hidden">
     {/* Big main image */}
-    <div className="col-span-2 row-span-2">
+    <div className="row-span-1 md:row-span-2 md:col-span-2 h-64 md:h-full w-full">
       <img
         src={venue.media[0].url}
         alt={venue.media[0].alt || "Venue image"}
@@ -97,23 +97,27 @@ const DetailedVenuePage = () => {
       />
     </div>
 
-    {/* Smaller images (next 3) */}
+    {/* Smaller images */}
     {venue.media.slice(1, 4).map((img, idx) => (
-      <img
-        key={idx}
-        src={img.url}
-        alt={img.alt || `Venue image ${idx + 2}`}
-        className="w-full h-full object-cover rounded-lg"
-      />
+      <div key={idx} className="h-32 md:h-full overflow-hidden rounded-lg w-full">
+        <img
+          src={img.url}
+          alt={img.alt || `Venue image ${idx + 2}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
     ))}
   </div>
 ) : (
   <img
     src="https://via.placeholder.com/600x400"
     alt="Placeholder venue image"
-    className="w-full h-96 object-cover rounded-lg"
+    className="w-full h-64 md:h-96 object-cover rounded-lg"
   />
 )}
+
+
+
 
 
       {/* Title, rating, price, host */}

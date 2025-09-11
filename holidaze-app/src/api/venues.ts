@@ -1,4 +1,4 @@
-import type { Venue,  VenuePayload } from "../types/venue";
+import type {  Venue,  VenuePayload } from "../types/venue";
 import { API_VENUES, API_PROFILES } from "../constants/apiEndpoints";
 
 const normalizeVenue = (venue: any): Venue => ({

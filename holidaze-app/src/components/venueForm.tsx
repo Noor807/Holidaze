@@ -13,11 +13,9 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
   const [formData, setFormData] = useState<VenuePayload>({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    media: initialData?.media || [
-      { url: "", alt: "Venue image 1" },
-      { url: "", alt: "Venue image 2" },
-      { url: "", alt: "Venue image 3" },
-    ],
+    media: initialData?.media && initialData.media.length > 0
+      ? initialData.media
+      : [{ url: "", alt: "Venue image 1" }], // Start with one image field
     price: initialData?.price || 0,
     maxGuests: initialData?.maxGuests || 1,
     rating: initialData?.rating || 0,
@@ -45,7 +43,7 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Meta (checkboxes)
+  // Meta checkboxes
   const handleMetaChange = (key: keyof NonNullable<VenuePayload["meta"]>, value: boolean) => {
     setFormData(prev => ({
       ...prev,
@@ -67,21 +65,24 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
     }));
   };
 
-  // Media handling
+  // Image handling
   const handleImageChange = (index: number, value: string) => {
     const updated: Media[] = [...(formData.media || [])];
     updated[index] = { url: value, alt: formData.name || `Venue image ${index + 1}` };
     handleChange("media", updated);
+
+    // If last input is filled, add a new empty field automatically
+    if (index === formData.media!.length - 1 && value.trim() !== "") {
+      addImageField();
+    }
   };
 
   const addImageField = () => {
-    const currentLength = formData.media?.length ?? 0; // safely get length
     handleChange("media", [
       ...(formData.media || []),
-      { url: "", alt: formData.name || `Venue image ${currentLength + 1}` },
+      { url: "", alt: formData.name || `Venue image ${formData.media!.length + 1}` },
     ]);
   };
-  
 
   const removeImageField = (index: number) => {
     handleChange(
@@ -145,10 +146,10 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
         className="w-full px-3 py-2 border rounded"
       />
 
-      {/* Media (multiple images with preview) */}
+      {/* Media - dynamic image fields */}
       <div>
         <h3 className="font-semibold mb-2">Venue Images</h3>
-        {formData.media?.map((img, index) => (
+        {formData.media!.map((img, index) => (
           <div key={index} className="flex items-center space-x-2 mb-2">
             <input
               type="text"
@@ -164,7 +165,7 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
                 className="w-16 h-16 object-cover rounded border"
               />
             )}
-            {index > 0 && (
+            {formData.media!.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeImageField(index)}
@@ -175,16 +176,9 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
             )}
           </div>
         ))}
-        <button
-          type="button"
-          onClick={addImageField}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          + Add Image
-        </button>
       </div>
 
-      {/* Meta */}
+      {/* Meta checkboxes */}
       <div className="flex gap-4">
         {["wifi", "parking", "breakfast", "pets"].map((metaKey) => (
           <label key={metaKey}>
@@ -200,7 +194,7 @@ const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
         ))}
       </div>
 
-      {/* Location */}
+      {/* Location fields */}
       {["address", "city", "zip", "country", "continent"].map((locKey) => (
         <input
           key={locKey}

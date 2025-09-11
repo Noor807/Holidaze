@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Venue, VenuePayload } from "../types/venue";
+import type { Venue, VenuePayload, Media } from "../types/venue";
 import { createVenue, updateVenue } from "../api/venues";
 import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ interface Props {
 const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
   const { user } = useAuth();
   const token = user?.accessToken;
+  if (!token) return null;
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -29,14 +30,32 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
   const [country, setCountry] = useState(initialData?.location?.country || "");
 
   // Step 3: Media & Facilities
-  const [mediaUrl, setMediaUrl] = useState(initialData?.media?.[0]?.url || "");
+  const [media, setMedia] = useState<Media[]>(
+    initialData?.media?.length
+      ? initialData.media
+      : [{ url: "", alt: "Venue image 1" }]
+  );
   const [wifi, setWifi] = useState(initialData?.meta?.wifi || false);
   const [parking, setParking] = useState(initialData?.meta?.parking || false);
   const [breakfast, setBreakfast] = useState(initialData?.meta?.breakfast || false);
   const [pets, setPets] = useState(initialData?.meta?.pets || false);
 
-  if (!token) return null;
+  // Media handlers
+  const handleMediaChange = (index: number, url: string) => {
+    const updated = [...media];
+    updated[index] = { url, alt: name || `Venue image ${index + 1}` };
+    setMedia(updated);
+  };
 
+  const addMediaField = () => {
+    setMedia(prev => [...prev, { url: "", alt: name || `Venue image ${prev.length + 1}` }]);
+  };
+
+  const removeMediaField = (index: number) => {
+    setMedia(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Navigation
   const handleNext = () => {
     if (step === 1 && (!name || !description || !price || !maxGuests)) {
       toast.error("Please fill all required fields in Step 1");
@@ -46,22 +65,21 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
       toast.error("Please fill all required fields in Step 2");
       return;
     }
-    setStep((prev) => Math.min(prev + 1, 3));
+    setStep(prev => Math.min(prev + 1, 3));
   };
 
-  const handlePrev = () => setStep((prev) => Math.max(prev - 1, 1));
+  const handlePrev = () => setStep(prev => Math.max(prev - 1, 1));
 
+  // Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Enforce Step 3 completion
-    if (step < 3) {
-      toast.error("Please complete all steps before submitting");
-      return;
-    }
+    // Validate step 3: at least one image or one facility
+    const hasMedia = media.some(m => m.url.trim() !== "");
+    const hasFacility = wifi || parking || breakfast || pets;
 
-    if (!mediaUrl && !wifi && !parking && !breakfast && !pets) {
-      toast.error("Please fill at least one field or select a facility in Step 3");
+    if (!hasMedia && !hasFacility) {
+      toast.error("Please add at least one image or select a facility in Step 3");
       return;
     }
 
@@ -71,7 +89,7 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
       price: Number(price),
       maxGuests: Number(maxGuests),
       rating: rating ? Number(rating) : 0,
-      media: mediaUrl ? [{ url: mediaUrl, alt: name }] : [],
+      media: media.filter(m => m.url.trim() !== ""),
       meta: { wifi, parking, breakfast, pets },
       location: { address: "", city, country, continent: "", lat: 0, lng: 0 },
     };
@@ -86,7 +104,6 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
         venue = await createVenue(payload, token);
         toast.success("Venue created successfully!");
       }
-
       if (onSubmit) onSubmit(venue);
       onClose();
     } catch (err: any) {
@@ -184,14 +201,43 @@ const CreateVenueModal = ({ onClose, initialData, onSubmit }: Props) => {
           {/* Step 3: Media & Facilities */}
           {step === 3 && (
             <div className="space-y-3">
-              <input
-                type="url"
-                placeholder="Media URL"
-                value={mediaUrl}
-                onChange={(e) => setMediaUrl(e.target.value)}
-                className="w-full px-3 py-2 border rounded"
-              />
-              <div className="flex gap-4">
+              <h3 className="font-semibold mb-2">Venue Images</h3>
+              {media.map((img, index) => (
+                <div key={index} className="flex items-center space-x-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder={`Image URL ${index + 1}`}
+                    value={img.url}
+                    onChange={(e) => handleMediaChange(index, e.target.value)}
+                    className="flex-1 px-3 py-2 border rounded"
+                  />
+                  {img.url && (
+                    <img
+                      src={img.url}
+                      alt={img.alt || `Venue image ${index + 1}`}
+                      className="w-16 h-16 object-cover rounded border"
+                    />
+                  )}
+                  {media.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeMediaField(index)}
+                      className="px-2 py-1 bg-red-500 text-white rounded"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addMediaField}
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                + Add Image
+              </button>
+
+              <div className="flex gap-4 mt-4">
                 <label>
                   <input type="checkbox" checked={wifi} onChange={() => setWifi(!wifi)} /> Wifi
                 </label>
