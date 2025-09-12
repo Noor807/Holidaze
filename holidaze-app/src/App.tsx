@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
@@ -13,39 +12,32 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import MyBookings from "./pages/myBookings";
 import ProfilePage from "./pages/profilePage"; 
-import MyVenuesPage from "./pages/myVenues";
 
-import CreateVenueModal from "./components/createVenueModal";
+import MyVenuesPage from "./pages/myVenues"; // Venue Manager
+import CreateEditVenuePage from "./pages/createEditVenuepage"; // Unified create/edit page
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [showCreateVenue, setShowCreateVenue] = useState(false);
-
-  const handleOpenCreateVenue = () => setShowCreateVenue(true);
-  const handleCloseCreateVenue = () => setShowCreateVenue(false);
 
   return (
     <>
-      {/* Navbar */}
-      <Navbar onSearch={setSearchTerm} onCreateVenue={handleOpenCreateVenue} />
-
-      {/* Create Venue Modal */}
-      {showCreateVenue && <CreateVenueModal onClose={handleCloseCreateVenue} />}
+      {/* Navbar with search */}
+      <Navbar onSearch={setSearchTerm} />
 
       <Routes>
         {/* Homepage */}
         <Route
           path="/"
           element={
-            <>
-              <Header onSearch={setSearchTerm} />
+            <div>
+              <Header />
               <main className="pt-6 max-w-7xl mx-auto px-4">
                 <Home searchTerm={searchTerm} />
               </main>
-            </>
+            </div>
           }
         />
 
@@ -75,6 +67,26 @@ function App() {
           element={
             <main className="pt-6 max-w-7xl mx-auto px-4">
               <MyVenuesPage />
+            </main>
+          }
+        />
+
+        {/* Create Venue */}
+        <Route
+          path="/my-venues/new"
+          element={
+            <main className="pt-6 max-w-7xl mx-auto px-4">
+              <CreateEditVenuePage />
+            </main>
+          }
+        />
+
+        {/* Edit Venue */}
+        <Route
+          path="/my-venues/:id/edit"
+          element={
+            <main className="pt-6 max-w-7xl mx-auto px-4">
+              <CreateEditVenuePage />
             </main>
           }
         />

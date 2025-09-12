@@ -1,221 +1,301 @@
-// src/components/venueForm.tsx
+// src/components/VenueForm.tsx
 import { useState } from "react";
-import type { VenuePayload, Media } from "../types/venue";
+import { useNavigate } from "react-router-dom";
+import type { Venue, VenuePayload, Media } from "../types/venue";
+import { createVenue, updateVenue } from "../api/venues";
+import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 
 interface Props {
-  initialData?: VenuePayload;
-  onSubmit: (data: VenuePayload) => Promise<void>;
-  submitLabel?: string;
+  initialData?: Venue;
+  onClose: () => void;
+  onSubmit?: (venue: Venue) => void;
 }
 
-const VenueForm = ({ initialData, onSubmit, submitLabel = "Save" }: Props) => {
-  const [formData, setFormData] = useState<VenuePayload>({
-    name: initialData?.name || "",
-    description: initialData?.description || "",
-    media: initialData?.media && initialData.media.length > 0
-      ? initialData.media
-      : [{ url: "", alt: "Venue image 1" }], // Start with one image field
-    price: initialData?.price || 0,
-    maxGuests: initialData?.maxGuests || 1,
-    rating: initialData?.rating || 0,
-    meta: initialData?.meta || {
-      wifi: false,
-      parking: false,
-      breakfast: false,
-      pets: false,
-    },
-    location: initialData?.location || {
-      address: "",
-      city: "",
-      zip: "",
-      country: "",
-      continent: "",
-      lat: 0,
-      lng: 0,
-    },
-  });
+interface FormState {
+  name: string;
+  description: string;
+  price: number;
+  maxGuests: number;
+  rating: number;
+  media: Media[];
+  meta: {
+    wifi: boolean;
+    parking: boolean;
+    breakfast: boolean;
+    pets: boolean;
+  };
+  location: {
+    address: string;
+    city: string;
+    zip: string;
+    country: string;
+    continent: string;
+    lat: number;
+    lng: number;
+  };
+}
+
+const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
+  const { user } = useAuth();
+  const token = user?.accessToken;
+  const navigate = useNavigate();
+
+  if (!token) return <p>Please login to manage venues.</p>;
 
   const [loading, setLoading] = useState(false);
 
-  // Generic field updater
-  const handleChange = (field: keyof VenuePayload, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const [form, setForm] = useState<FormState>({
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    price: initialData?.price ?? 0,
+    maxGuests: initialData?.maxGuests ?? 0,
+    rating: initialData?.rating ?? 0,
+    media: initialData?.media?.length
+      ? initialData.media.map((m) => ({ url: m.url, alt: m.alt || "" }))
+      : [],
+    meta: {
+      wifi: initialData?.meta?.wifi ?? false,
+      parking: initialData?.meta?.parking ?? false,
+      breakfast: initialData?.meta?.breakfast ?? false,
+      pets: initialData?.meta?.pets ?? false,
+    },
+    location: {
+      address: initialData?.location?.address ?? "",
+      city: initialData?.location?.city ?? "",
+      zip: initialData?.location?.zip ?? "",
+      country: initialData?.location?.country ?? "",
+      continent: initialData?.location?.continent ?? "",
+      lat: initialData?.location?.lat ?? 0,
+      lng: initialData?.location?.lng ?? 0,
+    },
+  });
+
+  const handleChange = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Meta checkboxes
-  const handleMetaChange = (key: keyof NonNullable<VenuePayload["meta"]>, value: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      meta: {
-        ...prev.meta,
-        [key]: value,
-      },
-    }));
-  };
-
-  // Location fields
-  const handleLocationChange = (key: keyof NonNullable<VenuePayload["location"]>, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      location: {
-        ...prev.location,
-        [key]: value,
-      },
-    }));
-  };
-
-  // Image handling
-  const handleImageChange = (index: number, value: string) => {
-    const updated: Media[] = [...(formData.media || [])];
-    updated[index] = { url: value, alt: formData.name || `Venue image ${index + 1}` };
-    handleChange("media", updated);
-
-    // If last input is filled, add a new empty field automatically
-    if (index === formData.media!.length - 1 && value.trim() !== "") {
-      addImageField();
-    }
-  };
-
-  const addImageField = () => {
-    handleChange("media", [
-      ...(formData.media || []),
-      { url: "", alt: formData.name || `Venue image ${formData.media!.length + 1}` },
-    ]);
-  };
-
-  const removeImageField = (index: number) => {
-    handleChange(
-      "media",
-      (formData.media || []).filter((_, i) => i !== index)
-    );
-  };
-
-  // Form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    const payload: VenuePayload = {
+      name: form.name,
+      description: form.description,
+      price: form.price,
+      maxGuests: form.maxGuests,
+      rating: form.rating ?? 0,
+      media: form.media.length > 0 ? form.media : undefined,
+      meta: {
+        wifi: form.meta.wifi ?? false,
+        parking: form.meta.parking ?? false,
+        breakfast: form.meta.breakfast ?? false,
+        pets: form.meta.pets ?? false,
+      },
+      location: {
+        address: form.location.address || undefined,
+        city: form.location.city || undefined,
+        zip: form.location.zip || undefined,
+        country: form.location.country || undefined,
+        continent: form.location.continent || undefined,
+        lat: form.location.lat ?? 0,
+        lng: form.location.lng ?? 0,
+      },
+    };
+
     try {
-      await onSubmit(formData);
-      toast.success("Venue saved successfully!");
+      let response;
+      if (initialData) {
+        response = await updateVenue(initialData.id, payload, token);
+      } else {
+        response = await createVenue(payload, token);
+      }
+
+      // Only show one toast for success
+      toast.success(initialData ? "Venue updated successfully!" : "Venue created successfully!");
+
+      const venue = response.data;
+      onSubmit?.(venue);
+
+      // Redirect to detail page after success
+      navigate(`/venues/${venue.id}`);
     } catch (err: any) {
-      toast.error(err.message || "Failed to save venue");
+      // Show only one error toast
+      if (err.response?.status === 401) {
+        toast.error("Unauthorized: please log in again.");
+      } else if (err.response?.status === 403) {
+        toast.error("Forbidden: you don’t have permission to perform this action.");
+      } else {
+        toast.error(err.message || "Failed to save venue");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name */}
+    <form onSubmit={handleSubmit} className="space-y-4 p-6 border rounded shadow-md bg-white">
+      {/* Name & Description */}
       <input
         type="text"
         placeholder="Venue Name"
-        value={formData.name}
+        value={form.name}
         onChange={(e) => handleChange("name", e.target.value)}
         required
-        className="w-full px-3 py-2 border rounded"
+        className="w-full p-2 border rounded"
       />
-
-      {/* Description */}
       <textarea
         placeholder="Description"
-        value={formData.description}
+        value={form.description}
         onChange={(e) => handleChange("description", e.target.value)}
         required
-        className="w-full px-3 py-2 border rounded"
+        className="w-full p-2 border rounded"
       />
 
-      {/* Price */}
-      <input
-        type="number"
-        placeholder="Price per night"
-        value={formData.price}
-        onChange={(e) => handleChange("price", parseFloat(e.target.value))}
-        required
-        className="w-full px-3 py-2 border rounded"
-      />
-
-      {/* Max Guests */}
-      <input
-        type="number"
-        placeholder="Max Guests"
-        value={formData.maxGuests}
-        onChange={(e) => handleChange("maxGuests", parseInt(e.target.value))}
-        required
-        className="w-full px-3 py-2 border rounded"
-      />
-
-      {/* Media - dynamic image fields */}
-      <div>
-        <h3 className="font-semibold mb-2">Venue Images</h3>
-        {formData.media!.map((img, index) => (
-          <div key={index} className="flex items-center space-x-2 mb-2">
-            <input
-              type="text"
-              placeholder={`Image URL ${index + 1}`}
-              value={img.url}
-              onChange={(e) => handleImageChange(index, e.target.value)}
-              className="flex-1 px-3 py-2 border rounded"
-            />
-            {img.url && (
-              <img
-                src={img.url}
-                alt={img.alt || `Venue image ${index + 1}`}
-                className="w-16 h-16 object-cover rounded border"
-              />
-            )}
-            {formData.media!.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeImageField(index)}
-                className="px-2 py-1 bg-red-500 text-white rounded"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
+      {/* Price, Max Guests, Rating */}
+      <div className="flex gap-4">
+        <input
+          type="number"
+          placeholder="Price per night"
+          value={form.price}
+          onChange={(e) => handleChange("price", Number(e.target.value))}
+          required
+          className="flex-1 p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Max Guests"
+          value={form.maxGuests}
+          onChange={(e) => handleChange("maxGuests", Number(e.target.value))}
+          required
+          className="flex-1 p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Rating"
+          value={form.rating}
+          onChange={(e) => handleChange("rating", Number(e.target.value))}
+          className="flex-1 p-2 border rounded"
+        />
       </div>
 
       {/* Meta checkboxes */}
       <div className="flex gap-4">
-        {["wifi", "parking", "breakfast", "pets"].map((metaKey) => (
-          <label key={metaKey}>
+      <h3 className="font-semibold mb-2">Amenities</h3>
+        {(["wifi", "parking", "breakfast", "pets"] as const).map((key) => (
+          <label key={key} className="flex items-center gap-1">
             <input
               type="checkbox"
-              checked={formData.meta?.[metaKey as keyof typeof formData.meta] || false}
-              onChange={(e) =>
-                handleMetaChange(metaKey as keyof NonNullable<VenuePayload["meta"]>, e.target.checked)
-              }
-            />{" "}
-            {metaKey.charAt(0).toUpperCase() + metaKey.slice(1)}
+              checked={form.meta[key]}
+              onChange={(e) => setForm({
+                ...form,
+                meta: { ...form.meta, [key]: e.target.checked },
+              })}
+            />
+            {key.charAt(0).toUpperCase() + key.slice(1)}
           </label>
         ))}
       </div>
 
-      {/* Location fields */}
-      {["address", "city", "zip", "country", "continent"].map((locKey) => (
-        <input
-          key={locKey}
-          type="text"
-          placeholder={locKey.charAt(0).toUpperCase() + locKey.slice(1)}
-          value={formData.location?.[locKey as keyof typeof formData.location] || ""}
-          onChange={(e) =>
-            handleLocationChange(locKey as keyof NonNullable<VenuePayload["location"]>, e.target.value)
-          }
-          className="w-full px-3 py-2 border rounded"
-        />
-      ))}
+      {/* Media URLs */}
+      <div>
+        <h3 className="font-semibold mb-2">Media</h3>
+        {form.media.map((m, idx) => (
+          <div key={idx} className="flex gap-2 mb-2">
+            <input
+              type="url"
+              placeholder="Image URL"
+              value={m.url}
+              onChange={(e) => {
+                const newMedia = [...form.media];
+                newMedia[idx].url = e.target.value;
+                setForm({ ...form, media: newMedia });
+              }}
+              className="flex-1 p-2 border rounded"
+            />
+            <input
+              type="text"
+              placeholder="Alt text"
+              value={m.alt}
+              onChange={(e) => {
+                const newMedia = [...form.media];
+                newMedia[idx].alt = e.target.value;
+                setForm({ ...form, media: newMedia });
+              }}
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, media: form.media.filter((_, i) => i !== idx) })}
+              className="px-2 py-1 bg-red-500 text-white rounded"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => setForm({ ...form, media: [...form.media, { url: "", alt: "" }] })}
+          className="px-3 py-1 bg-green-500 text-white rounded"
+        >
+          + Add Image
+        </button>
+      </div>
 
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-      >
-        {submitLabel}
-      </button>
+      {/* Location */}
+      <div className="grid grid-cols-2 gap-4">
+        {(["address", "city", "zip", "country", "continent"] as const).map((key) => (
+          <input
+            key={key}
+            type="text"
+            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+            value={form.location[key]}
+            onChange={(e) => setForm({
+              ...form,
+              location: { ...form.location, [key]: e.target.value },
+            })}
+            className="p-2 border rounded"
+          />
+        ))}
+        <input
+          type="number"
+          placeholder="Latitude"
+          value={form.location.lat}
+          onChange={(e) => setForm({
+            ...form,
+            location: { ...form.location, lat: Number(e.target.value) },
+          })}
+          className="p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Longitude"
+          value={form.location.lng}
+          onChange={(e) => setForm({
+            ...form,
+            location: { ...form.location, lng: Number(e.target.value) },
+          })}
+          className="p-2 border rounded"
+        />
+      </div>
+
+      {/* Buttons */}
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          {loading ? "Saving..." : initialData ? "Update Venue" : "Create Venue"}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

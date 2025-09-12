@@ -86,3 +86,18 @@ export const deleteVenue = async (id: string, token: string): Promise<void> => {
   });
   if (!res.ok) throw new Error("Failed to delete venue");
 };
+
+// Public: Get venue by ID
+export const getVenueById = async (id: string, token?: string): Promise<Venue> => {
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+    headers["X-Noroff-API-Key"] = import.meta.env.VITE_API_KEY;
+  }
+
+  const res = await fetch(`${API_VENUES}/${id}`, { headers });
+  if (!res.ok) throw new Error("Failed to fetch venue");
+  const json = await res.json();
+  return normalizeVenue(json.data);
+};
+

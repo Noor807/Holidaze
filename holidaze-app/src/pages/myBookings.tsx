@@ -5,14 +5,12 @@ import {
   type BookingWithVenue,
 } from "../api/bookings";
 import { toast } from "react-toastify";
-import CreateVenueModal from "../components/createVenueModal";
 import { Link } from "react-router-dom";
 
 const MyBookingsPage = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<BookingWithVenue[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateVenue, setShowCreateVenue] = useState(false);
   const [sortLatest, setSortLatest] = useState(true);
 
   const defaultImage = "https://via.placeholder.com/300?text=No+Image";
@@ -91,16 +89,6 @@ const MyBookingsPage = () => {
           >
             Previous
           </button>
-
-          {/* Create Venue button only for Venue Managers */}
-          {user.venueManager && (
-            <button
-              onClick={() => setShowCreateVenue(true)}
-              className="bg-white border-1 text-gray px-4 py-2 rounded hover:bg-green-400 transition"
-            >
-              + Venue
-            </button>
-          )}
         </div>
       </div>
 
@@ -160,10 +148,6 @@ const MyBookingsPage = () => {
             );
           })}
         </div>
-      )}
-
-      {showCreateVenue && (
-        <CreateVenueModal onClose={() => setShowCreateVenue(false)} />
       )}
     </div>
   );

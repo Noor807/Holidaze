@@ -1,4 +1,3 @@
-// src/types/venue.ts
 export interface Media {
   url: string;
   alt?: string;
@@ -37,17 +36,25 @@ export interface VenuePayload {
   };
 }
 
-export interface Venue extends VenuePayload {
+export interface Venue {
+  data: any;
   id: string;
   owner: {
     avatar: any;
-    id: string | undefined; name: string 
-};
+    id: string;
+    name: string;
+  };
   created: string;
   updated: string;
   bookings?: Booking[];
-  rating: number;  
-  media: Media[];  
-  meta: Required<VenuePayload["meta"]>; 
-  location: Required<VenuePayload["location"]>; 
+
+  // All required fields
+  name: string;
+  description: string;
+  price: number;
+  maxGuests: number;
+  rating: number;
+  media: Media[];
+  meta: Required<VenuePayload["meta"]>;
+  location: Required<VenuePayload["location"]>;
 }
