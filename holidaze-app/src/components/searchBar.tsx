@@ -113,33 +113,29 @@ const SearchBar = () => {
           className="absolute w-full bg-white border rounded-lg mt-1 shadow-lg z-50 max-h-60 overflow-auto"
         >
           {results.map((venue, index) => (
-            <li
-              key={venue.id ?? venue._id}
-              className={`p-2 cursor-pointer flex items-center gap-2 ${
-                index === highlightedIndex ? "bg-blue-500 text-white" : "hover:bg-gray-100"
-              }`}
-              onMouseEnter={() => setHighlightedIndex(index)}
-              onMouseLeave={() => setHighlightedIndex(-1)}
-              onMouseDown={() => handleSelect(venue)}
-            >
-              {venue.media && venue.media.length > 0 ? (
-                <img
-                  src={venue.media[0].url}
-                  alt={venue.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-              ) : (
-                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs">
-                  No Image
-                </div>
-              )}
-              <div className="flex flex-col">
-                <p className="font-semibold">{venue.name}</p>
-                {venue.description && (
-                  <p className="text-sm text-gray-600 truncate">{venue.description}</p>
-                )}
-              </div>
-            </li>
+           <li
+  key={venue.id ?? venue._id}
+  className={`p-2 cursor-pointer flex items-center gap-2 ${
+    index === highlightedIndex ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+  }`}
+  onMouseEnter={() => setHighlightedIndex(index)}
+  onMouseLeave={() => setHighlightedIndex(-1)}
+  onMouseDown={() => handleSelect(venue)}
+>
+  <img
+    src={
+      venue.media && venue.media.length > 0
+        ? venue.media[0].url
+        : "/default-venue.png" // <-- path to your default image
+    }
+    alt={venue.name}
+    className="w-12 h-12 object-cover rounded"
+  />
+  <div className="flex flex-col">
+    <p className="font-semibold">{venue.name}</p>
+  </div>
+</li>
+
           ))}
         </ul>
       )}

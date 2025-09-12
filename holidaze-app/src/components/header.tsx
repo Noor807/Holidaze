@@ -35,7 +35,7 @@ const Header = () => {
         </h1>
 
         {/* Use SearchBar here */}
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md text-gray-600">
           <SearchBar />
         </div>
 
