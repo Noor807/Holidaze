@@ -34,11 +34,10 @@ const CreateEditVenuePage = () => {
 
   // Called after form submission
   const handleFormSubmit = (createdOrUpdatedVenue: Venue) => {
-    toast.success(`Venue ${id ? "updated" : "created"} successfully!`);
-
-    // Pass the updated venue data back to MyVenues page via state (optional)
+    
     navigate("/my-venues", { state: { updatedVenue: createdOrUpdatedVenue } });
   };
+  
 
   if (loading) return <p>Loading venue...</p>;
 

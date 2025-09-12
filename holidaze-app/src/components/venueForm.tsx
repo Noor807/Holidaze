@@ -104,23 +104,18 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
     };
 
     try {
-      let response;
+      let venue: Venue;
       if (initialData) {
-        response = await updateVenue(initialData.id, payload, token);
+        venue = await updateVenue(initialData.id, payload, token);
+        toast.success("Venue updated successfully!");
       } else {
-        response = await createVenue(payload, token);
+        venue = await createVenue(payload, token);
+        toast.success("Venue created successfully!");
       }
-
-      // Only show one toast for success
-      toast.success(initialData ? "Venue updated successfully!" : "Venue created successfully!");
-
-      const venue = response.data;
+    
       onSubmit?.(venue);
-
-      // Redirect to detail page after success
       navigate(`/venues/${venue.id}`);
     } catch (err: any) {
-      // Show only one error toast
       if (err.response?.status === 401) {
         toast.error("Unauthorized: please log in again.");
       } else if (err.response?.status === 403) {
@@ -131,10 +126,14 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
     } finally {
       setLoading(false);
     }
+    
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-6 border rounded shadow-md bg-white">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 p-6 borderrounded shadow-md bg-gray-100 max-w-4xl mx-auto"
+    >
       {/* Name & Description */}
       <input
         type="text"
@@ -153,44 +152,58 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       />
 
       {/* Price, Max Guests, Rating */}
-      <div className="flex gap-4">
-        <input
-          type="number"
-          placeholder="Price per night"
-          value={form.price}
-          onChange={(e) => handleChange("price", Number(e.target.value))}
-          required
-          className="flex-1 p-2 border rounded"
-        />
+      <div className="flex flex-col sm:flex-row gap-4">
+      <input
+  type="number"
+  placeholder="Price per night"
+  value={form.price}
+  onChange={(e) => handleChange("price", Number(e.target.value))}
+  required
+  className="
+    w-full sm:w-1/2 md:w-1/3 lg:w-1/4
+    p-1 sm:p-1 md:p-1
+    text-sm sm:text-base md:text-lg
+    border rounded-lg
+    focus:outline-none focus:ring-2 focus:ring-blue-500
+  "
+/>
+
         <input
           type="number"
           placeholder="Max Guests"
           value={form.maxGuests}
           onChange={(e) => handleChange("maxGuests", Number(e.target.value))}
           required
-          className="flex-1 p-2 border rounded"
+          className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
+    p-1 sm:p-1 md:p-1
+    text-sm sm:text-base md:text-lg
+    border rounded-lg
+    focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="number"
           placeholder="Rating"
           value={form.rating}
           onChange={(e) => handleChange("rating", Number(e.target.value))}
-          className="flex-1 p-2 border rounded"
+          className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
+    p-1 sm:p-1 md:p-1
+    text-sm sm:text-base md:text-lg
+    border rounded-lg
+    focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* Meta checkboxes */}
-      <div className="flex gap-4">
-      <h3 className="font-semibold mb-2">Amenities</h3>
+      <div className="flex flex-wrap gap-4">
+        <h3 className="w-full font-semibold mb-2">Amenities</h3>
         {(["wifi", "parking", "breakfast", "pets"] as const).map((key) => (
-          <label key={key} className="flex items-center gap-1">
+          <label key={key} className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={form.meta[key]}
-              onChange={(e) => setForm({
-                ...form,
-                meta: { ...form.meta, [key]: e.target.checked },
-              })}
+              onChange={(e) =>
+                setForm({ ...form, meta: { ...form.meta, [key]: e.target.checked } })
+              }
             />
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </label>
@@ -201,7 +214,10 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       <div>
         <h3 className="font-semibold mb-2">Media</h3>
         {form.media.map((m, idx) => (
-          <div key={idx} className="flex gap-2 mb-2">
+          <div
+            key={idx}
+            className="flex flex-col sm:flex-row gap-2 mb-2 items-stretch sm:items-center"
+          >
             <input
               type="url"
               placeholder="Image URL"
@@ -227,7 +243,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             <button
               type="button"
               onClick={() => setForm({ ...form, media: form.media.filter((_, i) => i !== idx) })}
-              className="px-2 py-1 bg-red-500 text-white rounded"
+              className="px-2 py-1 bg-red-500 text-white rounded mt-2 sm:mt-0"
             >
               Remove
             </button>
@@ -243,17 +259,16 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       </div>
 
       {/* Location */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {(["address", "city", "zip", "country", "continent"] as const).map((key) => (
           <input
             key={key}
             type="text"
             placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
             value={form.location[key]}
-            onChange={(e) => setForm({
-              ...form,
-              location: { ...form.location, [key]: e.target.value },
-            })}
+            onChange={(e) =>
+              setForm({ ...form, location: { ...form.location, [key]: e.target.value } })
+            }
             className="p-2 border rounded"
           />
         ))}
@@ -261,37 +276,35 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           type="number"
           placeholder="Latitude"
           value={form.location.lat}
-          onChange={(e) => setForm({
-            ...form,
-            location: { ...form.location, lat: Number(e.target.value) },
-          })}
+          onChange={(e) =>
+            setForm({ ...form, location: { ...form.location, lat: Number(e.target.value) } })
+          }
           className="p-2 border rounded"
         />
         <input
           type="number"
           placeholder="Longitude"
           value={form.location.lng}
-          onChange={(e) => setForm({
-            ...form,
-            location: { ...form.location, lng: Number(e.target.value) },
-          })}
+          onChange={(e) =>
+            setForm({ ...form, location: { ...form.location, lng: Number(e.target.value) } })
+          }
           className="p-2 border rounded"
         />
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition w-full sm:w-auto"
         >
           {loading ? "Saving..." : initialData ? "Update Venue" : "Create Venue"}
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
+          className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition w-full sm:w-auto"
         >
           Cancel
         </button>
