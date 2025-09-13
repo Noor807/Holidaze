@@ -53,25 +53,25 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
         </span>
       </Link>
 
-      {/* Middle: SearchBar (Airbnb-style) */}
+      {/* Middle: SearchBar */}
       {!isHomePage && (
         <div className="flex-grow flex justify-center">
           {/* Desktop/Large screens */}
-          <div className="hidden md:block w-full max-w-md">
+          <div className="hidden md:block w-full max-w-md text-white">
             <SearchBar />
           </div>
 
           {/* Mobile/Tablet: Search Icon */}
-          <div className="md:hidden relative">
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setShowSearch((prev) => !prev)}
-              className="p-2 rounded-full hover:bg-gray-100"
+              className="p-2 rounded-full bg-white hover:bg-gray-300"
             >
               <Search size={22} className="text-black" />
             </button>
 
             {showSearch && (
-              <div className="absolute top-12 left-0 w-screen px-4">
+              <div className="absolute top-12 left-0 w-full px-4 sm:px-6">
                 <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-200">
                   <SearchBar />
                 </div>
@@ -109,7 +109,7 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
                 alt="Avatar"
                 className="w-10 h-10 rounded-full border border-gray-300 object-cover"
               />
-              <span className="hidden sm:inline text-black">{user.name}</span>
+              <span className="hidden sm:inline text-white">{user.name}</span>
             </button>
 
             {dropdownOpen && (

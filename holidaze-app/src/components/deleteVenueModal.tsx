@@ -46,7 +46,7 @@ const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props
       {/* Delete button */}
       <button
         onClick={() => setOpen(true)}
-        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+        className="px-3 py-1 bg-black text-white rounded hover:bg-gray-600 transition"
       >
         Delete
       </button>
@@ -54,9 +54,9 @@ const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-lg font-semibold mb-3">Delete Venue</h2>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-black/70 p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-lg text-gray-300  font-semibold mb-3">Delete Venue</h2>
+            <p className="text-gray-300 mb-6">
               Are you sure you want to delete this venue? This action cannot be undone.
             </p>
 
@@ -70,7 +70,7 @@ const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props
               <button
                 onClick={handleDelete}
                 disabled={loading}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition disabled:opacity-50"
+                className="px-4 py-2 bg-red-400 text-black rounded hover:bg-gray-600  transition disabled:opacity-50"
               >
                 {loading ? "Deleting..." : "Yes, Delete"}
               </button>
