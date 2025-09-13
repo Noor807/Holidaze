@@ -1,10 +1,11 @@
-// src/pages/myVenues.tsx
+// src/pages/MyVenues.tsx
 import { useEffect, useState } from "react";
-import { getMyVenues, deleteVenue } from "../api/venues";
+import { getMyVenues } from "../api/venues";
 import type { Venue } from "../types/venue";
 import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
+import DeleteVenueButton from "../components/deleteVenueModal";
 
 const MyVenuesPage = () => {
   const { user } = useAuth();
@@ -51,19 +52,6 @@ const MyVenuesPage = () => {
   useEffect(() => {
     fetchVenues();
   }, [user?.name, token]);
-
-  const handleDelete = async (id: string) => {
-    if (!token) return;
-    if (!window.confirm("Are you sure you want to delete this venue?")) return;
-
-    try {
-      await deleteVenue(id, token);
-      setVenues((prev) => prev.filter((v) => v.id !== id));
-      toast.success("Venue deleted successfully!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete venue");
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -113,12 +101,12 @@ const MyVenuesPage = () => {
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(venue.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                    >
-                      Delete
-                    </button>
+                    <DeleteVenueButton
+                      id={venue.id}
+                      onDeleted={() =>
+                        setVenues((prev) => prev.filter((v) => v.id !== venue.id))
+                      }
+                    />
                   </div>
                 </div>
               </div>

@@ -1,0 +1,85 @@
+// src/components/DeleteVenueButton.tsx
+import { useState } from "react";
+import { deleteVenue } from "../api/venues";
+import { useAuth } from "../context/authContext";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+interface Props {
+  id: string;
+  redirectAfterDelete?: boolean; // optional: redirect instead of staying
+  onDeleted?: () => void;        // optional: callback (e.g. refresh list)
+}
+
+const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props) => {
+  const { user } = useAuth();
+  const token = user?.accessToken;
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleDelete = async () => {
+    if (!token) {
+      toast.error("Please log in to delete venues.");
+      return;
+    }
+    try {
+      setLoading(true);
+      await deleteVenue(id, token);
+      toast.success("Venue deleted successfully!");
+      setOpen(false);
+
+      if (redirectAfterDelete) {
+        navigate("/venues"); // e.g. go back to list page
+      } else {
+        onDeleted?.(); // e.g. refresh list in VenuesPage
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete venue");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Delete button */}
+      <button
+        onClick={() => setOpen(true)}
+        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+      >
+        Delete
+      </button>
+
+      {/* Modal */}
+      {open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-lg font-semibold mb-3">Delete Venue</h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this venue? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+              >
+                No
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={loading}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition disabled:opacity-50"
+              >
+                {loading ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default DeleteVenueButton;
