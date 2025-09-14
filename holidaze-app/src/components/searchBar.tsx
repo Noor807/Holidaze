@@ -85,14 +85,14 @@ const SearchBar = () => {
 
   return (
     <div className="w-full max-w-md relative">
-      <div className="relative">
+      <div className="relative ">
         <input
           type="text"
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Search venues..."
-          className="w-full px-4 py-2 border text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-black/50"
+          className="w-full px-4 py-2 border text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-700 bg-black/50"
         />
         {value && (
           <button

@@ -97,7 +97,7 @@ const MyVenuesPage = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => navigate(`/my-venues/${venue.id}/edit`)}
-                      className="px-3 py-1 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition"
+                      className="px-3 py-1 border bg-white text-black rounded hover:bg-gray-200 transition"
                     >
                       Edit
                     </button>
