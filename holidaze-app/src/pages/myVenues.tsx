@@ -59,9 +59,9 @@ const MyVenuesPage = () => {
         <h1 className="text-3xl font-bold">My Venues</h1>
         <button
           onClick={() => navigate("/my-venues/new")}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          className="px-4 py-2 border-2 bg-white text-gray-600 rounded hover:bg-gray-300 transition"
         >
-          + Add Venue
+          + Venue
         </button>
       </div>
 
