@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import VenueCarousel from "../components/venueCarousel";
+import VenueCardSkeleton from "../components/venueCardSkeleton";
 import { fetchVenues } from "../api/fetchVenues";
 import type { Venue } from "../types/venue";
 
@@ -40,12 +41,13 @@ const Home = () => {
 
   return (
     <section className="max-w-7xl px-4 py-6 mx-auto">
+      {/* New Venues */}
       <h2 className="text-2xl font-bold mb-4 text-gray-700">Explore Our New Venues</h2>
-
-      {loading && <p>Loading...</p>}
+      {loading && <VenueCardSkeleton />}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && venues.length > 0 && <VenueCarousel venues={venues} />}
 
+      {/* Categories */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-gray-700">Explore by Category</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {categories.map((cat) => (
@@ -62,6 +64,7 @@ const Home = () => {
         ))}
       </div>
 
+      {/* Destinations */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-gray-700">Popular Destinations</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {destinations.map((dest) => (
