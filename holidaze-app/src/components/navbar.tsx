@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/logo-1.png";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/authContext";
 import SearchBar from "./searchBar";
