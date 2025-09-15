@@ -6,6 +6,7 @@ import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import DeleteVenueButton from "../components/deleteVenueModal";
+import VenueCardSkeleton from "../components/venueCardSkeleton";
 
 const MyVenuesPage = () => {
   const { user } = useAuth();
@@ -23,15 +24,10 @@ const MyVenuesPage = () => {
     if (updatedVenue) {
       setVenues((prev) => {
         const exists = prev.find((v) => v.id === updatedVenue.id);
-        if (exists) {
-          // Replace existing
-          return prev.map((v) => (v.id === updatedVenue.id ? updatedVenue : v));
-        } else {
-          // Add new
-          return [updatedVenue, ...prev];
-        }
+        return exists
+          ? prev.map((v) => (v.id === updatedVenue.id ? updatedVenue : v))
+          : [updatedVenue, ...prev];
       });
-      // Clean the state so it doesn't apply again on re-render
       navigate("/my-venues", { replace: true });
     }
   }, [location.state, navigate]);
@@ -65,8 +61,13 @@ const MyVenuesPage = () => {
         </button>
       </div>
 
+      {/* Loading Skeletons */}
       {loadingVenues ? (
-        <div className="text-center mt-10">Loading venues...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <VenueCardSkeleton key={idx} />
+          ))}
+        </div>
       ) : venues.length === 0 ? (
         <div className="text-center mt-10">You have no venues yet.</div>
       ) : (
@@ -76,7 +77,11 @@ const MyVenuesPage = () => {
             const imageAlt = venue.media?.[0]?.alt || venue.name || "Venue";
 
             return (
-              <div key={venue.id} className="bg-white rounded shadow-md overflow-hidden">
+              <div
+                key={venue.id}
+                className="bg-white rounded shadow-md overflow-hidden flex flex-col"
+              >
+                {/* Image */}
                 <div
                   className="relative h-48 cursor-pointer"
                   onClick={() => navigate(`/venues/${venue.id}`)}
@@ -90,22 +95,34 @@ const MyVenuesPage = () => {
                     }}
                   />
                 </div>
-                <div className="p-4">
+
+                {/* Content */}
+                <div className="p-4 flex flex-col flex-1 gap-2">
                   <h2 className="text-xl font-semibold mb-1">{venue.name}</h2>
-                  <p className="text-gray-600 mb-2">{venue.description}</p>
-                  <p className="font-bold mb-2">${venue.price.toLocaleString()} / night</p>
-                  <div className="flex gap-2">
+                  <p className="text-gray-600 mb-2 line-clamp-3">
+                    {venue.description}
+                  </p>
+                  <p className="font-bold mb-2">
+                    ${venue.price.toLocaleString()} / night
+                  </p>
+
+                  {/* Footer buttons matching skeleton */}
+                  <div className="flex justify-end gap-2 p-2 border-t mt-auto">
                     <button
                       onClick={() => navigate(`/my-venues/${venue.id}/edit`)}
-                      className="px-3 py-1 border bg-white text-black rounded hover:bg-gray-200 transition"
+                      className="h-8 w-16 px-3 bg-white
+                       text-black border-1 text-sm rounded hover:bg-gray-400 transition"
                     >
                       Edit
                     </button>
                     <DeleteVenueButton
                       id={venue.id}
                       onDeleted={() =>
-                        setVenues((prev) => prev.filter((v) => v.id !== venue.id))
+                        setVenues((prev) =>
+                          prev.filter((v) => v.id !== venue.id)
+                        )
                       }
+                      className="h-6 w-16 bg-gray-300 text-white text-sm rounded hover:bg-gray-600 transition"
                     />
                   </div>
                 </div>

@@ -32,7 +32,7 @@ const CreateEditVenuePage = () => {
     fetchVenue();
   }, [id]);
 
-  // Called after form submission
+  
   const handleFormSubmit = (createdOrUpdatedVenue: Venue) => {
     
     navigate("/my-venues", { state: { updatedVenue: createdOrUpdatedVenue } });
@@ -48,9 +48,9 @@ const CreateEditVenuePage = () => {
       </h1>
 
       <VenueForm
-        initialData={venue || undefined} // prefill for edit, empty for create
-        onClose={() => navigate("/my-venues")} // cancel redirects back
-        onSubmit={handleFormSubmit} // after success
+        initialData={venue || undefined} 
+        onClose={() => navigate("/my-venues")} 
+        onSubmit={handleFormSubmit} 
       />
     </div>
   );

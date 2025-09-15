@@ -1,3 +1,4 @@
+// src/pages/MyBookingsPage.tsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import {
@@ -6,6 +7,7 @@ import {
 } from "../api/bookings";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import VenueCardSkeleton from "../components/venueCardSkeleton";
 
 const MyBookingsPage = () => {
   const { user } = useAuth();
@@ -15,17 +17,14 @@ const MyBookingsPage = () => {
 
   const defaultImage = "https://via.placeholder.com/300?text=No+Image";
 
+  // Fetch bookings when user is available
   useEffect(() => {
     if (!user) return;
 
     const fetchBookings = async () => {
       setLoading(true);
       try {
-        const data = await getUserBookingsWithVenue(
-          user.name,
-          user.accessToken
-        );
-
+        const data = await getUserBookingsWithVenue(user.name, user.accessToken);
         const sorted = [...data].sort(
           (a, b) =>
             new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
@@ -42,6 +41,7 @@ const MyBookingsPage = () => {
     fetchBookings();
   }, [user]);
 
+  // Sorting function
   const sortBookings = (latest: boolean) => {
     setSortLatest(latest);
     setBookings((prev) =>
@@ -72,9 +72,7 @@ const MyBookingsPage = () => {
           <button
             onClick={() => sortBookings(true)}
             className={`px-4 py-2 rounded transition ${
-              sortLatest
-                ? "bg-gray-600 text-white"
-                : "bg-gray-200 text-gray-700"
+              sortLatest ? "bg-gray-600 text-white" : "bg-gray-200 text-gray-700"
             }`}
           >
             Latest
@@ -82,9 +80,7 @@ const MyBookingsPage = () => {
           <button
             onClick={() => sortBookings(false)}
             className={`px-4 py-2 rounded transition ${
-              !sortLatest
-                ? "bg-gray-600 text-white"
-                : "bg-gray-200 text-gray-700"
+              !sortLatest ? "bg-gray-600 text-white" : "bg-gray-200 text-gray-700"
             }`}
           >
             Previous
@@ -94,16 +90,18 @@ const MyBookingsPage = () => {
 
       {/* Bookings */}
       {loading ? (
-        <div className="text-center mt-10">Loading your bookings...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <VenueCardSkeleton key={idx} />
+          ))}
+        </div>
       ) : bookings.length === 0 ? (
         <div className="text-center mt-20">You have no bookings yet.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {bookings.map((booking) => {
-            const imageUrl =
-              booking.venue?.media?.[0]?.url || defaultImage;
-            const imageAlt =
-              booking.venue?.media?.[0]?.alt || booking.venue?.name || "Venue";
+            const imageUrl = booking.venue?.media?.[0]?.url || defaultImage;
+            const imageAlt = booking.venue?.media?.[0]?.alt || booking.venue?.name || "Venue";
 
             return (
               <Link
@@ -111,6 +109,7 @@ const MyBookingsPage = () => {
                 to={`/venues/${booking.venue?.id}`}
                 className="bg-white rounded shadow-md overflow-hidden block"
               >
+                {/* Image */}
                 <div className="relative h-48">
                   <img
                     src={imageUrl}
@@ -122,6 +121,7 @@ const MyBookingsPage = () => {
                   />
                 </div>
 
+                {/* Price badge */}
                 <div className="px-4 pt-2">
                   <p className="text-sm font-bold text-white bg-black/70 px-3 py-1 rounded-lg inline-block">
                     {booking.venue?.price
@@ -130,6 +130,7 @@ const MyBookingsPage = () => {
                   </p>
                 </div>
 
+                {/* Booking details */}
                 <div className="p-4">
                   <h2 className="text-xl font-semibold mb-1">
                     {booking.venue?.name || "Unknown Venue"}

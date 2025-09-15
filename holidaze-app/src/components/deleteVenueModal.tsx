@@ -7,8 +7,9 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   id: string;
-  redirectAfterDelete?: boolean; // optional: redirect instead of staying
-  onDeleted?: () => void;        // optional: callback (e.g. refresh list)
+  redirectAfterDelete?: boolean; 
+  onDeleted?: () => void; 
+  className?: string;       
 }
 
 const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props) => {
@@ -30,9 +31,9 @@ const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props
       setOpen(false);
 
       if (redirectAfterDelete) {
-        navigate("/venues"); // e.g. go back to list page
+        navigate("/venues"); 
       } else {
-        onDeleted?.(); // e.g. refresh list in VenuesPage
+        onDeleted?.(); 
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete venue");

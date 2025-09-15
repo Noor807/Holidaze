@@ -48,32 +48,34 @@ const VenueCard = ({ venue, onEdit, onDelete }: Props) => {
         <div className="flex items-center mb-2">{renderStars()}</div>
 
         <p className="text-gray-600 flex-1 mb-2 line-clamp-3">{venue.description}</p>
-        <p className="text-gray-800 font-medium">
-          ${venue.price} / night • Max {venue.maxGuests} guests
+        <p className="text-gray-800  font-bold">
+          ${venue.price} / night 
+          • Max {venue.maxGuests} guests
         </p>
       </div>
 
       {/* Footer buttons */}
-      {(onEdit || onDelete) && (
-        <div className="flex justify-end gap-2 p-2 border-t bg-gray-100">
-          {onEdit && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(); }}
-              className="px-3 py-1 border-1 bg-gray-200 text-black text-sm rounded hover:bg-gray-400"
-            >
-              Edit
-            </button>
-          )}
-          {onDelete && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="px-3 py-1 bg-gray-800 text-white text-sm rounded hover:bg-gray-600"
-            >
-              Delete
-            </button>
-          )}
-        </div>
-      )}
+{(onEdit || onDelete) && (
+  <div className="flex justify-end gap-2 p-2 border-t bg-gray-100">
+    {onEdit && (
+      <button
+        onClick={(e) => { e.stopPropagation(); onEdit(); }}
+        className="h-6 w-16 bg-gray-300 text-black text-sm rounded hover:bg-gray-400 transition"
+      >
+        Edit
+      </button>
+    )}
+    {onDelete && (
+      <button
+        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+        className="h-6 w-16  bg-gray-300 text-white text-sm rounded hover:bg-gray-600 transition"
+      >
+        Delete
+      </button>
+    )}
+  </div>
+)}
+
     </div>
   );
 };
