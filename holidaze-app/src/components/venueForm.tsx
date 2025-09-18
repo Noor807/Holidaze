@@ -141,14 +141,14 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         value={form.name}
         onChange={(e) => handleChange("name", e.target.value)}
         required
-        className="w-full p-2 border rounded"
+        className="w-full bg-white p-2 border rounded"
       />
       <textarea
         placeholder="Description"
         value={form.description}
         onChange={(e) => handleChange("description", e.target.value)}
         required
-        className="w-full p-2 border rounded"
+        className="w-full p-2 bg-white border rounded"
       />
 
       {/* Price, Max Guests, Rating */}
@@ -163,7 +163,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
     w-full sm:w-1/2 md:w-1/3 lg:w-1/4
     p-1 sm:p-1 md:p-1
     text-sm sm:text-base md:text-lg
-    border rounded-lg
+    border bg-white rounded-lg
     focus:outline-none focus:ring-2 focus:ring-blue-500
   "
 />
@@ -177,7 +177,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
     p-1 sm:p-1 md:p-1
     text-sm sm:text-base md:text-lg
-    border rounded-lg
+    border bg-white rounded-lg
     focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
@@ -188,7 +188,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
     p-1 sm:p-1 md:p-1
     text-sm sm:text-base md:text-lg
-    border rounded-lg
+    border bg-white rounded-lg
     focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -227,7 +227,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
                 newMedia[idx].url = e.target.value;
                 setForm({ ...form, media: newMedia });
               }}
-              className="flex-1 p-2 border rounded"
+              className="flex-1 p-2 bg-white border rounded"
             />
             <input
               type="text"
@@ -238,7 +238,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
                 newMedia[idx].alt = e.target.value;
                 setForm({ ...form, media: newMedia });
               }}
-              className="flex-1 p-2 border rounded"
+              className="flex-1 p-2 bg-white border rounded"
             />
             <button
               type="button"
@@ -269,7 +269,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             onChange={(e) =>
               setForm({ ...form, location: { ...form.location, [key]: e.target.value } })
             }
-            className="p-2 border rounded"
+            className="p-2 bg-white border rounded"
           />
         ))}
         <input
@@ -279,7 +279,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           onChange={(e) =>
             setForm({ ...form, location: { ...form.location, lat: Number(e.target.value) } })
           }
-          className="p-2 border rounded"
+          className="p-2 bg-white border rounded"
         />
         <input
           type="number"
@@ -288,7 +288,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           onChange={(e) =>
             setForm({ ...form, location: { ...form.location, lng: Number(e.target.value) } })
           }
-          className="p-2 border rounded"
+          className="p-2 bg-white border rounded"
         />
       </div>
 
@@ -297,7 +297,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition w-full sm:w-auto"
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-blue-600 transition w-full sm:w-auto"
         >
           {loading ? "Saving..." : initialData ? "Update Venue" : "Create Venue"}
         </button>

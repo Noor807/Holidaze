@@ -136,11 +136,11 @@ const MyBookingsPage = () => {
                     {booking.venue?.name || "Unknown Venue"}
                   </h2>
                   <p className="text-gray-600">
-                    <span className="font-medium">Start:</span>{" "}
+                    <span className="font-medium">Check In:</span>{" "}
                     {new Date(booking.dateFrom).toLocaleDateString()}
                   </p>
                   <p className="text-gray-600">
-                    <span className="font-medium">End:</span>{" "}
+                    <span className="font-medium">Check out:</span>{" "}
                     {new Date(booking.dateTo).toLocaleDateString()}
                   </p>
                   <p className="text-gray-600">Guests: {booking.guests}</p>

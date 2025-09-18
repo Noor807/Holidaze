@@ -1,4 +1,3 @@
-// DetailedVenuePage.tsx
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,7 +15,7 @@ import VenueMap from "../components/venueMap";
 import { useAuth } from "../context/authContext";
 import type { Venue } from "../types/venue";
 
-const DEFAULT_MAP_COORDS = { lat: 51.505, lng: -0.09 }; // Default location if venue missing
+const DEFAULT_MAP_COORDS = { lat: 51.505, lng: -0.09 };
 
 const DetailedVenuePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +26,6 @@ const DetailedVenuePage = () => {
   const isLoggedIn = Boolean(user);
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
 
-  // Fetch venue details
   useEffect(() => {
     async function fetchVenue() {
       try {
@@ -37,7 +35,6 @@ const DetailedVenuePage = () => {
         const json = await res.json();
         setVenue(json.data);
 
-        // Calculate unavailable dates from bookings
         if (json.data.bookings) {
           const dates: Date[] = [];
           json.data.bookings.forEach((b: any) => {
@@ -60,21 +57,23 @@ const DetailedVenuePage = () => {
     if (id) fetchVenue();
   }, [id]);
 
-  if (loading) return <p className="text-center">Loading venue...</p>;
+  if (loading) return <p className="text-center mt-10">Loading venue...</p>;
   if (error || !venue)
     return (
-      <p className="text-center text-red-600">{error || "Venue not found"}</p>
+      <p className="text-center text-red-600 mt-10">
+        {error || "Venue not found"}
+      </p>
     );
 
   const isOwner = user?.name === venue?.owner?.name;
 
   const renderStars = (rating: number) => (
-    <div className="flex space-x-1 mt-1">
+    <div className="flex space-x-1 mt-1 text-sm">
       {Array.from({ length: 5 }, (_, i) =>
         i < Math.round(rating) ? (
           <FaStar key={i} className="text-yellow-400" />
         ) : (
-          <FaRegStar key={i} className="text-gray-300" />
+          <FaRegStar key={i} className="text-gray-700" />
         )
       )}
     </div>
@@ -84,64 +83,55 @@ const DetailedVenuePage = () => {
   const mapLng = venue.location?.lng || DEFAULT_MAP_COORDS.lng;
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-     {/* Venue images gallery */}
-{venue.media && venue.media.length > 0 ? (
-  <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-4 md:grid-rows-2 gap-2 rounded-lg overflow-hidden">
-    {/* Big main image */}
-    <div className="row-span-1 md:row-span-2 md:col-span-2 h-64 md:h-full w-full">
-      <img
-        src={venue.media[0].url}
-        alt={venue.media[0].alt || "Venue image"}
-        className="w-full h-full object-cover rounded-lg"
-      />
-    </div>
-
-    {/* Smaller images */}
-    {venue.media.slice(1, 4).map((img, idx) => (
-      <div key={idx} className="h-32 md:h-full overflow-hidden rounded-lg w-full">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      {/* Venue Images */}
+      {venue.media && venue.media.length > 0 ? (
+        <div className="space-y-2">
+          <img
+            src={venue.media[0].url}
+            alt={venue.media[0].alt || "Venue image"}
+            className="w-full h-64 sm:h-96 object-cover rounded-lg"
+          />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {venue.media.slice(1, 5).map((img, idx) => (
+              <img
+                key={idx}
+                src={img.url}
+                alt={img.alt || `Venue image ${idx + 2}`}
+                className="w-full h-32 sm:h-48 object-cover rounded-lg"
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
         <img
-          src={img.url}
-          alt={img.alt || `Venue image ${idx + 2}`}
-          className="w-full h-full object-cover"
+          src="https://via.placeholder.com/600x400"
+          alt="Placeholder venue image"
+          className="w-full h-64 sm:h-96 object-cover rounded-lg"
         />
-      </div>
-    ))}
-  </div>
-) : (
-  <img
-    src="https://via.placeholder.com/600x400"
-    alt="Placeholder venue image"
-    className="w-full h-64 md:h-96 object-cover rounded-lg"
-  />
-)}
+      )}
 
-
-
-
-
-      {/* Title, rating, price, host */}
-      <div className="mt-4 space-y-2">
-        <h1 className="text-3xl font-bold">{venue.name}</h1>
+      {/* Venue Title, Rating, Price */}
+      <div className="space-y-2">
+        <h1 className="text-2xl sm:text-3xl font-bold">{venue.name}</h1>
         {renderStars(venue.rating)}
-        <p className="text-xl font-semibold">${venue.price} / night</p>
+        <p className="text-lg sm:text-xl font-semibold">${venue.price} / night</p>
 
-        {/* Host Card */}
         {venue.owner && (
-          <div className="flex items-center space-x-4 mt-4 p-2 border  rounded-lg shadow-sm bg-white hover:shadow-lg transition-shadow duration-200 max-w-xs">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-4 p-3 border rounded-lg shadow-sm bg-white">
             <img
               src={venue.owner.avatar?.url || "https://via.placeholder.com/60"}
               alt={venue.owner.avatar?.alt || "Host avatar"}
               className="w-12 h-12 rounded-full object-cover border"
             />
             <div className="flex flex-col justify-center">
-              <p className="font-semibold text-gray-800 text-sm">
+              <p className="font-semibold text-gray-800 text-sm sm:text-base">
                 {venue.owner.name || "Unknown Host"}
               </p>
-              <p className="text-xs text-gray-500">Hosting</p>
+              <p className="text-xs sm:text-sm text-gray-700">Hosting</p>
             </div>
-            <div className="ml-auto flex items-center space-x-1 text-gray-600 text-sm">
-              <FaUserFriends className="text-gray-500" />
+            <div className="ml-auto flex items-center space-x-1 text-gray-800 text-sm">
+              <FaUserFriends className="text-gray-700" />
               <span>{venue.bookings?.length || 0}</span>
             </div>
           </div>
@@ -149,15 +139,15 @@ const DetailedVenuePage = () => {
       </div>
 
       {/* Description */}
-      <section className="mt-6">
-        <h2 className="text-xl text-gray-500 font-semibold mb-2">
+      <section>
+        <h2 className="text-lg sm:text-xl text-gray-700 font-semibold mb-2">
           About This Venue
         </h2>
-        <p>{venue.description}</p>
+        <p className="text-sm sm:text-base text-gray-800">{venue.description}</p>
       </section>
 
-      {/* Booking Section */}
-      <section className="mt-6">
+      {/* Booking Form */}
+      <section>
         {isLoggedIn ? (
           isOwner ? (
             <p className="text-red-600 font-semibold">
@@ -167,23 +157,24 @@ const DetailedVenuePage = () => {
             <BookingForm
               venueId={venue.id}
               venueOwner={venue.owner?.name || ""}
+              pricePerNight={venue.price}
               unavailableDates={unavailableDates}
             />
           )
         ) : (
-          <div className="space-y-4">
-            <p className="text-gray-600">
-              Log in or register to book this venue
-            </p>
-            <div className="flex space-x-4">
+          <div className="p-6 bg-gray-100 rounded-lg shadow space-y-4">
+            <p className="text-gray-800">Log in or register to book this venue</p>
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               <Link
                 to="/login"
+                aria-label="Log in"
                 className="flex-1 px-4 py-2 border border-black text-black rounded hover:bg-gray-400 text-center"
               >
                 Log in
               </Link>
               <Link
                 to="/register"
+                aria-label="Register"
                 className="flex-1 px-4 py-2 bg-black text-white rounded hover:bg-gray-700 text-center"
               >
                 Register
@@ -193,10 +184,12 @@ const DetailedVenuePage = () => {
         )}
       </section>
 
-      {/* Facilities */}
-      <section className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
-        <ul className="space-y-2 text-gray-600 text-lg">
+      {/* Ameneties */}
+      <section>
+        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-700">
+          What this place offers
+        </h3>
+        <ul className="space-y-2 text-gray-800 text-sm sm:text-base">
           {venue.meta?.wifi && (
             <li className="flex items-center space-x-2">
               <FaWifi />
@@ -225,7 +218,7 @@ const DetailedVenuePage = () => {
       </section>
 
       {/* Map */}
-      <section className="mt-16">
+      <section className="mt-8 h-64 sm:h-96">
         <VenueMap lat={mapLat} lng={mapLng} venueName={venue.name} />
       </section>
     </div>
