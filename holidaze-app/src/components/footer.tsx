@@ -72,6 +72,7 @@ const Footer = () => {
               href="https://www.linkedin.com/in/noor-irfan-03b2202a2/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn profile"
               className="text-gray-400 hover:text-blue-500 transition"
             >
               <FaLinkedin size={24} className="text-blue-500" />
@@ -80,6 +81,7 @@ const Footer = () => {
               href="https://github.com/Noor807"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Github profile"
               className="text-gray-400 hover:text-gray-200 transition"
             >
             <FaGithub size={24} className="text-gray-200" />
