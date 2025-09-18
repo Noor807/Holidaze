@@ -1,8 +1,9 @@
 // src/components/BookingDatePicker.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DayPicker, type DateRange, type CustomComponents } from "react-day-picker";
+import { DayPicker, type DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import "../index.css"; 
 
 interface BookingDatePickerProps {
   unavailableDates?: string[]; // ISO date strings like "2025-09-18"
@@ -11,7 +12,7 @@ interface BookingDatePickerProps {
 }
 
 function toKey(d: Date) {
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+  return d.toISOString().slice(0, 10);
 }
 
 const BookingDatePicker = ({
@@ -30,9 +31,7 @@ const BookingDatePicker = ({
     const from = range?.from ?? null;
     const to = range?.to ?? null;
 
-    if (typeof onChange === "function") {
-      onChange(from, to);
-    }
+    if (typeof onChange === "function") onChange(from, to);
 
     if (from && to && !isLoggedIn) {
       alert("You need to log in to book this venue.");
@@ -41,11 +40,6 @@ const BookingDatePicker = ({
   };
 
   const clearDates = () => setSelected(undefined);
-
-  const customComponents: Partial<CustomComponents> = {
-    IconLeft: () => <span className="text-green-700 font-bold">{`<`}</span>,
-    IconRight: () => <span className="text-green-700 font-bold">{`>`}</span>,
-  };
 
   return (
     <div className="max-w-sm mx-auto text-center space-y-4">
@@ -79,10 +73,12 @@ const BookingDatePicker = ({
         />
       </div>
 
+      {/* Clear Dates Button */}
       <button
         type="button"
         onClick={clearDates}
-        className="px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700"
+        className="px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+        aria-label="Clear selected dates"
       >
         Clear Dates
       </button>
@@ -100,8 +96,7 @@ const BookingDatePicker = ({
           available: { backgroundColor: "#d1fae5", color: "#065f46" },
           disabled: { backgroundColor: "#f3f4f6", color: "#6b7280" },
         }}
-        components={customComponents}
-        className="rounded-lg shadow-md"
+        className="rdp-theme-green rounded-lg shadow-md"
       />
     </div>
   );
