@@ -69,7 +69,7 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-3">Follow Us</h3>
           <div className="flex space-x-6">
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/noor-irfan-03b2202a2/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-blue-500 transition"
@@ -77,7 +77,7 @@ const Footer = () => {
               <FaLinkedin size={24} className="text-blue-500" />
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/Noor807"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-gray-200 transition"
