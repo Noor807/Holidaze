@@ -1,19 +1,17 @@
 // src/components/BookingDatePicker.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DayPicker, type DateRange } from "react-day-picker";
+import { DayPicker, type DateRange, type CustomComponents } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 interface BookingDatePickerProps {
-  // ISO date strings: ["2025-02-01", "2025-02-02", ...]
-  unavailableDates?: string[];
+  unavailableDates?: string[]; // ISO date strings like "2025-09-18"
   isLoggedIn: boolean;
   onChange?: (from: Date | null, to: Date | null) => void;
 }
 
 function toKey(d: Date) {
-  // normalize to YYYY-MM-DD in UTC (matches API style)
-  return d.toISOString().slice(0, 10);
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
 const BookingDatePicker = ({
@@ -24,7 +22,6 @@ const BookingDatePicker = ({
   const navigate = useNavigate();
   const [selected, setSelected] = useState<DateRange | undefined>(undefined);
 
-  // Build a Set for O(1) checks when coloring days
   const disabledSet = new Set(unavailableDates);
 
   const handleSelect = (range: DateRange | undefined) => {
@@ -33,40 +30,78 @@ const BookingDatePicker = ({
     const from = range?.from ?? null;
     const to = range?.to ?? null;
 
-    // Bubble up to parent (e.g., DetailedVenuePage) if provided
     if (typeof onChange === "function") {
       onChange(from, to);
     }
 
-    // If a full range is chosen but user isn't logged in, prompt + redirect
     if (from && to && !isLoggedIn) {
       alert("You need to log in to book this venue.");
-      navigate("/login", { replace: false });
+      navigate("/login");
     }
   };
 
-  return (
-    <div className="max-w-sm mx-auto text-center">
-      <label className="block text-sm font-medium mb-2">
-        Select your stay dates
-      </label>
+  const clearDates = () => setSelected(undefined);
 
+  const customComponents: Partial<CustomComponents> = {
+    IconLeft: () => <span className="text-green-700 font-bold">{`<`}</span>,
+    IconRight: () => <span className="text-green-700 font-bold">{`>`}</span>,
+  };
+
+  return (
+    <div className="max-w-sm mx-auto text-center space-y-4">
+      {/* Start Date */}
+      <div className="flex flex-col">
+        <label htmlFor="start-date" className="text-black font-medium mb-1">
+          Start Date
+        </label>
+        <input
+          id="start-date"
+          type="text"
+          value={selected?.from ? selected.from.toLocaleDateString() : ""}
+          placeholder="Select start date"
+          readOnly
+          className="w-full px-3 py-2 border rounded-lg text-gray-900 placeholder-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600"
+        />
+      </div>
+
+      {/* End Date */}
+      <div className="flex flex-col">
+        <label htmlFor="end-date" className="text-black font-medium mb-1">
+          End Date
+        </label>
+        <input
+          id="end-date"
+          type="text"
+          value={selected?.to ? selected.to.toLocaleDateString() : ""}
+          placeholder="Select end date"
+          readOnly
+          className="w-full px-3 py-2 border rounded-lg text-gray-900 placeholder-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600"
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={clearDates}
+        className="px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700"
+      >
+        Clear Dates
+      </button>
+
+      {/* Calendar */}
       <DayPicker
         mode="range"
         selected={selected}
         onSelect={handleSelect}
-        // Disable the exact dates from the API
         disabled={(date) => disabledSet.has(toKey(date))}
-        // Color available (not in disabledSet) vs disabled
         modifiers={{
           available: (date) => !disabledSet.has(toKey(date)),
         }}
         modifiersStyles={{
-          // available days = green-ish
           available: { backgroundColor: "#d1fae5", color: "#065f46" },
-          // disabled days = light gray
-          disabled: { backgroundColor: "#f3f4f6", color: "#9ca3af" },
+          disabled: { backgroundColor: "#f3f4f6", color: "#6b7280" },
         }}
+        components={customComponents}
+        className="rounded-lg shadow-md"
       />
     </div>
   );

@@ -6,3 +6,32 @@ body {
   overflow-y: auto; 
   overflow-x: hidden; 
 }
+
+
+/* BookingDatePicker theme overrides */
+.rdp-theme-green .rdp-nav_button,
+.rdp-theme-green .rdp-nav_button:hover {
+  color: #065f46; /* dark green arrows */
+}
+
+.rdp-theme-green .rdp-day {
+  color: #065f46; /* default available day text */
+}
+
+.rdp-theme-green .rdp-day.rdp-day_disabled {
+  background-color: #f3f4f6; /* light gray background */
+  color: #6b7280;             /* dark gray text */
+}
+
+.rdp-theme-green .rdp-day.rdp-day_selected,
+.rdp-theme-green .rdp-day.rdp-day_range_start,
+.rdp-theme-green .rdp-day.rdp-day_range_end {
+  background-color: #16a34a; /* green for selected range */
+  color: white;
+}
+
+.rdp-theme-green .rdp-caption_label {
+  color: #065f46; /* month/year label color */
+  font-weight: bold;
+}
+

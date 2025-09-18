@@ -18,7 +18,6 @@ const SearchBar = () => {
   const resultsRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
 
-  // Fetch venues with debounce
   useEffect(() => {
     if (!value) {
       setResults([]);
@@ -29,13 +28,11 @@ const SearchBar = () => {
     const timeout = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/holidaze/venues/search?q=${encodeURIComponent(value)}`);
+        const res = await fetch(
+          `${API_BASE}/holidaze/venues/search?q=${encodeURIComponent(value)}`
+        );
         if (!res.ok) throw new Error("Failed to fetch venues");
-
         const response = await res.json();
-        console.log("API search response:", response);
-
-        // Extract venues from response.data array
         const venues: Venue[] = response.data ?? [];
         setResults(venues);
         setHighlightedIndex(-1);
@@ -50,9 +47,7 @@ const SearchBar = () => {
     return () => clearTimeout(timeout);
   }, [value]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
 
   const handleSelect = (venue: Venue) => {
     setValue("");
@@ -85,57 +80,68 @@ const SearchBar = () => {
 
   return (
     <div className="w-full max-w-md relative">
-      <div className="relative ">
-        <input
-          type="text"
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Search venues..."
-          className="w-full px-4 py-2 border text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-700 bg-black/50"
-        />
-        {value && (
-          <button
-            onClick={clearInput}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 focus:outline-none"
-            aria-label="Clear search"
-          >
-            ✕
-          </button>
-        )}
-      </div>
+      <label htmlFor="venue-search" className="sr-only">
+        Search Venues
+      </label>
+      <input
+        id="venue-search"
+        type="text"
+        value={value}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Search venues..."
+        aria-autocomplete="list"
+        aria-controls="search-results"
+        aria-activedescendant={
+          highlightedIndex >= 0 ? `search-result-${highlightedIndex}` : undefined
+        }
+        className="w-full px-4 py-2 border text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-700 bg-black/50"
+      />
+      {value && (
+        <button
+          onClick={clearInput}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 focus:outline-none"
+          aria-label="Clear search input"
+        >
+          ✕
+        </button>
+      )}
 
       {loading && <p className="mt-2 text-gray-400">Loading...</p>}
 
       {results.length > 0 && (
         <ul
+          id="search-results"
+          role="listbox"
           ref={resultsRef}
           className="absolute w-full bg-white border rounded-lg mt-1 shadow-lg z-50 max-h-60 overflow-auto"
         >
           {results.map((venue, index) => (
-           <li
-  key={venue.id ?? venue._id}
-  className={`p-2 cursor-pointer flex items-center gap-2 ${
-    index === highlightedIndex ? "bg-blue-500 text-white" : "hover:bg-gray-100"
-  }`}
-  onMouseEnter={() => setHighlightedIndex(index)}
-  onMouseLeave={() => setHighlightedIndex(-1)}
-  onMouseDown={() => handleSelect(venue)}
->
-  <img
-    src={
-      venue.media && venue.media.length > 0
-        ? venue.media[0].url
-        : "/default-venue.png" // <-- path to your default image
-    }
-    alt={venue.name}
-    className="w-12 h-12 object-cover rounded"
-  />
-  <div className="flex flex-col">
-    <p className="font-semibold">{venue.name}</p>
-  </div>
-</li>
-
+            <li
+              key={venue.id ?? venue._id}
+              id={`search-result-${index}`}
+              role="option"
+              aria-selected={index === highlightedIndex}
+              className={`p-2 cursor-pointer flex items-center gap-2 ${
+                index === highlightedIndex ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+              }`}
+              onMouseEnter={() => setHighlightedIndex(index)}
+              onMouseLeave={() => setHighlightedIndex(-1)}
+              onMouseDown={() => handleSelect(venue)}
+            >
+              <img
+                src={
+                  venue.media && venue.media.length > 0
+                    ? venue.media[0].url
+                    : "/default-venue.png"
+                }
+                alt={venue.name}
+                className="w-12 h-12 object-cover rounded"
+              />
+              <div className="flex flex-col">
+                <p className="font-semibold">{venue.name}</p>
+              </div>
+            </li>
           ))}
         </ul>
       )}

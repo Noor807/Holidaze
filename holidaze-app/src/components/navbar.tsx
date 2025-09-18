@@ -80,13 +80,13 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-full border border-gray-300 text-black hover:shadow-md transition font-medium"
+                className="px-4 py-2  text-white hover:shadow-md transition font-medium"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-white hover:opacity-90 transition font-medium"
+                className="px-4 py-2  rounded-full border  text-white hover:opacity-90 transition font-medium"
               >
                 Host
               </Link>
