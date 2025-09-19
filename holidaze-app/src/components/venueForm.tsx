@@ -138,6 +138,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       <input
         type="text"
         placeholder="Venue Name"
+        aria-label="text input"
         value={form.name}
         onChange={(e) => handleChange("name", e.target.value)}
         required
@@ -145,6 +146,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       />
       <textarea
         placeholder="Description"
+        aria-label="Description input"
         value={form.description}
         onChange={(e) => handleChange("description", e.target.value)}
         required
@@ -156,6 +158,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       <input
   type="number"
   placeholder="Price per night"
+   aria-label="price input"
   value={form.price}
   onChange={(e) => handleChange("price", Number(e.target.value))}
   required
@@ -171,6 +174,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <input
           type="number"
           placeholder="Max Guests"
+           aria-label="guest input"
           value={form.maxGuests}
           onChange={(e) => handleChange("maxGuests", Number(e.target.value))}
           required
@@ -183,6 +187,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <input
           type="number"
           placeholder="Rating"
+           aria-label="rating input"
           value={form.rating}
           onChange={(e) => handleChange("rating", Number(e.target.value))}
           className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
@@ -200,6 +205,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           <label key={key} className="flex items-center gap-2">
             <input
               type="checkbox"
+               aria-label="amenities checkboxes"
               checked={form.meta[key]}
               onChange={(e) =>
                 setForm({ ...form, meta: { ...form.meta, [key]: e.target.checked } })
@@ -221,6 +227,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             <input
               type="url"
               placeholder="Image URL"
+               aria-label="image input"
               value={m.url}
               onChange={(e) => {
                 const newMedia = [...form.media];
@@ -232,6 +239,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             <input
               type="text"
               placeholder="Alt text"
+               aria-label="image text input"
               value={m.alt}
               onChange={(e) => {
                 const newMedia = [...form.media];
