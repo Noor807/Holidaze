@@ -218,7 +218,7 @@ const BookingForm = ({
             <div className="flex justify-between"><span>Children</span><span>{guests.children}</span></div>
             <div className="flex justify-between"><span>Nights</span><span>{nights}</span></div>
             <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
-              <span>Total</span><span>${totalPrice}</span>
+              <span >Total</span><span>${totalPrice}</span>
             </div>
           </div>
           <button
@@ -236,22 +236,22 @@ const BookingForm = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             ref={modalRef}
-            className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md space-y-4"
+            className="bg-gradient-to-r from-green-200 to-blue-200 p-6 rounded-2xl shadow-md w-full max-w-md space-y-4"
             role="dialog"
             aria-modal="true"
             tabIndex={-1}
           >
-            <h2 className="text-xl font-bold">Confirm Booking</h2>
+            <h2 className="text-2xl font-bold text-green-600">Confirm Booking</h2>
             <div className="space-y-1">
               <p>Adults: {guests.adults}</p>
               <p>Children: {guests.children}</p>
               <p>Nights: {nights}</p>
-              <p>Total: ${totalPrice}</p>
+              <p className="font-bold">Total: ${totalPrice}</p>
             </div>
             <div className="flex justify-end gap-3 mt-4">
               <button
                 onClick={closeModal}
-                className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+                className="px-4 py-2 rounded-lg bg-white border border-black-300 hover:bg-gray-400"
               >
                 Cancel
               </button>

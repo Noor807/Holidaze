@@ -1,6 +1,10 @@
 // src/components/profileForm.tsx
 import { useState } from "react";
-import { updateUserProfile, type Media, type UserProfileUpdate } from "../api/profiles";
+import {
+  updateUserProfile,
+  type Media,
+  type UserProfileUpdate,
+} from "../api/profiles";
 import { toast } from "react-toastify";
 
 interface ProfileFormProps {
@@ -46,8 +50,6 @@ const ProfileForm = ({
         avatar: updatedProfile.avatar ?? undefined,
         banner: updatedProfile.banner ?? undefined,
       });
-
-      toast.success("Profile updated!");
     } catch (err) {
       console.error(err);
       toast.error("Failed to update profile");
@@ -75,7 +77,7 @@ const ProfileForm = ({
         <label className="block mb-1 font-medium">Avatar URL</label>
         <input
           type="text"
-           aria-label="avatar input"
+          aria-label="avatar input"
           value={avatar?.url || ""}
           onChange={(e) => setAvatar({ url: e.target.value })}
           placeholder="Paste avatar image URL"
@@ -86,7 +88,7 @@ const ProfileForm = ({
             src={avatar.url}
             alt="Avatar preview"
             className="w-20 h-20 rounded-full mt-2 object-cover"
-             aria-label="image input"
+            aria-label="image input"
           />
         )}
       </div>
@@ -107,7 +109,7 @@ const ProfileForm = ({
             src={banner.url}
             alt="Banner preview"
             className="w-full h-32 mt-2 object-cover rounded"
-             aria-label="banner input"
+            aria-label="banner input"
           />
         )}
       </div>

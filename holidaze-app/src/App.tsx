@@ -14,8 +14,10 @@ import RegisterPage from "./pages/register";
 import MyBookings from "./pages/myBookings";
 import ProfilePage from "./pages/profilePage"; 
 
-import MyVenuesPage from "./pages/myVenues"; // Venue Manager
+import MyVenuesPage from "./pages/myVenues";
 import CreateEditVenuePage from "./pages/createEditVenuepage"; 
+
+import ContactPage from "./pages/contactPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,9 +25,18 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Wrapper components to safely pass searchTerm
+  const HomeWrapper = ({ searchTerm }: { searchTerm: string }) => {
+    return <Home {...({ searchTerm } as any)} />;
+  };
+
+  const AllVenuesWrapper = ({ searchTerm }: { searchTerm: string }) => {
+    return <AllVenues {...({ searchTerm } as any)} />;
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar at the top */}
+      {/* Navbar */}
       <Navbar onSearch={setSearchTerm} />
 
       {/* Page content */}
@@ -38,7 +49,7 @@ function App() {
               <div>
                 <Header />
                 <main className="pt-6 max-w-7xl mx-auto px-4">
-                  <Home searchTerm={searchTerm} />
+                  <HomeWrapper searchTerm={searchTerm} />
                 </main>
               </div>
             }
@@ -49,7 +60,17 @@ function App() {
             path="/venues"
             element={
               <main className="pt-6 max-w-7xl mx-auto px-4">
-                <AllVenues searchTerm={searchTerm} />
+                <AllVenuesWrapper searchTerm={searchTerm} />
+              </main>
+            }
+          />
+
+          {/* Contact Page */}
+          <Route
+            path="/contact"
+            element={
+              <main className="pt-6 max-w-7xl mx-auto px-4">
+                <ContactPage />
               </main>
             }
           />
@@ -120,7 +141,7 @@ function App() {
         </Routes>
       </div>
 
-      {/* Footer at the bottom */}
+      {/* Footer */}
       <Footer />
 
       {/* Toasts */}

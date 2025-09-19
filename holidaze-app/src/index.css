@@ -3,156 +3,162 @@
 body {
   overflow-y: auto;
   overflow-x: hidden;
-  
 }
 
-
 @layer components {
-  /* 
-   ____________________________________________________________________________
-  |
-  |             THE GENERAL CONTAINERS MAIN AND DATE-PICKER CONTAINER
-  |____________________________________________________________________________
-  */
-
-  /* Outer calendar container for 1 or 2 months */
+  /* ==========================================================================
+     MAIN CONTAINERS
+  ========================================================================== */
   .custom-datepicker {
     @apply flex gap-16 justify-end bg-white p-4 rounded-2xl;
   }
   .custom-datepicker .react-datepicker {
     @apply w-full flex gap-4;
   }
-
-  /* Each month container: table layout for alignment */
   .custom-datepicker .react-datepicker__month-container {
     @apply w-full max-w-1/2;
-    display: table; /* important for vertical alignment */
+    display: table;
     table-layout: fixed;
   }
-  /* Disabled / excluded dates in red */
+
+  /* ==========================================================================
+     DISABLED DATES
+  ========================================================================== */
   .custom-datepicker .react-datepicker__day--disabled,
   .custom-datepicker .react-datepicker__day--excluded {
-    @apply text-red-600 line-through pointer-events-none;
+    @apply !text-red-600 line-through pointer-events-none;
   }
-
   .custom-datepicker .react-datepicker__day--disabled:hover,
   .custom-datepicker .react-datepicker__day--excluded:hover {
     @apply bg-red-100;
   }
 
-  /* 
-   ____________________________________________________________________________
-  |
-  |             NAVIGATION BUTTON (CHEVRON LEFT & CHEVRON RIGHT)
-  |____________________________________________________________________________
-  */
-
-  /* Navigation selector (both) */
+  /* ==========================================================================
+     NAVIGATION BUTTONS
+  ========================================================================== */
   .custom-datepicker .react-datepicker__navigation {
-    margin-top: 14px;
+    margin-top: 12px;
   }
-
-  /* First month shows left arrow only */
   .custom-datepicker .react-datepicker__month-container:first-child .react-datepicker__navigation--previous {
     display: block;
   }
   .custom-datepicker .react-datepicker__month-container:first-child .react-datepicker__navigation--next {
     display: none;
   }
-
-  /* Last month shows right arrow only */
   .custom-datepicker .react-datepicker__month-container:last-child .react-datepicker__navigation--next {
     display: block;
   }
   .custom-datepicker .react-datepicker__month-container:last-child .react-datepicker__navigation--previous {
     display: none;
   }
-
-  /* Color and size of the chevron (both) */
   .custom-datepicker .react-datepicker__navigation-icon::before {
-    border-color: #374151; /* gray-700 */
+    border-color: #0e192c;
     border-width: 2px 2px 0 0;
     width: 0.5rem;
     height: 0.5rem;
   }
-  /* 
-   ____________________________________________________________________________
-  |
-  |             HEADER AREA (MONTH/YEAR)
-  |____________________________________________________________________________
-  */
+
+  /* ==========================================================================
+     HEADER
+  ========================================================================== */
   .custom-datepicker .react-datepicker__header {
-    display: table-header-group; /* align weekdays */
-
-    @apply p-18;
+    display: table-header-group;
+    @apply p-4;
   }
-
   .custom-datepicker .react-datepicker__current-month {
-    @apply text-xl text-white !p-3;
-
+    @apply text-xl !text-gray-700 font-semibold text-center;
   }
 
-  /* 
-   ____________________________________________________________________________
-  |
-  |             WEEK AREA NOT THE INDIVIDUAL DAYS (1-7)
-  |____________________________________________________________________________
-  */
-
+  /* ==========================================================================
+     WEEKDAYS
+  ========================================================================== */
   .custom-datepicker .react-datepicker__day-names {
     @apply w-full flex items-center justify-center text-lg;
   }
-
-  /* 
-   ____________________________________________________________________________
-  |
-  |             INDIVIDUAL DAY (MONDAY - SUNDAY)
-  |____________________________________________________________________________
-  */
-
   .custom-datepicker .react-datepicker__day-name {
     display: table-cell;
-    @apply !text-green-500 font-medium !w-10 !h-10 flex items-center justify-center ;
+    @apply !text-gray-700 font-medium !w-10 !h-10 flex items-center justify-center;
   }
 
-  /* 
-   ____________________________________________________________________________
-  |
-  |             ACTUAL DAYS WHERE YOU PICK WHEN SELECTING DAYS
-  |____________________________________________________________________________
-  */
+  /* ==========================================================================
+     DAYS
+  ========================================================================== */
   .custom-datepicker .react-datepicker__day {
-    display: table-cell; /* important */
+    display: table-cell;
     @apply !w-10 !h-10 flex items-center justify-center rounded-full cursor-pointer text-gray-900 transition-all;
   }
-
-  /* Hover state before you pick a day */
   .custom-datepicker .react-datepicker__day:hover {
-    @apply bg-green-300 hover:text-black;
+    @apply !bg-green-300 hover:text-black;
   }
-
-  /* Selected / range start / range end */
   .custom-datepicker .react-datepicker__day--selected,
   .custom-datepicker .react-datepicker__day--range-start,
   .custom-datepicker .react-datepicker__day--range-end {
     @apply bg-black text-white font-semibold rounded-full;
   }
-
-  /* In-range */
   .custom-datepicker .react-datepicker__day--in-range {
     @apply bg-purple-500 rounded-none;
   }
+  
 
-  /* Disabled / excluded */
-  .custom-datepicker .react-datepicker__day--disabled,
-  .custom-datepicker .react-datepicker__day--excluded {
-    @apply text-gray-300 line-through pointer-events-none;
-  }
+  /* ==========================================================================
+     RESPONSIVE BEHAVIOR
+  ========================================================================== */
 
-  /* Mobile: stack months */
+  /* Tablets (≤768px) → stack months vertically */
   @media (max-width: 768px) {
     .custom-datepicker {
-      @apply flex-col gap-4;
+      @apply flex-col gap-6;
+    }
+  }
+
+  /* Mobile (≤640px) → shrink day cells */
+  @media (max-width: 640px) {
+    .custom-datepicker .react-datepicker__day,
+    .custom-datepicker .react-datepicker__day-name {
+      @apply !w-8 !h-8 text-sm;
+    }
+    .custom-datepicker .react-datepicker__current-month {
+      @apply text-lg;
+    }
+  }
+  /* Narrow screens (≤430px) → even smaller + force equal width */
+@media (max-width: 430px) {
+  .custom-datepicker .react-datepicker__day,
+  .custom-datepicker .react-datepicker__day-name {
+    width: 1.8rem !important;
+    height: 1.8rem !important;
+    font-size: 0.7rem !important;
+    padding: 0 !important;
+  }
+  .custom-datepicker .react-datepicker__current-month {
+    font-size: 1rem !important;
+  }
+}
+
+  /* Small Mobile (≤375px) → ultra compact */
+  @media (max-width: 375px) {
+    .custom-datepicker {
+      @apply p-2 gap-4;
+    }
+    .custom-datepicker .react-datepicker__day,
+    .custom-datepicker .react-datepicker__day-name {
+      @apply !w-7 !h-7 text-xs;
+    }
+    .custom-datepicker .react-datepicker__current-month {
+      @apply text-base;
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
