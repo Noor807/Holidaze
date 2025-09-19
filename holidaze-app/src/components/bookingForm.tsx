@@ -3,9 +3,8 @@ import { useAuth } from "../context/authContext";
 import { createBooking } from "../api/bookings";
 import { toast } from "react-toastify";
 import { FaChevronDown, FaUser, FaChild, FaBaby, FaPaw } from "react-icons/fa";
-import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface Guests {
   adults: number;
@@ -21,12 +20,6 @@ interface Props {
   unavailableDates?: Date[];
 }
 
-interface Range {
-  startDate: Date;
-  endDate: Date;
-  key: string;
-}
-
 const BookingForm = ({
   venueId,
   venueOwner,
@@ -34,10 +27,8 @@ const BookingForm = ({
   unavailableDates = [],
 }: Props) => {
   const { user } = useAuth();
-
-  const [range, setRange] = useState<Range[]>([
-    { startDate: new Date(), endDate: new Date(), key: "selection" },
-  ]);
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [guests, setGuests] = useState<Guests>({
     adults: 1,
     children: 0,
@@ -47,14 +38,27 @@ const BookingForm = ({
   const [showGuests, setShowGuests] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [monthsToShow, setMonthsToShow] = useState(
+    typeof window !== "undefined" && window.innerWidth >= 768 ? 2 : 1
+  );
 
   const modalRef = useRef<HTMLDivElement | null>(null);
   const lastFocused = useRef<HTMLElement | null>(null);
 
+  // Responsive months
+  useEffect(() => {
+    const handleResize = () => setMonthsToShow(window.innerWidth >= 768 ? 2 : 1);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const nights =
-    (range[0].endDate.getTime() - range[0].startDate.getTime()) /
-      (1000 * 60 * 60 * 24) +
-    1;
+    startDate && endDate
+      ? Math.max(
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1,
+          1
+        )
+      : 1;
 
   const totalGuests = Object.values(guests).reduce((a, b) => a + b, 0);
   const basePrice = nights * pricePerNight;
@@ -70,21 +74,24 @@ const BookingForm = ({
     if (!user) return toast.error("Please log in to book.");
     if (user.name && user.name === venueOwner)
       return toast.error("You cannot book your own venue.");
+    if (!startDate || !endDate)
+      return toast.error("Please select a valid date range.");
 
     setLoading(true);
     try {
       await createBooking(
         {
           venueId,
-          dateFrom: range[0].startDate.toISOString(),
-          dateTo: range[0].endDate.toISOString(),
+          dateFrom: startDate.toISOString(),
+          dateTo: endDate.toISOString(),
           guests: totalGuests,
         },
         user.accessToken
       );
       toast.success(`Booking successful! Total: $${totalPrice}`);
       setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
-      setRange([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
+      setStartDate(new Date());
+      setEndDate(new Date());
       setShowGuests(false);
       closeModal();
     } catch (err: any) {
@@ -98,72 +105,72 @@ const BookingForm = ({
     lastFocused.current = document.activeElement as HTMLElement;
     setShowModal(true);
   };
-
   const closeModal = () => {
     setShowModal(false);
     lastFocused.current?.focus();
   };
 
-  // Trap focus inside modal
+  // Trap focus in modal
   useEffect(() => {
-    if (showModal && modalRef.current) {
-      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
+    if (!showModal || !modalRef.current) return;
+    const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
 
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") closeModal();
-        if (e.key === "Tab") {
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+      if (e.key === "Tab") {
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
         }
-      };
+      }
+    };
 
-      document.addEventListener("keydown", handleKeyDown);
-      first?.focus();
-
-      return () => document.removeEventListener("keydown", handleKeyDown);
-    }
+    document.addEventListener("keydown", handleKeyDown);
+    first?.focus();
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [showModal]);
 
   return (
-    <>
-      <fieldset className="bg-white rounded-2xl shadow-lg p-6 grid md:grid-cols-3 gap-8 w-full border-0">
-        <legend className="sr-only">Booking form</legend>
+    <main className="max-w-5xl mx-auto px-4 py-8 bg-gradient-to-r from-green-200 to-blue-200">
+      <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
+        {/* Dates & Guests */}
+        <section className="space-y-6 w-full">
+          {/* Calendar */}
+          <div className="bg-white p-4 gap-0 flex flex-col rounded-2xl shadow-md custom-datepicker">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">Select Dates</h2>
+            <DatePicker
+              className="w-full"
+              inline
+              monthsShown={monthsToShow}
+              calendarClassName="custom-datepicker"
+              selectsRange
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(dates: [Date | null, Date | null]) => {
+                const [start, end] = dates;
+                setStartDate(start);
+                setEndDate(end);
+              }}
+              minDate={new Date()}
+              excludeDates={unavailableDates}
+              
+            />
+          </div>
 
-        {/* Left: Dates & Guests */}
-        <div className="md:col-span-2 space-y-6">
-          <label id="date-range-label" className="font-semibold text-gray-900">
-            Select Dates
-          </label>
-          <DateRange
-            aria-labelledby="date-range-label"
-            ranges={range}
-            onChange={(ranges) => {
-              const selection = (ranges as { selection: Range }).selection;
-              setRange([selection]);
-            }}
-            minDate={new Date()}
-            disabledDates={unavailableDates}
-            rangeColors={["#16a34a"]}
-          />
-
-          {/* Guests selector */}
-          <div className="relative">
+          {/* Guests */}
+          <div className="bg-white p-4 rounded-2xl shadow-md">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">Guests</h2>
             <button
               type="button"
               onClick={() => setShowGuests(!showGuests)}
               className="w-full border px-4 py-2 rounded-lg bg-white text-left flex justify-between items-center shadow-sm text-gray-900"
-              aria-haspopup="true"
-              aria-expanded={showGuests}
-              aria-controls="guests-dropdown"
             >
               Guests: {totalGuests} ({guests.adults} adults, {guests.children} children)
               <FaChevronDown
@@ -171,11 +178,7 @@ const BookingForm = ({
               />
             </button>
             {showGuests && (
-              <div
-                id="guests-dropdown"
-                className="absolute z-10 mt-2 w-full bg-white border rounded-xl shadow-lg p-3 space-y-2"
-                aria-label="Select number of guests"
-              >
+              <div className="mt-3 space-y-2">
                 {[
                   { type: "adults", label: "Adults", icon: <FaUser /> },
                   { type: "children", label: "Children", icon: <FaChild /> },
@@ -185,27 +188,19 @@ const BookingForm = ({
                   const key = type as keyof Guests;
                   return (
                     <div key={type} className="flex justify-between items-center">
-                      <span className="flex items-center space-x-1 text-gray-900">
-                        {icon} <span>{label}</span>
-                      </span>
-                      <div className="flex items-center space-x-2">
+                      <span className="flex items-center gap-1">{icon}{label}</span>
+                      <div className="flex gap-2">
                         <button
                           type="button"
-                          aria-label={`Decrease ${label}`}
                           onClick={() => handleDecrement(key)}
                           className="px-2 py-1 bg-gray-800 text-white rounded"
-                        >
-                          -
-                        </button>
+                        >-</button>
                         <span aria-live="polite">{guests[key]}</span>
                         <button
                           type="button"
-                          aria-label={`Increase ${label}`}
                           onClick={() => handleIncrement(key)}
                           className="px-2 py-1 bg-gray-800 text-white rounded"
-                        >
-                          +
-                        </button>
+                        >+</button>
                       </div>
                     </div>
                   );
@@ -213,73 +208,54 @@ const BookingForm = ({
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* Right: Summary */}
-        <div className="md:col-span-1">
-          <div className="bg-white shadow-lg rounded-2xl border p-6 space-y-4 sticky top-6">
-            <div className="flex justify-between items-center">
-              <p className="text-lg font-semibold text-gray-900">${pricePerNight} / night</p>
-              <p className="text-sm text-gray-900">{totalGuests} guests</p>
+        {/* Booking Summary */}
+        <aside className="bg-white p-4 rounded-2xl shadow-md sticky top-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">Booking Summary</h2>
+          <div className="space-y-2">
+            <div className="flex justify-between"><span>Adults</span><span>{guests.adults}</span></div>
+            <div className="flex justify-between"><span>Children</span><span>{guests.children}</span></div>
+            <div className="flex justify-between"><span>Nights</span><span>{nights}</span></div>
+            <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
+              <span>Total</span><span>${totalPrice}</span>
             </div>
-
-            <div className="border-t pt-4 space-y-2">
-              <div className="flex justify-between text-gray-900">
-                <span>{nights} nights × ${pricePerNight}</span>
-                <span>${basePrice}</span>
-              </div>
-              {guestFee > 0 && (
-                <div className="flex justify-between text-gray-900">
-                  <span>Extra guest fee</span>
-                  <span>${guestFee}</span>
-                </div>
-              )}
-              <div className="flex justify-between font-bold text-lg text-gray-900 border-t pt-2 mt-2">
-                <span>Total</span>
-                <span aria-live="polite">${totalPrice || 0}</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => lastFocused.current = document.activeElement as HTMLElement || null || openModal()}
-              className="w-full bg-green-700 text-white py-3 rounded-xl font-semibold hover:bg-green-800 transition"
-            >
-              Book Now
-            </button>
           </div>
-        </div>
-      </fieldset>
+          <button
+            type="button"
+            onClick={openModal}
+            className="w-full bg-green-700 text-white py-3 rounded-xl font-semibold hover:bg-green-800 transition"
+          >
+            Book Now
+          </button>
+        </aside>
+      </form>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             ref={modalRef}
-            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg space-y-4"
+            className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md space-y-4"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="confirm-booking-title"
             tabIndex={-1}
           >
-            <h2 id="confirm-booking-title" className="text-xl font-bold text-gray-900">
-              Confirm Booking
-            </h2>
-            <div className="space-y-2 text-gray-900">
+            <h2 className="text-xl font-bold">Confirm Booking</h2>
+            <div className="space-y-1">
+              <p>Adults: {guests.adults}</p>
+              <p>Children: {guests.children}</p>
               <p>Nights: {nights}</p>
-              <p>Guests: {totalGuests}</p>
-              <p>Total Price: ${totalPrice}</p>
+              <p>Total: ${totalPrice}</p>
             </div>
-            <div className="flex justify-end space-x-3 mt-4">
+            <div className="flex justify-end gap-3 mt-4">
               <button
-                type="button"
                 onClick={closeModal}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-900 hover:bg-gray-100"
+                className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
-                type="button"
                 onClick={handleConfirmBooking}
                 disabled={loading}
                 className="px-4 py-2 rounded-lg bg-green-700 text-white font-semibold hover:bg-green-800"
@@ -290,7 +266,7 @@ const BookingForm = ({
           </div>
         </div>
       )}
-    </>
+    </main>
   );
 };
 

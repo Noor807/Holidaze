@@ -116,7 +116,6 @@ const SearchBar = () => {
           className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-green-600"
           aria-label="Clear search input"
         >
-          <span className="sr-only">Clear search</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width={22}
@@ -148,26 +147,29 @@ const SearchBar = () => {
           className="absolute w-full bg-white border rounded-lg mt-1 shadow-lg z-50 max-h-60 overflow-auto"
         >
           {results.map((venue, index) => (
-            <li
-              key={venue.id ?? venue._id}
-              id={`search-result-${index}`}
-              role="option"
-              aria-selected={index === highlightedIndex}
-              className={`p-2 cursor-pointer flex items-center gap-2 ${
-                index === highlightedIndex ? "bg-green-600 text-white" : "hover:bg-gray-100"
-              }`}
-              onMouseEnter={() => setHighlightedIndex(index)}
-              onMouseLeave={() => setHighlightedIndex(-1)}
-              onMouseDown={() => handleSelect(venue)}
-            >
-              <img
-                src={venue.media?.[0]?.url ?? "/default-venue.png"}
-                alt={venue.name}
-                className="w-12 h-12 object-cover rounded"
-              />
-              <div className="flex flex-col">
-                <p className="font-semibold text-gray-900">{venue.name}</p>
-              </div>
+            <li key={venue.id ?? venue._id} role="none">
+              <button
+                id={`search-result-${index}`}
+                role="option"
+                aria-selected={index === highlightedIndex}
+                onMouseEnter={() => setHighlightedIndex(index)}
+                onMouseLeave={() => setHighlightedIndex(-1)}
+                onClick={() => handleSelect(venue)}
+                className={`w-full text-left p-2 flex items-center gap-2 ${
+                  index === highlightedIndex
+                    ? "bg-green-600 text-white"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                <img
+                  src={venue.media?.[0]?.url ?? "/default-venue.png"}
+                  alt={venue.name}
+                  className="w-12 h-12 object-cover rounded"
+                />
+                <div className="flex flex-col">
+                  <p className="font-semibold text-gray-900">{venue.name}</p>
+                </div>
+              </button>
             </li>
           ))}
         </ul>

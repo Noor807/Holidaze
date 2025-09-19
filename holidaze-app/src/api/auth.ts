@@ -61,13 +61,20 @@ export const loginUser = async (data: LoginData): Promise<AuthData> => {
   const payload = response.data?.data ?? response.data;
 
   return {
-    accessToken: payload.accessToken,
-    name: payload.name,
-    email: payload.email,
-    venueManager: payload.venueManager,
-    id: payload.id,
-    avatar: payload.avatar ? { url: payload.avatar, alt: "Avatar" } : null,
-    banner: payload.banner ? { url: payload.banner, alt: "Banner" } : null,
-    bio: payload.bio || "",
+    accessToken: payload.accessToken ?? "",
+    name: payload.name ?? "",
+    email: payload.email ?? "",
+    venueManager: payload.venueManager ?? false,
+    id: payload.id ?? "",
+    avatar: payload.avatar
+      ? { url: payload.avatar, alt: "Avatar" }
+      : null,
+    banner: payload.banner
+      ? { url: payload.banner, alt: "Banner" }
+      : null,
+    bio: payload.bio ?? "",
+    role: payload.role ?? "user", // ✅ required field
   };
 };
+
+

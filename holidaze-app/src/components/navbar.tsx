@@ -70,6 +70,8 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
               <button
                 onClick={() => setShowSearch(true)}
                 className="p-2 rounded-full bg-white hover:bg-gray-300"
+                type="button"
+                aria-label="search for venue"
               >
                 <Search size={22} className="text-black" />
               </button>

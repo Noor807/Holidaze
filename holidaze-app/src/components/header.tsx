@@ -5,7 +5,7 @@ import SearchBar from "./searchBar";
 
 const Header = () => {
   const images = [
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+    "https://media.cntraveller.com/photos/611befdb69410e829d87e766/16:9/w_3200,h_1800,c_limit/rome.jpg",
     "https://cdn.pixabay.com/photo/2015/03/19/14/30/las-vegas-680953_1280.jpg",
     "https://cdn.pixabay.com/photo/2020/06/14/10/58/london-5297395_1280.jpg",
   ];

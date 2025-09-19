@@ -40,9 +40,9 @@ const Home = () => {
   ];
 
   return (
-    <section className="max-w-7xl px-4 py-6 mx-auto">
+    <section className="max-w-7xl px-4 py-6 mx-auto ">
       {/* New Venues */}
-      <h2 className="text-2xl font-bold mb-4 text-gray-700">Explore Our New Venues</h2>
+      <h2 className="text-4xl font-bold text-center mb-14 text-gray-700">Explore Our New Venues</h2>
       {loading && <VenueCardSkeleton />}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && venues.length > 0 && <VenueCarousel venues={venues} />}
