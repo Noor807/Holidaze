@@ -30,18 +30,18 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ loading state
+  const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true); // start loading
+    setLoading(true); 
 
     try {
-      // Login user
+     
       const user = await loginUser({ email, password });
 
-      // Optionally fetch avatar from profile API
+      
       try {
         const profileRes = await fetch(`${API_PROFILES}/${user.name}`, {
           headers: getAuthHeaders(user.accessToken),
@@ -53,19 +53,19 @@ const LoginPage = () => {
             : null;
 
           if (fetchedAvatar) {
-            user.avatar = fetchedAvatar; // overwrite avatar if exists
+            user.avatar = fetchedAvatar; 
           }
         }
       } catch (err) {
         console.warn("Could not fetch avatar", err);
       }
 
-      // Store user in context
+      
       login(user);
 
       toast.success(`Welcome back, ${user.name}!`);
 
-      // Redirect to previous page or home
+      
       const redirectTo = location.state?.from || "/";
       navigate(redirectTo, {
         state: { selectedDate: location.state?.selectedDate || undefined },
@@ -76,7 +76,7 @@ const LoginPage = () => {
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
-      setLoading(false); // stop loading
+      setLoading(false); 
     }
   };
 
@@ -101,7 +101,7 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-            disabled={loading} // disable while loading
+            disabled={loading} 
           />
 
           <input
@@ -112,12 +112,12 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-            disabled={loading} // disable while loading
+            disabled={loading} 
           />
 
           <button
             type="submit"
-            disabled={loading} // disable while loading
+            disabled={loading} 
             className={`w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition text-lg font-semibold flex justify-center items-center ${
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
