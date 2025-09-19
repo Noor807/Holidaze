@@ -18,6 +18,8 @@ import MyVenuesPage from "./pages/myVenues";
 import CreateEditVenuePage from "./pages/createEditVenuepage"; 
 
 import ContactPage from "./pages/contactPage";
+import PrivacyPolicyPage from "./pages/privacyPolicy";
+
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -74,6 +76,15 @@ function App() {
               </main>
             }
           />
+          <Route
+  path="/privacy"
+  element={
+    <main className="pt-6 max-w-7xl mx-auto px-4">
+      <PrivacyPolicyPage />
+    </main>
+  }
+/>
+
 
           {/* My Bookings */}
           <Route
