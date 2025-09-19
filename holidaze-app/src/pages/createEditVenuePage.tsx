@@ -51,6 +51,7 @@ const CreateEditVenuePage = () => {
         initialData={venue || undefined} 
         onClose={() => navigate("/my-venues")} 
         onSubmit={handleFormSubmit} 
+       
       />
     </div>
   );

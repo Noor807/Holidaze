@@ -272,6 +272,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           <input
             key={key}
             type="text"
+            aria-label="location input"
             placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
             value={form.location[key]}
             onChange={(e) =>
@@ -283,6 +284,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <input
           type="number"
           placeholder="Latitude"
+          aria-label="latitude input"
           value={form.location.lat}
           onChange={(e) =>
             setForm({ ...form, location: { ...form.location, lat: Number(e.target.value) } })
@@ -292,6 +294,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <input
           type="number"
           placeholder="Longitude"
+          aria-label="longtitude input"
           value={form.location.lng}
           onChange={(e) =>
             setForm({ ...form, location: { ...form.location, lng: Number(e.target.value) } })
