@@ -90,6 +90,7 @@ const RegisterPage = () => {
           <input
             type="text"
             placeholder="Full Name"
+            aria-label="name input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
@@ -99,6 +100,7 @@ const RegisterPage = () => {
           <input
             type="email"
             placeholder="Email (@stud.noroff.no)"
+            aria-label="email input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
@@ -108,6 +110,7 @@ const RegisterPage = () => {
           <input
             type="password"
             placeholder="Password (min 8 chars)"
+            aria-label="password input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
@@ -116,6 +119,7 @@ const RegisterPage = () => {
 
           <textarea
             placeholder="Tell us about yourself..."
+            aria-label="bio input"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
@@ -125,6 +129,7 @@ const RegisterPage = () => {
           <input
             type="url"
             placeholder="Avatar image URL"
+            aria-label="image input"
             value={avatar}
             onChange={(e) => setAvatar(e.target.value)}
             className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
@@ -133,6 +138,7 @@ const RegisterPage = () => {
           <input
             type="url"
             placeholder="Banner image URL"
+            aria-label="banner input"
             value={banner}
             onChange={(e) => setBanner(e.target.value)}
             className="w-full mb-6 p-3 border border-gray-300 rounded-lg"
