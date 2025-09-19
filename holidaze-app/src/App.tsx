@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/navbar"; 
+import Navbar from "./components/navbar";
 import Header from "./components/header";
-import Footer from "./components/footer"; 
+import Footer from "./components/footer";
 
 import Home from "./pages/home";
 import AllVenues from "./pages/allVenues";
@@ -12,17 +12,17 @@ import DetailedVenuePage from "./pages/detailVenue";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import MyBookings from "./pages/myBookings";
-import ProfilePage from "./pages/profilePage"; 
+import ProfilePage from "./pages/profilePage";
 
 import MyVenuesPage from "./pages/myVenues";
-import CreateEditVenuePage from "./pages/createEditVenuepage"; 
+import CreateEditVenuePage from "./pages/createEditVenuepage";
 
 import ContactPage from "./pages/contactPage";
 import PrivacyPolicyPage from "./pages/privacyPolicy";
 
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import FaqPage from "./pages/faqPage";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,14 +77,21 @@ function App() {
             }
           />
           <Route
-  path="/privacy"
-  element={
-    <main className="pt-6 max-w-7xl mx-auto px-4">
-      <PrivacyPolicyPage />
-    </main>
-  }
-/>
-
+            path="/privacy"
+            element={
+              <main className="pt-6 max-w-7xl mx-auto px-4">
+                <PrivacyPolicyPage />
+              </main>
+            }
+          />
+          <Route
+            path="/faq"
+            element={
+              <main className="pt-6 max-w-7xl mx-auto px-4">
+                <FaqPage />
+              </main>
+            }
+          />
 
           {/* My Bookings */}
           <Route
