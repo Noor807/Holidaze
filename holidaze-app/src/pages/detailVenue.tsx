@@ -165,13 +165,13 @@ const DetailedVenuePage = () => {
             />
           )
         ) : (
-          <div className="p-6 bg-gray-100 rounded-lg shadow space-y-4">
-            <p className="text-gray-800">Log in or register to book this venue</p>
+          <div className="p-6 bg-emerald-100 rounded-lg shadow space-y-4">
+            <h3 className="text-gray-800 text-xl font-semibold">Log in or register to book this venue</h3>
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               <Link
                 to="/login"
                 aria-label="Log in to book this venue"
-                className="flex-1 px-4 py-2 border border-black text-black rounded hover:bg-gray-400 text-center"
+                className="flex-1 px-4 py-2 border border-black bg-white text-black rounded hover:bg-gray-300 text-center"
               >
                 Log in
               </Link>
