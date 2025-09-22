@@ -45,7 +45,7 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
   return (
     <>
       {/* Navbar */}
-      <nav className="w-full flex items-center justify-between px-4 md:px-6 py-3 bg-gray-900 shadow-md sticky top-0 !z-50">
+      <nav className="w-full flex items-center justify-between px-4 md:px-6 py-3 bg-gray-900 shadow-md sticky top-0 !z-[999]">
         {/* Left: Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <img src={Logo} alt="Holidaze Logo" className="h-8 w-auto" />
