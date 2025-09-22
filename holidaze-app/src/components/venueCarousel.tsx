@@ -47,7 +47,7 @@ const VenueCarousel = ({ venues }: Props) => {
     responsive: [
       { breakpoint: 1536, settings: { slidesToShow: 3 } }, // xl screens
       { breakpoint: 1024, settings: { slidesToShow: 2 } }, // lg
-      { breakpoint: 768, settings: { slidesToShow: 1 } },  // sm
+      { breakpoint: 768, settings: { slidesToShow: 2 } },  // sm
       { breakpoint: 640, settings: { slidesToShow: 1 } },  
       { breakpoint: 375, settings: { slidesToShow: 1 } },  
 

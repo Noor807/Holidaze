@@ -26,7 +26,7 @@ const Header = () => {
 
   return (
     <header
-      className="relative bg-cover bg-center h-[600px] transition-all duration-1000 ease-in-out"
+      className="relative  bg-cover bg-center h-[600px] transition-all duration-1000 ease-in-out"
       style={{ backgroundImage: `url(${images[currentImage]})` }}
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4 bg-black/30">

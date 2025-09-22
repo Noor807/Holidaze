@@ -12,22 +12,22 @@ L.Icon.Default.mergeOptions({
 });
 
 interface VenueMapProps {
-  lat?: number;          // optional
-  lng?: number;          // optional
+  lat?: number;          
+  lng?: number;          
   venueName?: string;
-  height?: string;       // optional
+  height?: string;       
 }
 
-const DEFAULT_POSITION = { lat: 51.505, lng: -0.09 }; // fallback: London
+const DEFAULT_POSITION = { lat: 51.505, lng: -0.09 }; 
 
-const VenueMap = ({ lat, lng, venueName, height = "200px" }: VenueMapProps) => {
+const VenueMap = ({ lat, lng, venueName, height = "500px" }: VenueMapProps) => {
   const position = { lat: lat ?? DEFAULT_POSITION.lat, lng: lng ?? DEFAULT_POSITION.lng };
 
   return (
-    <div className="w-full rounded-lg overflow-hidden shadow-md" style={{ height }}>
+    <div className="w-full leaflet-map-container rounded-lg !z-10 overflow-hidden shadow-md" style={{ height }}>
       <MapContainer
         center={[position.lat, position.lng]}
-        zoom={lat && lng ? 14 : 2} // zoom out if default
+        zoom={lat && lng ? 14 : 2} 
         scrollWheelZoom={false}
         style={{ width: "100%", height: "100%" }}
       >
