@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
@@ -17,17 +17,22 @@ import type { Venue } from "../../types/venue";
 
 const DEFAULT_MAP_COORDS = { lat: 51.505, lng: -0.09 };
 
-const DetailedVenuePage = () => {
+const DetailedVenuePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const { user } = useAuth();
-  const isLoggedIn = Boolean(user);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
+  const { user } = useAuth();
+
+  const isLoggedIn = useMemo(() => Boolean(user), [user]);
+  const isOwner = useMemo(() => user?.name === venue?.owner?.name, [user, venue]);
 
   useEffect(() => {
-    async function fetchVenue() {
+    if (!id) return;
+
+    const fetchVenue = async () => {
+      setLoading(true);
       try {
         const res = await fetch(
           `https://v2.api.noroff.dev/holidaze/venues/${id}?_bookings=true&_owner=true`
@@ -37,7 +42,7 @@ const DetailedVenuePage = () => {
 
         if (json.data.bookings) {
           const dates: Date[] = [];
-          json.data.bookings.forEach((b: any) => {
+          json.data.bookings.forEach((b: { dateFrom: string; dateTo: string }) => {
             let current = new Date(b.dateFrom);
             const end = new Date(b.dateTo);
             while (current <= end) {
@@ -47,28 +52,30 @@ const DetailedVenuePage = () => {
           });
           setUnavailableDates(dates);
         }
-      } catch (err) {
+      } catch (err: any) {
         setError("Failed to load venue details");
         toast.error("Failed to load venue details");
       } finally {
         setLoading(false);
       }
-    }
-    if (id) fetchVenue();
+    };
+
+    fetchVenue();
   }, [id]);
 
-  if (loading) return <p className="text-center mt-10">Loading venue...</p>;
+  if (loading)
+    return <p className="text-center mt-10">Loading venue...</p>;
+
   if (error || !venue)
     return (
-      <p className="text-center text-red-600 mt-10">
-        {error || "Venue not found"}
-      </p>
+      <p className="text-center text-red-600 mt-10">{error || "Venue not found"}</p>
     );
 
-  const isOwner = user?.name === venue?.owner?.name;
-
   const renderStars = (rating: number) => (
-    <div className="flex space-x-1 mt-1 text-sm" aria-label={`Rating: ${rating} out of 5 stars`}>
+    <div
+      className="flex space-x-1 mt-1 text-sm"
+      aria-label={`Rating: ${rating} out of 5 stars`}
+    >
       {Array.from({ length: 5 }, (_, i) =>
         i < Math.round(rating) ? (
           <FaStar key={i} className="text-yellow-400" aria-hidden="true" />
@@ -165,7 +172,9 @@ const DetailedVenuePage = () => {
           )
         ) : (
           <div className="p-6 bg-emerald-100 rounded-lg shadow space-y-4">
-            <h3 className="text-gray-800 text-xl font-semibold">Log in or register to book this venue</h3>
+            <h3 className="text-gray-800 text-xl font-semibold">
+              Log in or register to book this venue
+            </h3>
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               <Link
                 to="/login"
@@ -224,7 +233,9 @@ const DetailedVenuePage = () => {
 
       {/* Map */}
       <section aria-label="Venue Location" className="space-y-2">
-        <h3 className="text-lg sm:text-xl font-semibold text-gray-700">Location</h3>
+        <h3 className="text-lg sm:text-xl font-semibold text-gray-700">
+          Location
+        </h3>
         <div className="w-full h-96 sm:h-[32rem] lg:h-[36rem] rounded-lg overflow-hidden">
           <VenueMap lat={mapLat} lng={mapLng} venueName={venue.name} />
         </div>
