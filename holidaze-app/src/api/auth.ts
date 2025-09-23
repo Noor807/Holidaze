@@ -73,7 +73,7 @@ export const loginUser = async (data: LoginData): Promise<AuthData> => {
       ? { url: payload.banner, alt: "Banner" }
       : null,
     bio: payload.bio ?? "",
-    role: payload.role ?? "user", // ✅ required field
+    role: payload.role ?? "user", 
   };
 };
 

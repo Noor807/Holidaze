@@ -50,20 +50,20 @@ const ProfilePage = () => {
       </div>
 
       {/* Avatar & Info */}
-      <div className="relative -mt-20 flex flex-col sm:flex-row sm:items-end px-4 sm:px-6 gap-4">
+      <div className="relative -mt-14 flex flex-col sm:flex-row sm:items-end px-4 sm:px-6 gap-4">
         <img
           src={user.avatar?.url ?? defaultAvatar}
           alt="Avatar"
           className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow object-cover mx-auto sm:mx-0"
         />
-        <div className="flex-1 text-center sm:text-left">
+        <div className="flex-1 text-center mt-3 sm:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold">{user.name}</h1>
           <p className="text-gray-600 mt-1 text-sm sm:text-base">
             {user.bio ?? "No bio yet..."}
           </p>
         </div>
         <button
-          className="self-center sm:self-end px-4 py-2 bg-gray-200 text-black font-semibold rounded shadow hover:bg-blue-700 hover:text-white flex items-center gap-2 transition"
+          className="self-center border-1 sm:self-end px-4 py-2 bg-gray-200 text-black font-semibold rounded shadow hover:bg-green-600 hover:text-white flex items-center gap-2 transition"
           onClick={() => setIsEditing(true)}
         >
           <PencilIcon className="w-4 h-4" /> Edit

@@ -8,10 +8,9 @@ import { Search } from "lucide-react";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
-  onCreateVenue?: () => void;
 }
 
-const Navbar = ({ onCreateVenue }: NavbarProps) => {
+const Navbar = ({ }: NavbarProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,13 +81,13 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2  text-white hover:shadow-md transition font-medium"
+                className="px-4 py-2 text-white hover:shadow-md transition font-medium"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2  rounded-full border  text-white hover:opacity-90 transition font-medium"
+                className="px-4 py-2 rounded-full border text-white hover:opacity-90 transition font-medium"
               >
                 Host
               </Link>
@@ -102,9 +101,9 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
                 <img
                   src={avatarUrl}
                   alt="Avatar"
-                  className="w-10 h-10 rounded-full border border-gray-300 object-cover"
+                  className="w-10 h-10 rounded-full border border-gray-300 object-cover cursor-pointer"
                 />
-                <span className="hidden sm:inline text-white">{user.name}</span>
+                <span className="hidden sm:inline text-white cursor-pointer">{user.name}</span>
               </button>
 
               {dropdownOpen && (
@@ -126,17 +125,14 @@ const Navbar = ({ onCreateVenue }: NavbarProps) => {
                       >
                         My Venues
                       </Link>
-                      {onCreateVenue && (
-                        <button
-                          onClick={() => {
-                            onCreateVenue();
-                            setDropdownOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-blue-600"
-                        >
-                          Create Venue
-                        </button>
-                      )}
+
+                      <Link
+                        to={`/my-venues/new`}
+                        className=" text-green-700 font-medium hover:bg-green-200 transition text-center mx-2 my-1"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        + Create Venue
+                      </Link>
                     </>
                   )}
 
