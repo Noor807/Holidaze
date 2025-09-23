@@ -1,5 +1,4 @@
-// src/pages/MyVenues.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getMyVenues } from "../../api/venues";
 import type { Venue } from "../../types/venue";
 import { useAuth } from "../../context/authContext";
@@ -8,19 +7,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import DeleteVenueButton from "../../components/deleteVenueModal";
 import VenueCardSkeleton from "../../components/venueCardSkeleton";
 
-const MyVenuesPage = () => {
+const MyVenuesPage: React.FC = () => {
   const { user } = useAuth();
   const token = user?.accessToken;
   const navigate = useNavigate();
   const location = useLocation();
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [loadingVenues, setLoadingVenues] = useState(true);
+  const [loadingVenues, setLoadingVenues] = useState<boolean>(true);
 
   const defaultImage = "https://via.placeholder.com/300?text=No+Image";
 
   // Handle updated venue from Create/Edit page
   useEffect(() => {
-    const updatedVenue = (location.state as any)?.updatedVenue as Venue;
+    const updatedVenue = (location.state as { updatedVenue?: Venue })?.updatedVenue;
     if (updatedVenue) {
       setVenues((prev) => {
         const exists = prev.find((v) => v.id === updatedVenue.id);
@@ -32,22 +31,24 @@ const MyVenuesPage = () => {
     }
   }, [location.state, navigate]);
 
-  const fetchVenues = async () => {
+  // Fetch venues
+  const fetchVenues = useCallback(async () => {
     if (!token || !user) return;
     setLoadingVenues(true);
     try {
       const data = await getMyVenues(user.name, token);
       setVenues(data);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to fetch venues");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to fetch venues";
+      toast.error(message);
     } finally {
       setLoadingVenues(false);
     }
-  };
+  }, [token, user]);
 
   useEffect(() => {
     fetchVenues();
-  }, [user?.name, token]);
+  }, [fetchVenues]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -118,9 +119,7 @@ const MyVenuesPage = () => {
                     <DeleteVenueButton
                       id={venue.id}
                       onDeleted={() =>
-                        setVenues((prev) =>
-                          prev.filter((v) => v.id !== venue.id)
-                        )
+                        setVenues((prev) => prev.filter((v) => v.id !== venue.id))
                       }
                       className="h-6 w-16 bg-gray-300 text-white text-sm rounded hover:bg-gray-600 transition"
                     />
