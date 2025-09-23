@@ -1,26 +1,21 @@
-// src/api/profiles.ts
 import { API_BASE } from "../constants/apiEndpoints";
 
+// -------------------------
+// Types
+// -------------------------
 export interface Media {
   url: string;
   alt?: string;
 }
 
-export interface ProfileData {
-  bio?: string;
-  avatar?: Media;
-  banner?: Media;
-  venueManager?: boolean;
-}
-
 export interface ProfileResponse {
+  id: string;
   name: string;
   email: string;
   avatar?: Media | null;
   banner?: Media | null;
   bio?: string;
   venueManager: boolean;
-  id: string;
 }
 
 export interface UserProfileUpdate {
@@ -30,6 +25,9 @@ export interface UserProfileUpdate {
   venueManager?: boolean;
 }
 
+// -------------------------
+// Update user profile
+// -------------------------
 export const updateUserProfile = async (
   username: string,
   token: string,
@@ -40,28 +38,29 @@ export const updateUserProfile = async (
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-        "X-Noroff-API-Key": import.meta.env.VITE_API_KEY, 
+        Authorization: `Bearer ${token}`,
+        "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
       },
-      
       body: JSON.stringify(data),
     });
 
     const json = await res.json().catch(() => null);
 
     if (!res.ok) {
-      console.error("Update failed:", json || res.statusText);
-      throw new Error(
-        (json?.errors?.[0]?.message as string) || `Failed to update profile: ${res.status}`
-      );
+      const message =
+        json?.errors?.[0]?.message ||
+        res.statusText ||
+        "Failed to update profile";
+      throw new Error(message);
     }
 
-    return json.data; // API returns updated profile in `data` object
-  } catch (err) {
-    console.error("Network error:", err);
-    throw new Error(err instanceof Error ? err.message : "Unknown error");
+    return json?.data as ProfileResponse;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unknown network error";
+    throw new Error(message);
   }
 };
 
-// Alias to keep importing UserProfile if needed
+// Alias for consistency
 export type UserProfile = ProfileResponse;
