@@ -48,7 +48,7 @@ export interface Venue {
   updated: string;
   bookings?: Booking[];
 
-  // All required fields
+  // Required fields
   name: string;
   description: string;
   price: number;

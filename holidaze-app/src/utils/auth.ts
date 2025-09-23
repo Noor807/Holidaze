@@ -1,5 +1,4 @@
-// src/utils/auth.ts
-export const logoutUser = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-  };
+export const logoutUser = (): void => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("user");
+};
