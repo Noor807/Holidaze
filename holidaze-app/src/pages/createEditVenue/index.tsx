@@ -1,7 +1,7 @@
 // src/pages/createEditVenuepage.tsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import VenueForm from "../components/venueForm";
+import VenueForm from "../../components/venueForm";
 import { getVenueById } from "../api/venues";
 import type { Venue } from "../types/venue";
 import { toast } from "react-toastify";

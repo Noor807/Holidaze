@@ -1,10 +1,10 @@
 // src/pages/ProfilePage.tsx
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/authContext";
-import { getUserBookingsWithVenue, type BookingWithVenue } from "../api/bookings";
+import { useAuth } from "../../context/authContext";
+import { getUserBookingsWithVenue, type BookingWithVenue } from "../../api/bookings";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import ProfileForm from "../components/profileForm";
+import ProfileForm from "../../components/profileForm";
 import { PencilIcon } from "lucide-react";
 
 const ProfilePage = () => {

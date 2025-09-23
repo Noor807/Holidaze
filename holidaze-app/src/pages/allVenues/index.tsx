@@ -1,10 +1,10 @@
 // src/pages/allVenues.tsx
 import { useState, useEffect } from "react";
-import VenueCard from "../components/venueCard";
-import VenueCardSkeleton from "../components/venueCardSkeleton";
-import { fetchVenues } from "../api/fetchVenues";
-import type { Venue } from "../types/venue";
-import Pagination from "../components/pagination";
+import VenueCard from "../../components/venueCard";
+import VenueCardSkeleton from "../../components/venueCardSkeleton";
+import { fetchVenues } from "../../api/fetchVenues";
+import type { Venue } from "../../types/venue";
+import Pagination from "../../components/pagination";
 
 interface AllVenuesProps {
   searchTerm?: string;

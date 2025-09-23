@@ -1,12 +1,12 @@
 // src/pages/MyVenues.tsx
 import { useEffect, useState } from "react";
-import { getMyVenues } from "../api/venues";
-import type { Venue } from "../types/venue";
-import { useAuth } from "../context/authContext";
+import { getMyVenues } from "../../api/venues";
+import type { Venue } from "../../types/venue";
+import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import DeleteVenueButton from "../components/deleteVenueModal";
-import VenueCardSkeleton from "../components/venueCardSkeleton";
+import DeleteVenueButton from "../../components/deleteVenueModal";
+import VenueCardSkeleton from "../../components/venueCardSkeleton";
 
 const MyVenuesPage = () => {
   const { user } = useAuth();

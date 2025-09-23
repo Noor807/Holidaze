@@ -15,14 +15,14 @@ import MyBookings from "./pages/myBookings";
 import ProfilePage from "./pages/profilePage";
 
 import MyVenuesPage from "./pages/myVenues";
-import CreateEditVenuePage from "./pages/createEditVenuepage";
+import CreateEditVenuePage from "./pages/createEditVenuePage";
 
 import ContactPage from "./pages/contactPage";
 import PrivacyPolicyPage from "./pages/privacyPolicy";
+import FaqPage from "./pages/faqPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import FaqPage from "./pages/faqPage";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,6 +76,8 @@ function App() {
               </main>
             }
           />
+
+          {/* Privacy Policy */}
           <Route
             path="/privacy"
             element={
@@ -84,6 +86,8 @@ function App() {
               </main>
             }
           />
+
+          {/* FAQ */}
           <Route
             path="/faq"
             element={
