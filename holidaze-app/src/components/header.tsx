@@ -1,18 +1,18 @@
-// src/components/Header.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./searchBar";
 
-const Header = () => {
-  const images = [
-    "https://media.cntraveller.com/photos/611befdb69410e829d87e766/16:9/w_3200,h_1800,c_limit/rome.jpg",
-    "https://cdn.pixabay.com/photo/2015/03/19/14/30/las-vegas-680953_1280.jpg",
-    "https://cdn.pixabay.com/photo/2020/06/14/10/58/london-5297395_1280.jpg",
-  ];
+const images = [
+  "https://media.cntraveller.com/photos/611befdb69410e829d87e766/16:9/w_3200,h_1800,c_limit/rome.jpg",
+  "https://cdn.pixabay.com/photo/2015/03/19/14/30/las-vegas-680953_1280.jpg",
+  "https://cdn.pixabay.com/photo/2020/06/14/10/58/london-5297395_1280.jpg",
+];
 
+const Header: React.FC = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const navigate = useNavigate();
 
+  // Rotate header images every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
@@ -20,28 +20,28 @@ const Header = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleShowAll = () => {
-    navigate("/venues");
-  };
+  const handleShowAll = () => navigate("/venues");
 
   return (
     <header
-      className="relative  bg-cover bg-center h-[600px] transition-all duration-1000 ease-in-out"
+      className="relative bg-cover bg-center h-[600px] transition-all duration-1000 ease-in-out"
       style={{ backgroundImage: `url(${images[currentImage]})` }}
+      role="banner"
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4 bg-black/30">
-        <h1 className="text-4xl font-bold mb-6 drop-shadow-lg">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
+        <h1 className="text-4xl font-bold mb-6 drop-shadow-lg text-white">
           Where do you want to go?
         </h1>
 
-        {/* Use SearchBar here */}
-        <div className="w-full max-w-md text-gray-600">
+        {/* Search bar */}
+        <div className="w-full max-w-md">
           <SearchBar />
         </div>
 
+        {/* Call-to-action */}
         <button
           onClick={handleShowAll}
-          className="mt-6 px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500 transition font-semibold"
+          className="mt-6 px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500 transition font-semibold text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
         >
           All Venues
         </button>
