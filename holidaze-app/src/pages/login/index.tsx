@@ -1,11 +1,10 @@
-// src/pages/LoginPage.tsx
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { loginUser } from "../api/auth";
-import { API_PROFILES } from "../constants/apiEndpoints";
-import { useAuth } from "../context/authContext";
-import { getAuthHeaders } from "../api/api";
+import { loginUser } from "../../api/auth";
+import { API_PROFILES } from "../../constants/apiEndpoints";
+import { useAuth } from "../../context/authContext";
+import { getAuthHeaders } from "../../api/api";
 
 // Type for location state
 interface LocationState {

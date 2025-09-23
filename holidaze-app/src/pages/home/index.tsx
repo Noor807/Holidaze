@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import VenueCarousel from "../components/venueCarousel";
-import VenueCardSkeleton from "../components/venueCardSkeleton";
-import { fetchVenues } from "../api/fetchVenues";
-import type { Venue } from "../types/venue";
+import VenueCarousel from "../../components/venueCarousel";
+import VenueCardSkeleton from "../../components/venueCardSkeleton";
+import { fetchVenues } from "../../api/fetchVenues";
+import type { Venue } from "../../types/venue";
 
 const Home = () => {
   const [venues, setVenues] = useState<Venue[]>([]);

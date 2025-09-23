@@ -1,4 +1,3 @@
-// src/pages/faqPage.tsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 

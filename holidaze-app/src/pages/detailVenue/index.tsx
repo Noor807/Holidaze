@@ -10,10 +10,10 @@ import {
   FaRegStar,
   FaUserFriends,
 } from "react-icons/fa";
-import BookingForm from "../components/bookingForm";
-import VenueMap from "../components/venueMap";
-import { useAuth } from "../context/authContext";
-import type { Venue } from "../types/venue";
+import BookingForm from "../../components/bookingForm";
+import VenueMap from "../../components/venueMap";
+import { useAuth } from "../../context/authContext";
+import type { Venue } from "../../types/venue";
 
 const DEFAULT_MAP_COORDS = { lat: 51.505, lng: -0.09 };
 

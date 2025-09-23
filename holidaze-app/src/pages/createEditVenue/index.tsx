@@ -1,4 +1,3 @@
-// src/pages/createEditVenuepage.tsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VenueForm from "../../components/venueForm";
@@ -7,15 +6,15 @@ import type { Venue } from "../../types/venue";
 import { toast } from "react-toastify";
 
 const CreateEditVenuePage = () => {
-  const { id } = useParams<{ id: string }>(); // id exists if editing
+  const { id } = useParams<{ id: string }>(); 
   const navigate = useNavigate();
 
-  const [venue, setVenue] = useState<Venue | null>(null); // prefill for edit
-  const [loading, setLoading] = useState(!!id); // only loading if editing
+  const [venue, setVenue] = useState<Venue | null>(null); 
+  const [loading, setLoading] = useState(!!id); 
 
-  // Fetch existing venue data if editing
+  
   useEffect(() => {
-    if (!id) return; // skip if creating
+    if (!id) return; 
 
     const fetchVenue = async () => {
       setLoading(true);
