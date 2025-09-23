@@ -1,5 +1,3 @@
-// src/pages/PrivacyPolicyPage.tsx
-
 const PrivacyPolicyPage = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12 bg-gradient-to-r from-green-100 to-blue-100 ">
