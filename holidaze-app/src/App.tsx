@@ -15,11 +15,11 @@ import MyBookings from "./pages/myBookings";
 import ProfilePage from "./pages/profilePage";
 
 import MyVenuesPage from "./pages/myVenues";
-import CreateEditVenuePage from "./pages/createEditVenuePage";
+import CreateEditVenuePage from "./pages/createEditVenue";
 
 import ContactPage from "./pages/contactPage";
 import PrivacyPolicyPage from "./pages/privacyPolicy";
-import FaqPage from "./pages/faqPage";
+import FaqPage from "./pages/fqaPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
