@@ -1,14 +1,15 @@
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 
-const useLogout = () => {
+const useLogout = (): (() => void) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();               // Clear auth
-    navigate("/login");     // Redirect to login page
-  };
+  const handleLogout = useCallback(() => {
+    logout();             
+    navigate("/login");   
+  }, [logout, navigate]);
 
   return handleLogout;
 };
