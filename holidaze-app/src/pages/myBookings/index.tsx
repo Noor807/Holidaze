@@ -1,19 +1,15 @@
-// src/pages/MyBookingsPage.tsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
-import {
-  getUserBookingsWithVenue,
-  type BookingWithVenue,
-} from "../../api/bookings";
+import { getUserBookingsWithVenue, type BookingWithVenue } from "../../api/bookings";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import VenueCardSkeleton from "../../components/venueCardSkeleton";
 
-const MyBookingsPage = () => {
+const MyBookingsPage: React.FC = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<BookingWithVenue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [sortLatest, setSortLatest] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [sortLatest, setSortLatest] = useState<boolean>(true);
 
   const defaultImage = "https://via.placeholder.com/300?text=No+Image";
 
@@ -25,14 +21,16 @@ const MyBookingsPage = () => {
       setLoading(true);
       try {
         const data = await getUserBookingsWithVenue(user.name, user.accessToken);
+
+        // Sort by latest by default
         const sorted = [...data].sort(
-          (a, b) =>
-            new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
+          (a, b) => new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
         );
         setBookings(sorted);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to fetch bookings";
         console.error(err);
-        toast.error(err.message || "Failed to fetch bookings");
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -45,11 +43,10 @@ const MyBookingsPage = () => {
   const sortBookings = (latest: boolean) => {
     setSortLatest(latest);
     setBookings((prev) =>
-      [...prev].sort(
-        (a, b) =>
-          latest
-            ? new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
-            : new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime()
+      [...prev].sort((a, b) =>
+        latest
+          ? new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
+          : new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime()
       )
     );
   };
@@ -67,7 +64,6 @@ const MyBookingsPage = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Bookings</h1>
-
         <div className="flex gap-3">
           <button
             onClick={() => sortBookings(true)}
@@ -100,13 +96,14 @@ const MyBookingsPage = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {bookings.map((booking) => {
-            const imageUrl = booking.venue?.media?.[0]?.url || defaultImage;
-            const imageAlt = booking.venue?.media?.[0]?.alt || booking.venue?.name || "Venue";
+            const venue = booking.venue;
+            const imageUrl = venue?.media?.[0]?.url || defaultImage;
+            const imageAlt = venue?.media?.[0]?.alt || venue?.name || "Venue";
 
             return (
               <Link
                 key={booking.id}
-                to={`/venues/${booking.venue?.id}`}
+                to={`/venues/${venue?.id}`}
                 className="bg-white rounded shadow-md overflow-hidden block"
               >
                 {/* Image */}
@@ -124,23 +121,21 @@ const MyBookingsPage = () => {
                 {/* Price badge */}
                 <div className="px-4 pt-2">
                   <p className="text-sm font-bold text-white bg-black/70 px-3 py-1 rounded-lg inline-block">
-                    {booking.venue?.price
-                      ? `$${parseFloat(booking.venue.price).toLocaleString()} / night`
+                    {venue?.price
+                      ? `$${parseFloat(venue.price).toLocaleString()} / night`
                       : "N/A"}
                   </p>
                 </div>
 
                 {/* Booking details */}
                 <div className="p-4">
-                  <h2 className="text-xl font-semibold mb-1">
-                    {booking.venue?.name || "Unknown Venue"}
-                  </h2>
+                  <h2 className="text-xl font-semibold mb-1">{venue?.name || "Unknown Venue"}</h2>
                   <p className="text-gray-600">
                     <span className="font-medium">Check In:</span>{" "}
                     {new Date(booking.dateFrom).toLocaleDateString()}
                   </p>
                   <p className="text-gray-600">
-                    <span className="font-medium">Check out:</span>{" "}
+                    <span className="font-medium">Check Out:</span>{" "}
                     {new Date(booking.dateTo).toLocaleDateString()}
                   </p>
                   <p className="text-gray-600">Guests: {booking.guests}</p>
