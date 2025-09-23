@@ -2,6 +2,7 @@ import Slider from "react-slick";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import type { Venue } from "../types/venue";
 import VenueCard from "./venueCard";
+import VenueCardSkeleton from "./venueCardSkeleton";
 
 // Custom Left Arrow
 const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
@@ -31,9 +32,11 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
 
 interface Props {
   venues: Venue[];
+  loading?: boolean;
+  skeletonCount?: number; // allows customizing placeholder count
 }
 
-const VenueCarousel = ({ venues }: Props) => {
+const VenueCarousel = ({ venues, loading = false, skeletonCount = 4 }: Props) => {
   const settings = {
     dots: false,
     infinite: true,
@@ -45,21 +48,30 @@ const VenueCarousel = ({ venues }: Props) => {
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
-      { breakpoint: 1536, settings: { slidesToShow: 3 } }, // xl screens
+      { breakpoint: 1536, settings: { slidesToShow: 3 } }, // xl
       { breakpoint: 1024, settings: { slidesToShow: 2 } }, // lg
       { breakpoint: 768, settings: { slidesToShow: 2 } },  // sm
-      { breakpoint: 640, settings: { slidesToShow: 1 } },  
-      { breakpoint: 375, settings: { slidesToShow: 1 } },  
-
+      { breakpoint: 640, settings: { slidesToShow: 1 } },  // mobile
     ],
   };
 
+  const items = loading
+    ? Array.from({ length: skeletonCount })
+    : venues;
+
   return (
-    <div className="relative px-2 sm:px-4 lg:px-6"> 
+    <div className="relative px-2 sm:px-4 lg:px-6">
       <Slider {...settings}>
-        {venues.map((venue) => (
-          <div key={venue.id} className="px-1 sm:px-2">
-            <VenueCard venue={venue} />
+        {items.map((item, index) => (
+          <div
+            key={loading ? `skeleton-${index}` : (item as Venue).id}
+            className="px-1 sm:px-2"
+          >
+            {loading ? (
+              <VenueCardSkeleton />
+            ) : (
+              <VenueCard venue={item as Venue} />
+            )}
           </div>
         ))}
       </Slider>
