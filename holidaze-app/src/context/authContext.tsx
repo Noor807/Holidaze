@@ -1,5 +1,4 @@
-// src/context/authContext.tsx
-import { createContext, useContext, useState, type ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import { API_BASE } from "../constants/apiEndpoints";
 
 export interface Media {
@@ -28,36 +27,37 @@ interface AuthContextProps {
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUserState] = useState<AuthData | null>(() => {
+const getStoredUser = (): AuthData | null => {
+  try {
     const stored = localStorage.getItem("auth");
-    if (!stored) return null;
-    try {
-      return JSON.parse(stored);
-    } catch {
-      return null;
-    }
-  });
+    return stored ? (JSON.parse(stored) as AuthData) : null;
+  } catch {
+    return null;
+  }
+};
 
-  const setUser = (data: AuthData) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUserState] = useState<AuthData | null>(getStoredUser);
+
+  const setUser = useCallback((data: AuthData) => {
     setUserState(data);
     localStorage.setItem("auth", JSON.stringify(data));
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUserState(null);
     localStorage.removeItem("auth");
-  };
+  }, []);
 
-  const login = async (data: AuthData) => {
-    // save basic login first
+  const login = useCallback(async (data: AuthData) => {
+    // Set basic login info immediately
     setUser(data);
 
     try {
       const res = await fetch(`${API_BASE}/holidaze/profiles/${data.name}`, {
         headers: {
           Authorization: `Bearer ${data.accessToken}`,
-          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY, // ✅ correct header
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
         },
       });
 
@@ -66,18 +66,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const json = await res.json();
       const profileData = json.data;
 
-      // merge login data with full profile
       setUser({
         ...data,
-        bio: profileData.bio ?? data.bio,
-        avatar: profileData.avatar ?? data.avatar ?? null,
-        banner: profileData.banner ?? data.banner ?? null,
-        venueManager: profileData.venueManager ?? data.venueManager,
+        bio: profileData?.bio ?? data.bio,
+        avatar: profileData?.avatar ?? data.avatar ?? null,
+        banner: profileData?.banner ?? data.banner ?? null,
+        venueManager: profileData?.venueManager ?? data.venueManager,
       });
     } catch (err) {
       console.warn("Could not fetch full profile, using basic login info", err);
     }
-  };
+  }, [setUser]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, setUser }}>
