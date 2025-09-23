@@ -1,6 +1,5 @@
-// src/api/bookings.ts
-import { API_BOOKINGS, API_PROFILES, } from "../constants/apiEndpoints";
-import { getAuthHeaders } from "./api";
+import { API_BOOKINGS, API_PROFILES } from "../constants/apiEndpoints";
+import { getAuthHeaders } from "../api/api";
 
 // -------------------------
 // Types
@@ -13,9 +12,9 @@ export interface BookingPayload {
 }
 
 export interface Venue {
-  price: string;
   id: string;
   name: string;
+  price: string;
   media: { url: string; alt?: string }[];
 }
 
@@ -31,41 +30,50 @@ export interface BookingWithVenue {
 }
 
 // -------------------------
+// Helpers
+// -------------------------
+const handleResponse = async (res: Response) => {
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.errors?.[0]?.message || "API request failed");
+  }
+  return json;
+};
+
+// -------------------------
 // Create a new booking
 // -------------------------
-export const createBooking = async (data: BookingPayload, token: string) => {
+export const createBooking = async (
+  data: BookingPayload,
+  token: string
+) => {
   if (!token) throw new Error("No API token provided");
 
-  const response = await fetch(API_BOOKINGS, {
+  const res = await fetch(API_BOOKINGS, {
     method: "POST",
     headers: getAuthHeaders(token),
     body: JSON.stringify(data),
   });
 
-  const json = await response.json();
-
-  if (!response.ok) throw new Error(json.errors?.[0]?.message || "Booking failed");
-
-  return json;
+  return handleResponse(res);
 };
 
 // -------------------------
 // Get all bookings of a user WITH venue info
 // -------------------------
-// src/api/bookings.ts
 export const getUserBookingsWithVenue = async (
   username: string,
   token: string
 ): Promise<BookingWithVenue[]> => {
+  if (!token) throw new Error("No API token provided");
+
   const res = await fetch(`${API_PROFILES}/${username}?_bookings=true`, {
     headers: getAuthHeaders(token),
   });
 
-  const json = await res.json();
+  const json = await handleResponse(res);
 
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || "Failed to fetch bookings");
-
-  return json.data.bookings.map((b: any) => ({
+  return (json.data.bookings ?? []).map((b: any) => ({
     id: b.id,
     dateFrom: b.dateFrom,
     dateTo: b.dateTo,
@@ -77,10 +85,9 @@ export const getUserBookingsWithVenue = async (
           id: b.venue.id,
           name: b.venue.name,
           media: b.venue.media || [],
-          price: b.venue.price ?? "0", // <-- include price
+          price: b.venue.price?.toString() ?? "0",
         }
       : { id: "", name: "Unknown Venue", media: [], price: "0" },
     userAvatar: json.data.avatar?.url || "",
   }));
 };
-
