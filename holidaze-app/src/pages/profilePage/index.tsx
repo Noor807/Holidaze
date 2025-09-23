@@ -1,4 +1,3 @@
-// src/pages/ProfilePage.tsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
 import { getUserBookingsWithVenue, type BookingWithVenue } from "../../api/bookings";
@@ -20,11 +19,12 @@ const ProfilePage = () => {
     if (!user) return;
 
     const fetchBookings = async () => {
+      setLoadingBookings(true);
       try {
-        setLoadingBookings(true);
         const data = await getUserBookingsWithVenue(user.name, user.accessToken);
         setBookings(data);
-      } catch {
+      } catch (err) {
+        console.error(err);
         toast.error("Failed to load bookings");
       } finally {
         setLoadingBookings(false);
@@ -114,24 +114,29 @@ const ProfilePage = () => {
           <p className="text-center">No upcoming bookings.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {bookings.map((b) => (
-              <Link
-                key={b.id}
-                to={`/venues/${b.venue?.id}`}
-                className="bg-white rounded-lg shadow hover:shadow-md transition p-4 flex flex-col"
-              >
-                <img
-                  src={b.venue?.media?.[0]?.url ?? defaultBanner}
-                  alt={b.venue?.name ?? ""}
-                  className="w-full h-40 object-cover rounded mb-2"
-                />
-                <h4 className="font-semibold truncate">{b.venue?.name}</h4>
-                <p className="text-gray-500 text-sm">
-                  {new Date(b.dateFrom).toLocaleDateString()} -{" "}
-                  {new Date(b.dateTo).toLocaleDateString()}
-                </p>
-              </Link>
-            ))}
+            {bookings.map((booking) => {
+              const venueImage = booking.venue?.media?.[0]?.url ?? defaultBanner;
+              const venueName = booking.venue?.name ?? "Venue";
+
+              return (
+                <Link
+                  key={booking.id}
+                  to={`/venues/${booking.venue?.id}`}
+                  className="bg-white rounded-lg shadow hover:shadow-md transition p-4 flex flex-col"
+                >
+                  <img
+                    src={venueImage}
+                    alt={venueName}
+                    className="w-full h-40 object-cover rounded mb-2"
+                  />
+                  <h4 className="font-semibold truncate">{venueName}</h4>
+                  <p className="text-gray-500 text-sm">
+                    {new Date(booking.dateFrom).toLocaleDateString()} -{" "}
+                    {new Date(booking.dateTo).toLocaleDateString()}
+                  </p>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

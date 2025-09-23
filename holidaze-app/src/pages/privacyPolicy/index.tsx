@@ -1,4 +1,6 @@
-const PrivacyPolicyPage = () => {
+const PrivacyPolicyPage: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12 bg-gradient-to-r from-green-100 to-blue-100 ">
       <h1 className="text-3xl font-bold mb-6 text-center">Privacy Policy</h1>
@@ -43,7 +45,7 @@ const PrivacyPolicyPage = () => {
       </p>
 
       <p className="mt-8 text-gray-600 text-sm text-center">
-        &copy; {new Date().getFullYear()} Holidaze. All rights reserved.
+        &copy; {currentYear} Holidaze. All rights reserved.
       </p>
     </div>
   );
