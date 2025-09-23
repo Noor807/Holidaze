@@ -17,6 +17,29 @@ import type { Venue } from "../../types/venue";
 
 const DEFAULT_MAP_COORDS = { lat: 51.505, lng: -0.09 };
 
+const ImagePlaceholder: React.FC<{ size?: "lg" | "sm" }> = ({ size = "lg" }) => (
+  <div
+    className={`flex items-center justify-center bg-gray-100 rounded-lg ${
+      size === "lg" ? "w-full h-64 sm:h-96" : "w-full h-32 sm:h-48"
+    }`}
+  >
+    <svg
+      className={`${size === "lg" ? "w-16 h-16" : "w-12 h-12"} text-gray-500`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 3v18h18V3H3zm2 2h14v14H5V5zm3 3l2.5 3 3-4 3.5 5H8l2-2-2-2z"
+      />
+    </svg>
+  </div>
+);
+
 const DetailedVenuePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -95,28 +118,35 @@ const DetailedVenuePage: React.FC = () => {
       <div className="space-y-4">
         {venue.media && venue.media.length > 0 ? (
           <>
-            <img
-              src={venue.media[0].url}
-              alt={venue.media[0].alt || "Venue image"}
-              className="w-full h-64 sm:h-96 object-cover rounded-lg"
-            />
+            {/* Main Image */}
+            {venue.media[0].url ? (
+              <img
+                src={venue.media[0].url}
+                alt={venue.media[0].alt || "Venue image"}
+                className="w-full h-64 sm:h-96 object-cover rounded-lg"
+              />
+            ) : (
+              <ImagePlaceholder size="lg" />
+            )}
+
+            {/* Gallery Images */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {venue.media.slice(1, 5).map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img.url}
-                  alt={img.alt || `Venue image ${idx + 2}`}
-                  className="w-full h-32 sm:h-48 object-cover rounded-lg"
-                />
-              ))}
+              {venue.media.slice(1, 5).map((img, idx) =>
+                img.url ? (
+                  <img
+                    key={idx}
+                    src={img.url}
+                    alt={img.alt || `Venue image ${idx + 2}`}
+                    className="w-full h-32 sm:h-48 object-cover rounded-lg"
+                  />
+                ) : (
+                  <ImagePlaceholder key={idx} size="sm" />
+                )
+              )}
             </div>
           </>
         ) : (
-          <img
-            src="https://via.placeholder.com/600x400"
-            alt="Placeholder venue image"
-            className="w-full h-64 sm:h-96 object-cover rounded-lg"
-          />
+          <ImagePlaceholder size="lg" />
         )}
       </div>
 

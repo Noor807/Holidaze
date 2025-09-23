@@ -54,7 +54,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
         {/* Desktop Search */}
         {!isHomePage && (
           <div className="hidden md:flex flex-1 justify-center px-4">
-            <div className="w-full max-w-xl">
+            <div className="w-full max-w-xl text-white bg-black/30 ">
               <SearchBar onSearch={onSearch} />
             </div>
           </div>

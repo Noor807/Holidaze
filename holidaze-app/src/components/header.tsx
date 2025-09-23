@@ -28,13 +28,13 @@ const Header: React.FC = () => {
       style={{ backgroundImage: `url(${images[currentImage]})` }}
       role="banner"
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/40">
         <h1 className="text-4xl font-bold mb-6 drop-shadow-lg text-white">
           Where do you want to go?
         </h1>
 
         {/* Search bar */}
-        <div className="w-full max-w-md">
+        <div className="w-full text-white max-w-md bg-black/30 ">
           <SearchBar />
         </div>
 

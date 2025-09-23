@@ -41,7 +41,7 @@ const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
       aria-label={`View details for ${venue.name}`}
     >
       {/* Image */}
-      <div className="relative w-full h-48">
+      <div className="relative w-full h-48 flex items-center justify-center bg-gray-100">
         {venue.media?.[0] ? (
           <img
             src={venue.media[0].url}
@@ -49,9 +49,20 @@ const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="h-full w-full bg-gray-200 flex items-center justify-center text-gray-500">
-            No image available
-          </div>
+          <svg
+            className="w-12 h-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 3v18h18V3H3zm2 2h14v14H5V5zm3 3l2.5 3 3-4 3.5 5H8l2-2-2-2z"
+            />
+          </svg>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/50" />
         <div className="absolute bottom-0 left-0 right-0 px-2 z-10 flex justify-between items-center">
@@ -68,9 +79,7 @@ const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
         <p className="text-green-700 absolute top-4 right-4 flex items-center gap-1 font-semibold">
           {venue.maxGuests} <FaUserFriends />
         </p>
-        <h2 className="text-lg font-semibold mt-5 mb-1 truncate">
-          {venue.name}
-        </h2>
+        <h2 className="text-lg font-semibold mt-5 mb-1 truncate">{venue.name}</h2>
         <p className="text-gray-600 line-clamp-3">{venue.description}</p>
       </div>
 

@@ -3,9 +3,12 @@
 body {
   overflow-y: auto;
   overflow-x: hidden;
-  background: linear-gradient(to right, #f0fdf4, #eff6ff); 
+  background: linear-gradient(to right, #f0fdf4, #eff6ff);
+  font-family: 'Inter', 'Roboto', 'Poppins', 'Nunito', 'Lato', sans-serif; 
   /*background: linear-gradient(to right, #f5f5f5, #e5e7eb, #d1d5db);*/ 
 }
+
+
 
 
 
