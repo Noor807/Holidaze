@@ -17,7 +17,7 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   </div>
 );
 
-// Custom Right Arrow
+
 const NextArrow = ({ onClick }: { onClick?: () => void }) => (
   <div
     className="absolute -right-6 sm:-right-8 md:-right-10 top-1/2 -translate-y-1/2 z-20 
@@ -33,7 +33,7 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
 interface Props {
   venues: Venue[];
   loading?: boolean;
-  skeletonCount?: number; // allows customizing placeholder count
+  skeletonCount?: number; 
 }
 
 const VenueCarousel = ({ venues, loading = false, skeletonCount = 4 }: Props) => {
@@ -41,7 +41,7 @@ const VenueCarousel = ({ venues, loading = false, skeletonCount = 4 }: Props) =>
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 4, // desktop
+    slidesToShow: 4, 
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
@@ -49,7 +49,7 @@ const VenueCarousel = ({ venues, loading = false, skeletonCount = 4 }: Props) =>
     prevArrow: <PrevArrow />,
     responsive: [
       { breakpoint: 1536, settings: { slidesToShow: 3 } }, // xl
-      { breakpoint: 1024, settings: { slidesToShow: 2 } }, // lg
+      { breakpoint: 1024, settings: { slidesToShow: 3 } }, // lg
       { breakpoint: 768, settings: { slidesToShow: 2 } },  // sm
       { breakpoint: 640, settings: { slidesToShow: 1 } },  // mobile
     ],
