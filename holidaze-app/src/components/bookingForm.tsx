@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "../context/authContext";
 import { createBooking } from "../api/bookings";
 import { toast } from "react-toastify";
@@ -20,62 +20,52 @@ interface Props {
   unavailableDates?: Date[];
 }
 
-const BookingForm = ({
-  venueId,
-  venueOwner,
-  pricePerNight,
-  unavailableDates = [],
-}: Props) => {
+const initialGuests: Guests = { adults: 1, children: 0, infants: 0, pets: 0 };
+
+const BookingForm = ({ venueId, venueOwner, pricePerNight, unavailableDates = [] }: Props) => {
   const { user } = useAuth();
+
+  // --- State ---
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const [guests, setGuests] = useState<Guests>({
-    adults: 1,
-    children: 0,
-    infants: 0,
-    pets: 0,
-  });
+  const [guests, setGuests] = useState<Guests>(initialGuests);
   const [showGuests, setShowGuests] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [monthsToShow, setMonthsToShow] = useState(
-    typeof window !== "undefined" && window.innerWidth >= 768 ? 2 : 1
-  );
+  const [monthsToShow, setMonthsToShow] = useState(window.innerWidth >= 768 ? 2 : 1);
 
   const modalRef = useRef<HTMLDivElement | null>(null);
   const lastFocused = useRef<HTMLElement | null>(null);
 
-  // Responsive months
+  // --- Responsive months ---
   useEffect(() => {
     const handleResize = () => setMonthsToShow(window.innerWidth >= 768 ? 2 : 1);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const nights =
-    startDate && endDate
-      ? Math.max(
-          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1,
-          1
-        )
-      : 1;
+  // --- Booking calculations ---
+  const nights = startDate && endDate
+    ? Math.max(Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)), 1)
+    : 1;
 
   const totalGuests = Object.values(guests).reduce((a, b) => a + b, 0);
   const basePrice = nights * pricePerNight;
   const guestFee = totalGuests > 1 ? (totalGuests - 1) * 20 : 0;
   const totalPrice = basePrice + guestFee;
 
+  // --- Guest handlers ---
   const handleIncrement = (type: keyof Guests) =>
-    setGuests((prev) => ({ ...prev, [type]: prev[type] + 1 }));
-  const handleDecrement = (type: keyof Guests) =>
-    setGuests((prev) => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
+    setGuests(prev => ({ ...prev, [type]: prev[type] + 1 }));
 
+  const handleDecrement = (type: keyof Guests) =>
+    setGuests(prev => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
+
+  // --- Booking handler ---
   const handleConfirmBooking = async () => {
     if (!user) return toast.error("Please log in to book.");
-    if (user.name && user.name === venueOwner)
-      return toast.error("You cannot book your own venue.");
-    if (!startDate || !endDate)
-      return toast.error("Please select a valid date range.");
+    if (user.name === venueOwner) return toast.error("You cannot book your own venue.");
+    if (!startDate || !endDate) return toast.error("Please select a valid date range.");
 
     setLoading(true);
     try {
@@ -88,8 +78,9 @@ const BookingForm = ({
         },
         user.accessToken
       );
+
       toast.success(`Booking successful! Total: $${totalPrice}`);
-      setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
+      setGuests(initialGuests);
       setStartDate(new Date());
       setEndDate(new Date());
       setShowGuests(false);
@@ -101,18 +92,21 @@ const BookingForm = ({
     }
   };
 
+  // --- Modal handlers ---
   const openModal = () => {
     lastFocused.current = document.activeElement as HTMLElement;
     setShowModal(true);
   };
-  const closeModal = () => {
+
+  const closeModal = useCallback(() => {
     setShowModal(false);
     lastFocused.current?.focus();
-  };
+  }, []);
 
-  // Trap focus in modal
+  // --- Focus trap for modal ---
   useEffect(() => {
     if (!showModal || !modalRef.current) return;
+
     const focusable = modalRef.current.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
@@ -135,21 +129,21 @@ const BookingForm = ({
     document.addEventListener("keydown", handleKeyDown);
     first?.focus();
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [showModal]);
+  }, [showModal, closeModal]);
 
+  // --- Render ---
   return (
     <main className="max-w-5xl mx-auto px-4 py-8 bg-gradient-to-r from-green-200 to-blue-200">
       <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
         {/* Dates & Guests */}
         <section className="space-y-6 w-full">
           {/* Calendar */}
-          <div className="bg-white p-4 gap-0 flex flex-col rounded-2xl shadow-md custom-datepicker">
+          <div className="bg-white p-4 rounded-2xl shadow-md custom-datepicker">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Select Dates</h2>
             <DatePicker
               className="w-full"
               inline
               monthsShown={monthsToShow}
-              calendarClassName="custom-datepicker"
               selectsRange
               startDate={startDate}
               endDate={endDate}
@@ -160,7 +154,6 @@ const BookingForm = ({
               }}
               minDate={new Date()}
               excludeDates={unavailableDates}
-              
             />
           </div>
 
@@ -173,10 +166,9 @@ const BookingForm = ({
               className="w-full border px-4 py-2 rounded-lg bg-white text-left flex justify-between items-center shadow-sm text-gray-900"
             >
               Guests: {totalGuests} ({guests.adults} adults, {guests.children} children)
-              <FaChevronDown
-                className={`ml-2 transition-transform ${showGuests ? "rotate-180" : ""}`}
-              />
+              <FaChevronDown className={`ml-2 transition-transform ${showGuests ? "rotate-180" : ""}`} />
             </button>
+
             {showGuests && (
               <div className="mt-3 space-y-2">
                 {[
@@ -190,17 +182,9 @@ const BookingForm = ({
                     <div key={type} className="flex justify-between items-center">
                       <span className="flex items-center gap-1">{icon}{label}</span>
                       <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleDecrement(key)}
-                          className="px-2 py-1 bg-gray-800 text-white rounded"
-                        >-</button>
+                        <button type="button" onClick={() => handleDecrement(key)} className="px-2 py-1 bg-gray-800 text-white rounded">-</button>
                         <span aria-live="polite">{guests[key]}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleIncrement(key)}
-                          className="px-2 py-1 bg-gray-800 text-white rounded"
-                        >+</button>
+                        <button type="button" onClick={() => handleIncrement(key)} className="px-2 py-1 bg-gray-800 text-white rounded">+</button>
                       </div>
                     </div>
                   );
@@ -218,14 +202,10 @@ const BookingForm = ({
             <div className="flex justify-between"><span>Children</span><span>{guests.children}</span></div>
             <div className="flex justify-between"><span>Nights</span><span>{nights}</span></div>
             <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
-              <span >Total</span><span>${totalPrice}</span>
+              <span>Total</span><span>${totalPrice}</span>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={openModal}
-            className="w-full bg-green-700 text-white py-3 rounded-xl font-semibold hover:bg-green-800 transition"
-          >
+          <button type="button" onClick={openModal} className="w-full bg-green-700 text-white py-3 rounded-xl font-semibold hover:bg-green-800 transition">
             Book Now
           </button>
         </aside>
@@ -249,17 +229,8 @@ const BookingForm = ({
               <p className="font-bold">Total: ${totalPrice}</p>
             </div>
             <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 rounded-lg bg-white border border-black-300 hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmBooking}
-                disabled={loading}
-                className="px-4 py-2 rounded-lg bg-green-700 text-white font-semibold hover:bg-green-800"
-              >
+              <button onClick={closeModal} className="px-4 py-2 rounded-lg bg-white border hover:bg-gray-200">Cancel</button>
+              <button onClick={handleConfirmBooking} disabled={loading} className="px-4 py-2 rounded-lg bg-green-700 text-white font-semibold hover:bg-green-800">
                 {loading ? "Booking..." : "Confirm"}
               </button>
             </div>
