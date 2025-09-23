@@ -1,5 +1,4 @@
-// src/pages/allVenues.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import VenueCard from "../../components/venueCard";
 import VenueCardSkeleton from "../../components/venueCardSkeleton";
 import { fetchVenues } from "../../api/fetchVenues";
@@ -10,26 +9,31 @@ interface AllVenuesProps {
   searchTerm?: string;
 }
 
+interface FetchVenuesResponse {
+  venues: Venue[];
+  pageCount: number;
+}
+
 const ITEMS_PER_PAGE = 12;
 
-const AllVenues = ({ searchTerm = "" }: AllVenuesProps) => {
+const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Fetch venues whenever page or searchTerm changes
   useEffect(() => {
     const loadVenues = async () => {
       try {
         setLoading(true);
-        const { venues, pageCount } = await fetchVenues(currentPage, ITEMS_PER_PAGE, searchTerm);
-        setVenues(venues);
-        setTotalPages(pageCount);
+        const data: FetchVenuesResponse = await fetchVenues(currentPage, ITEMS_PER_PAGE, searchTerm);
+        setVenues(data.venues);
+        setTotalPages(data.pageCount);
         setError("");
       } catch (err: any) {
-        setError(err.message || "Error fetching venues");
+        setError(err?.message ?? "Error fetching venues");
       } finally {
         setLoading(false);
       }
@@ -37,19 +41,24 @@ const AllVenues = ({ searchTerm = "" }: AllVenuesProps) => {
     loadVenues();
   }, [currentPage, searchTerm]);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    [totalPages]
+  );
+
+  const showPagination = useMemo(() => !loading && !error && totalPages > 1, [loading, error, totalPages]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <h1 className="text-3xl font-bold mb-6">All Venues</h1>
 
       {/* Pagination Top */}
-      {!loading && !error && totalPages > 1 && (
+      {showPagination && (
         <div className="flex justify-end mb-6">
           <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
         </div>
@@ -71,7 +80,7 @@ const AllVenues = ({ searchTerm = "" }: AllVenuesProps) => {
       </div>
 
       {/* Pagination Bottom */}
-      {!loading && !error && totalPages > 1 && (
+      {showPagination && (
         <div className="flex justify-end mt-6">
           <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
         </div>
