@@ -1,13 +1,13 @@
 // src/pages/MyBookingsPage.tsx
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../../context/authContext";
 import {
   getUserBookingsWithVenue,
   type BookingWithVenue,
-} from "../api/bookings";
+} from "../../api/bookings";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import VenueCardSkeleton from "../components/venueCardSkeleton";
+import VenueCardSkeleton from "../../components/venueCardSkeleton";
 
 const MyBookingsPage = () => {
   const { user } = useAuth();
