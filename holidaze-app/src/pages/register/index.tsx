@@ -1,6 +1,6 @@
 // src/pages/register.tsx
 import { useState } from "react";
-import { registerUser } from "../api/auth";
+import { registerUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
