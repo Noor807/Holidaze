@@ -1,4 +1,3 @@
-import React from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 interface PaginationProps {
@@ -12,12 +11,21 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   onPageChange,
 }) => {
+  if (totalPages <= 1) return null; // hide pagination if only 1 page
+
+  const handlePrev = () => onPageChange(Math.max(currentPage - 1, 1));
+  const handleNext = () => onPageChange(Math.min(currentPage + 1, totalPages));
+
   return (
-    <div className="flex justify-center mt-6 space-x-4 items-center">
+    <nav
+      className="flex justify-center mt-6 space-x-4 items-center"
+      aria-label="Pagination Navigation"
+    >
+      {/* Previous Button */}
       <button
-        onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+        onClick={handlePrev}
         disabled={currentPage === 1}
-        className={`p-2 rounded-full ${
+        className={`p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
           currentPage === 1
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-black text-white hover:bg-gray-700"
@@ -27,14 +35,16 @@ const Pagination: React.FC<PaginationProps> = ({
         <FaArrowLeft />
       </button>
 
-      <span className="px-3 py-1 rounded bg-gray-200 text-gray-700 text-sm">
+      {/* Page Indicator */}
+      <span className="px-3 py-1 rounded bg-gray-200 text-gray-700 text-sm font-medium">
         Page {currentPage} of {totalPages}
       </span>
 
+      {/* Next Button */}
       <button
-        onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+        onClick={handleNext}
         disabled={currentPage === totalPages}
-        className={`p-2 rounded-full ${
+        className={`p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
           currentPage === totalPages
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-black text-white hover:bg-gray-700"
@@ -43,7 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({
       >
         <FaArrowRight />
       </button>
-    </div>
+    </nav>
   );
 };
 
