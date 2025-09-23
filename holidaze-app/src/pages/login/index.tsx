@@ -22,49 +22,49 @@ interface ProfileResponse {
   };
 }
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: LocationState };
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); 
+
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true); 
+    setLoading(true);
 
     try {
-     
+      // Attempt login
       const user = await loginUser({ email, password });
 
-      
+      // Fetch user avatar if available
       try {
         const profileRes = await fetch(`${API_PROFILES}/${user.name}`, {
           headers: getAuthHeaders(user.accessToken),
         });
+
         if (profileRes.ok) {
           const profileJson = (await profileRes.json()) as ProfileResponse;
-          const fetchedAvatar = profileJson?.data?.avatar?.url
-            ? { url: profileJson.data.avatar.url, alt: "Avatar" }
-            : null;
+          const avatarUrl = profileJson?.data?.avatar?.url;
 
-          if (fetchedAvatar) {
-            user.avatar = fetchedAvatar; 
+          if (avatarUrl) {
+            user.avatar = { url: avatarUrl, alt: "Avatar" };
           }
         }
       } catch (err) {
         console.warn("Could not fetch avatar", err);
       }
 
-      
+      // Save login state
       login(user);
 
       toast.success(`Welcome back, ${user.name}!`);
 
-      
+      // Redirect user
       const redirectTo = location.state?.from || "/";
       navigate(redirectTo, {
         state: { selectedDate: location.state?.selectedDate || undefined },
@@ -75,7 +75,7 @@ const LoginPage = () => {
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -100,7 +100,7 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-            disabled={loading} 
+            disabled={loading}
           />
 
           <input
@@ -111,17 +111,17 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-            disabled={loading} 
+            disabled={loading}
           />
 
           <button
             type="submit"
-            disabled={loading} 
+            disabled={loading}
             className={`w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition text-lg font-semibold flex justify-center items-center ${
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
-            {loading ? (
+            {loading && (
               <svg
                 className="animate-spin h-5 w-5 mr-2 text-white"
                 xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +142,7 @@ const LoginPage = () => {
                   d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                 ></path>
               </svg>
-            ) : null}
+            )}
             {loading ? "Logging in..." : "Login"}
           </button>
 
