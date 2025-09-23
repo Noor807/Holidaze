@@ -47,7 +47,7 @@ const DeleteVenueButton = ({ id, redirectAfterDelete = false, onDeleted }: Props
       {/* Delete button */}
       <button
         onClick={() => setOpen(true)}
-        className="px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
+        className="px-3 py-1 font-semibold bg-gray-400 border-1 text-white rounded hover:bg-red-500 transition"
       >
         Delete
       </button>

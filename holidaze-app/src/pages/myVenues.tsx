@@ -55,7 +55,7 @@ const MyVenuesPage = () => {
         <h1 className="text-3xl font-bold">My Venues</h1>
         <button
           onClick={() => navigate("/my-venues/new")}
-          className="px-4 py-2 border-2 bg-white text-gray-600 rounded hover:bg-gray-300 transition"
+          className="px-4 py-2  font-semibold border-2 bg-white text-gray-600 rounded hover:bg-gray-300 transition"
         >
           + Venue
         </button>
@@ -110,8 +110,8 @@ const MyVenuesPage = () => {
                   <div className="flex justify-end gap-2 p-2 border-t mt-auto">
                     <button
                       onClick={() => navigate(`/my-venues/${venue.id}/edit`)}
-                      className="h-8 w-16 px-3 bg-white
-                       text-black border-1 text-sm rounded hover:bg-gray-400 transition"
+                      className="h-9 w-18 px-3 py-1 bg-green-600
+                       text-white border-1 text-sm font-semibold rounded hover:bg-green-400 transition"
                     >
                       Edit
                     </button>
