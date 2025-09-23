@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 interface FaqItem {
@@ -29,18 +29,22 @@ const faqData: FaqItem[] = [
   },
 ];
 
-const FaqPage = () => {
+const FaqPage: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const toggleIndex = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  const toggleIndex = useCallback((index: number) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  }, []);
 
-  const filteredFaq = faqData.filter(
-    (item) =>
-      item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.answer.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFaq = useMemo(
+    () =>
+      faqData.filter(
+        (item) =>
+          item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.answer.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
   );
 
   return (
