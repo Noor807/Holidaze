@@ -1,10 +1,5 @@
-// src/components/profileForm.tsx
 import { useState } from "react";
-import {
-  updateUserProfile,
-  type Media,
-  type UserProfileUpdate,
-} from "../api/profiles";
+import { updateUserProfile, type Media, type UserProfileUpdate } from "../api/profiles";
 import { toast } from "react-toastify";
 
 interface ProfileFormProps {
@@ -20,13 +15,13 @@ interface ProfileFormProps {
 const ProfileForm = ({
   userName,
   token,
-  initialBio,
+  initialBio = "",
   initialAvatar,
   initialBanner,
   onUpdate,
   onClose,
 }: ProfileFormProps) => {
-  const [bio, setBio] = useState(initialBio || "");
+  const [bio, setBio] = useState(initialBio);
   const [avatar, setAvatar] = useState<Media | undefined>(initialAvatar);
   const [banner, setBanner] = useState<Media | undefined>(initialBanner);
   const [loading, setLoading] = useState(false);
@@ -44,14 +39,15 @@ const ProfileForm = ({
       setLoading(true);
       const updatedProfile = await updateUserProfile(userName, token, formData);
 
-      // Map null to undefined for TypeScript safety
       onUpdate({
         bio: updatedProfile.bio ?? undefined,
         avatar: updatedProfile.avatar ?? undefined,
         banner: updatedProfile.banner ?? undefined,
       });
-    } catch (err) {
-      console.error(err);
+
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error(error);
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
@@ -62,23 +58,23 @@ const ProfileForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Bio */}
       <div>
-        <label className="block mb-1 font-medium">Bio</label>
+        <label htmlFor="bio" className="block mb-1 font-medium">Bio</label>
         <textarea
+          id="bio"
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           className="w-full px-3 py-2 border rounded"
-          aria-label="bio input"
           rows={4}
         />
       </div>
 
       {/* Avatar URL */}
       <div>
-        <label className="block mb-1 font-medium">Avatar URL</label>
+        <label htmlFor="avatar" className="block mb-1 font-medium">Avatar URL</label>
         <input
+          id="avatar"
           type="text"
-          aria-label="avatar input"
-          value={avatar?.url || ""}
+          value={avatar?.url ?? ""}
           onChange={(e) => setAvatar({ url: e.target.value })}
           placeholder="Paste avatar image URL"
           className="w-full px-3 py-2 border rounded"
@@ -88,18 +84,17 @@ const ProfileForm = ({
             src={avatar.url}
             alt="Avatar preview"
             className="w-20 h-20 rounded-full mt-2 object-cover"
-            aria-label="image input"
           />
         )}
       </div>
 
       {/* Banner URL */}
       <div>
-        <label className="block mb-1 font-medium">Banner URL</label>
+        <label htmlFor="banner" className="block mb-1 font-medium">Banner URL</label>
         <input
+          id="banner"
           type="text"
-          aria-label="banner input"
-          value={banner?.url || ""}
+          value={banner?.url ?? ""}
           onChange={(e) => setBanner({ url: e.target.value })}
           placeholder="Paste banner image URL"
           className="w-full px-3 py-2 border rounded"
@@ -109,7 +104,6 @@ const ProfileForm = ({
             src={banner.url}
             alt="Banner preview"
             className="w-full h-32 mt-2 object-cover rounded"
-            aria-label="banner input"
           />
         )}
       </div>
