@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+// src/components/Navbar.tsx
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Logo from "../assets/logo-1.png";
 import { toast } from "react-toastify";
@@ -10,7 +11,7 @@ interface NavbarProps {
   onSearch?: (query: string) => void;
 }
 
-const Navbar = ({ }: NavbarProps) => {
+const Navbar = ({ onSearch }: NavbarProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,15 +20,17 @@ const Navbar = ({ }: NavbarProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isHomePage = location.pathname === "/";
 
+  // Close dropdown if clicked outside
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setDropdownOpen(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [handleClickOutside]);
 
   const handleLogout = () => {
     logout();
@@ -37,40 +40,35 @@ const Navbar = ({ }: NavbarProps) => {
 
   const avatarUrl = user?.avatar?.url
     ? `${user.avatar.url}?t=${Date.now()}`
-    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-        user?.name ?? "user"
-      )}`;
+    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user?.name ?? "user")}`;
 
   return (
     <>
-      {/* Navbar */}
-      <nav className="w-full flex items-center justify-between px-4 md:px-6 py-3 bg-gray-900 shadow-md sticky top-0 !z-[999]">
-        {/* Left: Logo */}
+      <nav className="w-full flex items-center justify-between px-4 md:px-6 py-3 bg-gray-900 shadow-md sticky top-0 z-[999]" role="navigation">
+        {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <img src={Logo} alt="Holidaze Logo" className="h-8 w-auto" />
-          <span className="text-white text-lg font-semibold hidden sm:inline">
-            Holidaze
-          </span>
+          <span className="text-white text-lg font-semibold hidden sm:inline">Holidaze</span>
         </Link>
 
-        {/* Center: Desktop Search */}
+        {/* Desktop Search */}
         {!isHomePage && (
           <div className="hidden md:flex flex-1 justify-center px-4">
             <div className="w-full max-w-xl">
-              <SearchBar />
+              <SearchBar onSearch={onSearch} />
             </div>
           </div>
         )}
 
-        {/* Right: User & Mobile Search */}
+        {/* User / Mobile Search */}
         <div className="flex items-center space-x-2">
           {!isHomePage && (
             <div className="md:hidden">
               <button
-                onClick={() => setShowSearch(true)}
-                className="p-2 rounded-full bg-white hover:bg-gray-300"
                 type="button"
-                aria-label="search for venue"
+                onClick={() => setShowSearch(true)}
+                className="p-2 rounded-full bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                aria-label="Search for venue"
               >
                 <Search size={22} className="text-black" />
               </button>
@@ -79,77 +77,40 @@ const Navbar = ({ }: NavbarProps) => {
 
           {!user ? (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-2 text-white hover:shadow-md transition font-medium"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="px-4 py-2 rounded-full border text-white hover:opacity-90 transition font-medium"
-              >
-                Host
-              </Link>
+              <Link to="/login" className="px-4 py-2 text-white hover:shadow-md transition font-medium">Login</Link>
+              <Link to="/register" className="px-4 py-2 rounded-full border text-white hover:opacity-90 transition font-medium">Host</Link>
             </>
           ) : (
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setDropdownOpen((prev) => !prev)}
+                type="button"
+                onClick={() => setDropdownOpen(prev => !prev)}
                 className="flex items-center space-x-2 focus:outline-none"
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
               >
-                <img
-                  src={avatarUrl}
-                  alt="Avatar"
-                  className="w-10 h-10 rounded-full border border-gray-300 object-cover cursor-pointer"
-                />
+                <img src={avatarUrl} alt={`${user.name} avatar`} className="w-10 h-10 rounded-full border border-gray-300 object-cover cursor-pointer" />
                 <span className="hidden sm:inline text-white cursor-pointer">{user.name}</span>
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white text-black rounded-xl shadow-lg border border-gray-200 z-50">
-                  <Link
-                    to={`/profile`}
-                    className="block px-4 py-2 hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    My Profile
-                  </Link>
+                <div
+                  role="menu"
+                  aria-label="User menu"
+                  className="absolute right-0 mt-2 w-52 bg-white text-black rounded-xl shadow-lg border border-gray-200 z-50"
+                >
+                  <Link to="/profile" role="menuitem" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>My Profile</Link>
 
                   {user.venueManager && (
                     <>
-                      <Link
-                        to={`/my-venues`}
-                        className="block px-4 py-2 hover:bg-gray-100"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        My Venues
-                      </Link>
-
-                      <Link
-                        to={`/my-venues/new`}
-                        className=" text-green-700 font-medium hover:bg-green-200 transition text-center mx-2 my-1"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        + Create Venue
-                      </Link>
+                      <Link to="/my-venues" role="menuitem" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>My Venues</Link>
+                      <Link to="/my-venues/new" role="menuitem" className="block text-green-700 font-medium hover:bg-green-200 transition text-center mx-2 my-1 rounded" onClick={() => setDropdownOpen(false)}>+ Create Venue</Link>
                     </>
                   )}
 
-                  <Link
-                    to={`/my-bookings`}
-                    className="block px-4 py-2 hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    My Bookings
-                  </Link>
+                  <Link to="/my-bookings" role="menuitem" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>My Bookings</Link>
 
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
-                  >
-                    Logout
-                  </button>
+                  <button type="button" onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500" role="menuitem">Logout</button>
                 </div>
               )}
             </div>
@@ -157,17 +118,12 @@ const Navbar = ({ }: NavbarProps) => {
         </div>
       </nav>
 
-      {/* Mobile/Tablet Search Overlay */}
+      {/* Mobile Search Overlay */}
       {showSearch && (
-        <div className="fixed inset-0 bg-black/30 flex items-start justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/30 flex items-start justify-center p-4 z-50" aria-modal="true" role="dialog">
           <div className="bg-white w-full max-w-md rounded-xl p-4 shadow-lg">
-            <SearchBar />
-            <button
-              className="mt-2 text-sm text-gray-500"
-              onClick={() => setShowSearch(false)}
-            >
-              Close
-            </button>
+            <SearchBar onSearch={onSearch} />
+            <button type="button" className="mt-2 text-sm text-gray-500" onClick={() => setShowSearch(false)}>Close</button>
           </div>
         </div>
       )}
