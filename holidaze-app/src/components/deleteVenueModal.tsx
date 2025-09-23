@@ -55,7 +55,7 @@ const DeleteVenueButton: React.FC<Props> = ({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`px-3 py-1 font-semibold bg-gray-400 text-white rounded hover:bg-red-500 transition ${className}`}
+        className={`px-3 py-1 h-9 w-18 font-semibold bg-gray-400 text-white rounded hover:bg-red-500 transition ${className}`}
       >
         Delete
       </button>

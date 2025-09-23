@@ -1,4 +1,3 @@
-// src/components/VenueForm.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Venue, VenuePayload, Media } from "../types/venue";
@@ -41,13 +40,13 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
   const token = user?.accessToken;
   const navigate = useNavigate();
 
-  if (!token) return <p>Please login to manage venues.</p>;
+  if (!token) return <p className="text-red-500">Please login to manage venues.</p>;
 
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<FormState>({
-    name: initialData?.name || "",
-    description: initialData?.description || "",
+    name: initialData?.name ?? "",
+    description: initialData?.description ?? "",
     price: initialData?.price ?? 0,
     maxGuests: initialData?.maxGuests ?? 0,
     rating: initialData?.rating ?? 0,
@@ -84,128 +83,98 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
       description: form.description,
       price: form.price,
       maxGuests: form.maxGuests,
-      rating: form.rating ?? 0,
+      rating: form.rating,
       media: form.media.length > 0 ? form.media : undefined,
-      meta: {
-        wifi: form.meta.wifi ?? false,
-        parking: form.meta.parking ?? false,
-        breakfast: form.meta.breakfast ?? false,
-        pets: form.meta.pets ?? false,
-      },
+      meta: { ...form.meta },
       location: {
+        ...form.location,
         address: form.location.address || undefined,
         city: form.location.city || undefined,
         zip: form.location.zip || undefined,
         country: form.location.country || undefined,
         continent: form.location.continent || undefined,
-        lat: form.location.lat ?? 0,
-        lng: form.location.lng ?? 0,
       },
     };
 
     try {
-      let venue: Venue;
-      if (initialData) {
-        venue = await updateVenue(initialData.id, payload, token);
-        toast.success("Venue updated successfully!");
-      } else {
-        venue = await createVenue(payload, token);
-        toast.success("Venue created successfully!");
-      }
-    
+      const venue = initialData
+        ? await updateVenue(initialData.id, payload, token)
+        : await createVenue(payload, token);
+
+      toast.success(
+        initialData ? "Venue updated successfully!" : "Venue created successfully!"
+      );
+
       onSubmit?.(venue);
       navigate(`/venues/${venue.id}`);
     } catch (err: any) {
-      if (err.response?.status === 401) {
-        toast.error("Unauthorized: please log in again.");
-      } else if (err.response?.status === 403) {
-        toast.error("Forbidden: you don’t have permission to perform this action.");
-      } else {
-        toast.error(err.message || "Failed to save venue");
-      }
+      const msg =
+        err.response?.status === 401
+          ? "Unauthorized: please log in again."
+          : err.response?.status === 403
+          ? "Forbidden: you don’t have permission to perform this action."
+          : err.message || "Failed to save venue";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
-    
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 p-6 borderrounded shadow-md bg-gray-100 max-w-4xl mx-auto"
+      className="space-y-4 p-6 border rounded shadow-md bg-gray-100 max-w-4xl mx-auto"
     >
-      {/* Name & Description */}
+      {/* Name */}
       <input
         type="text"
         placeholder="Venue Name"
-        aria-label="text input"
+        aria-label="Venue name"
         value={form.name}
         onChange={(e) => handleChange("name", e.target.value)}
         required
         className="w-full bg-white p-2 border rounded"
       />
+
+      {/* Description */}
       <textarea
         placeholder="Description"
-        aria-label="Description input"
+        aria-label="Venue description"
         value={form.description}
         onChange={(e) => handleChange("description", e.target.value)}
         required
+        rows={4}
         className="w-full p-2 bg-white border rounded"
       />
 
       {/* Price, Max Guests, Rating */}
       <div className="flex flex-col sm:flex-row gap-4">
-      <input
-  type="number"
-  placeholder="Price per night"
-   aria-label="price input"
-  value={form.price}
-  onChange={(e) => handleChange("price", Number(e.target.value))}
-  required
-  className="
-    w-full sm:w-1/2 md:w-1/3 lg:w-1/4
-    p-1 sm:p-1 md:p-1
-    text-sm sm:text-base md:text-lg
-    border bg-white rounded-lg
-    focus:outline-none focus:ring-2 focus:ring-blue-500
-  "
-/>
-
-        <input
-          type="number"
-          placeholder="Max Guests"
-           aria-label="guest input"
-          value={form.maxGuests}
-          onChange={(e) => handleChange("maxGuests", Number(e.target.value))}
-          required
-          className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
-    p-1 sm:p-1 md:p-1
-    text-sm sm:text-base md:text-lg
-    border bg-white rounded-lg
-    focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="number"
-          placeholder="Rating"
-           aria-label="rating input"
-          value={form.rating}
-          onChange={(e) => handleChange("rating", Number(e.target.value))}
-          className=" w-full sm:w-1/2 md:w-1/3 lg:w-1/4
-    p-1 sm:p-1 md:p-1
-    text-sm sm:text-base md:text-lg
-    border bg-white rounded-lg
-    focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        {[
+          { key: "price", label: "Price per night", required: true },
+          { key: "maxGuests", label: "Max Guests", required: true },
+          { key: "rating", label: "Rating", required: false },
+        ].map(({ key, label, required }) => (
+          <input
+            key={key}
+            type="number"
+            placeholder={label}
+            aria-label={label}
+            value={form[key as keyof FormState] as number}
+            onChange={(e) => handleChange(key as keyof FormState, Number(e.target.value))}
+            required={required}
+            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 text-sm border bg-white rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ))}
       </div>
 
-      {/* Meta checkboxes */}
+      {/* Amenities */}
       <div className="flex flex-wrap gap-4">
         <h3 className="w-full font-semibold mb-2">Amenities</h3>
-        {(["wifi", "parking", "breakfast", "pets"] as const).map((key) => (
+        {(Object.keys(form.meta) as (keyof typeof form.meta)[]).map((key) => (
           <label key={key} className="flex items-center gap-2">
             <input
               type="checkbox"
-               aria-label="amenities checkboxes"
               checked={form.meta[key]}
               onChange={(e) =>
                 setForm({ ...form, meta: { ...form.meta, [key]: e.target.checked } })
@@ -216,7 +185,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         ))}
       </div>
 
-      {/* Media URLs */}
+      {/* Media */}
       <div>
         <h3 className="font-semibold mb-2">Media</h3>
         {form.media.map((m, idx) => (
@@ -227,7 +196,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             <input
               type="url"
               placeholder="Image URL"
-               aria-label="image input"
+              aria-label={`Image URL ${idx + 1}`}
               value={m.url}
               onChange={(e) => {
                 const newMedia = [...form.media];
@@ -239,7 +208,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             <input
               type="text"
               placeholder="Alt text"
-               aria-label="image text input"
+              aria-label={`Alt text ${idx + 1}`}
               value={m.alt}
               onChange={(e) => {
                 const newMedia = [...form.media];
@@ -250,8 +219,10 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
             />
             <button
               type="button"
-              onClick={() => setForm({ ...form, media: form.media.filter((_, i) => i !== idx) })}
-              className="px-2 py-1 bg-red-500 text-white rounded mt-2 sm:mt-0"
+              onClick={() =>
+                setForm({ ...form, media: form.media.filter((_, i) => i !== idx) })
+              }
+              className="px-2 py-1 bg-red-500 text-white rounded"
             >
               Remove
             </button>
@@ -272,8 +243,8 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
           <input
             key={key}
             type="text"
-            aria-label="location input"
             placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+            aria-label={key}
             value={form.location[key]}
             onChange={(e) =>
               setForm({ ...form, location: { ...form.location, [key]: e.target.value } })
@@ -284,7 +255,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <input
           type="number"
           placeholder="Latitude"
-          aria-label="latitude input"
+          aria-label="Latitude"
           value={form.location.lat}
           onChange={(e) =>
             setForm({ ...form, location: { ...form.location, lat: Number(e.target.value) } })
@@ -294,7 +265,7 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         <input
           type="number"
           placeholder="Longitude"
-          aria-label="longtitude input"
+          aria-label="Longitude"
           value={form.location.lng}
           onChange={(e) =>
             setForm({ ...form, location: { ...form.location, lng: Number(e.target.value) } })
@@ -303,12 +274,12 @@ const VenueForm = ({ initialData, onClose, onSubmit }: Props) => {
         />
       </div>
 
-      {/* Buttons */}
+      {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-2">
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-blue-600 transition w-full sm:w-auto"
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition w-full sm:w-auto"
         >
           {loading ? "Saving..." : initialData ? "Update Venue" : "Create Venue"}
         </button>

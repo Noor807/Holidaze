@@ -1,103 +1,64 @@
-import type {  Venue,  VenuePayload } from "../types/venue";
+import type { Venue, VenuePayload } from "../types/venue";
 import { API_VENUES, API_PROFILES } from "../constants/apiEndpoints";
 
-const normalizeVenue = (venue: any): Venue => ({
-  ...venue,
-  media: venue.media ?? [],
-  meta: {
-    wifi: venue.meta?.wifi ?? false,
-    parking: venue.meta?.parking ?? false,
-    breakfast: venue.meta?.breakfast ?? false,
-    pets: venue.meta?.pets ?? false,
-  },
-  location: {
-    address: venue.location?.address ?? "",
-    city: venue.location?.city ?? "",
-    zip: venue.location?.zip ?? "",
-    country: venue.location?.country ?? "",
-    continent: venue.location?.continent ?? "",
-    lat: venue.location?.lat ?? 0,
-    lng: venue.location?.lng ?? 0,
-  },
-  bookings: venue.bookings ?? [],
-});
+/** Generic API request helper */
+async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const res = await fetch(url, options);
 
-// Public: Get all venues
-export const getVenues = async (): Promise<Venue[]> => {
-  const res = await fetch(API_VENUES);
-  if (!res.ok) throw new Error("Failed to fetch venues");
-  const json = await res.json();
-  return json.data.map(normalizeVenue);
-};
-
-// Protected: Get my venues
-export const getMyVenues = async (username: string, token: string): Promise<Venue[]> => {
-  const res = await fetch(`${API_PROFILES}/${username}/venues`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
-    },
-  });
-  if (!res.ok) throw new Error("Failed to fetch your venues");
-  const json = await res.json();
-  return json.data.map(normalizeVenue);
-};
-
-// Protected: Create venue
-export const createVenue = async (payload: VenuePayload, token: string): Promise<Venue> => {
-  const res = await fetch(API_VENUES, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error("Failed to create venue");
-  const json = await res.json();
-  return normalizeVenue(json.data);
-};
-
-// Protected: Update venue
-export const updateVenue = async (id: string, payload: VenuePayload, token: string): Promise<Venue> => {
-  const res = await fetch(`${API_VENUES}/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error("Failed to update venue");
-  const json = await res.json();
-  return normalizeVenue(json.data);
-};
-
-// Protected: Delete venue
-export const deleteVenue = async (id: string, token: string): Promise<void> => {
-  const res = await fetch(`${API_VENUES}/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
-    },
-  });
-  if (!res.ok) throw new Error("Failed to delete venue");
-};
-
-// Public: Get venue by ID
-export const getVenueById = async (id: string, token?: string): Promise<Venue> => {
-  const headers: Record<string, string> = {};
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-    headers["X-Noroff-API-Key"] = import.meta.env.VITE_API_KEY;
+  if (!res.ok) {
+    throw new Error(`API Error ${res.status}: ${res.statusText}`);
   }
 
-  const res = await fetch(`${API_VENUES}/${id}`, { headers });
-  if (!res.ok) throw new Error("Failed to fetch venue");
-  const json = await res.json();
-  return normalizeVenue(json.data);
-};
+  const json = await res.json().catch(() => ({}));
+  return json.data as T;
+}
 
+/** Headers for authenticated requests */
+const withAuthHeaders = (token: string): HeadersInit => ({
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+  "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
+});
+
+// -----------------------
+// API Functions
+// -----------------------
+
+/** Public: Get all venues */
+export const getVenues = async (): Promise<Venue[]> =>
+  apiRequest<Venue[]>(API_VENUES);
+
+/** Protected: Get my venues */
+export const getMyVenues = async (username: string, token: string): Promise<Venue[]> =>
+  apiRequest<Venue[]>(`${API_PROFILES}/${username}/venues`, {
+    headers: withAuthHeaders(token),
+  });
+
+/** Protected: Create venue */
+export const createVenue = async (payload: VenuePayload, token: string): Promise<Venue> =>
+  apiRequest<Venue>(API_VENUES, {
+    method: "POST",
+    headers: withAuthHeaders(token),
+    body: JSON.stringify(payload),
+  });
+
+/** Protected: Update venue */
+export const updateVenue = async (id: string, payload: VenuePayload, token: string): Promise<Venue> =>
+  apiRequest<Venue>(`${API_VENUES}/${id}`, {
+    method: "PUT",
+    headers: withAuthHeaders(token),
+    body: JSON.stringify(payload),
+  });
+
+/** Protected: Delete venue */
+export const deleteVenue = async (id: string, token: string): Promise<void> =>
+  apiRequest<void>(`${API_VENUES}/${id}`, {
+    method: "DELETE",
+    headers: withAuthHeaders(token),
+  });
+
+/** Public: Get venue by ID */
+export const getVenueById = async (id: string, token?: string): Promise<Venue> => {
+  const headers: HeadersInit = token ? withAuthHeaders(token) : {};
+  return apiRequest<Venue>(`${API_VENUES}/${id}`, { headers });
+};
