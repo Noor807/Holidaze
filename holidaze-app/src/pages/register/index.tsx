@@ -1,4 +1,3 @@
-// src/pages/register.tsx
 import { useState } from "react";
 import { registerUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
@@ -55,7 +54,6 @@ const RegisterPage = () => {
     }
 
     try {
-      // 1️⃣ Register user
       await registerUser({
         name,
         email,
@@ -66,10 +64,7 @@ const RegisterPage = () => {
         banner: banner || undefined,
       });
 
-      // 2️⃣ Success toast
       toast.success("Registration successful! Please log in.");
-
-      // 3️⃣ Redirect to login page
       navigate("/login");
     } catch (err: any) {
       console.error("Registration failed:", err.response || err.message);
