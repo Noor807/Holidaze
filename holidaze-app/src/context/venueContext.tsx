@@ -1,12 +1,15 @@
-// src/context/venuesContext.tsx
-import { createContext, useContext, useState,type ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 
+export interface Media {
+  url: string;
+  alt?: string;
+}
 
 export interface Venue {
   id: string;
   name: string;
   description: string;
-  media: { url: string; alt?: string }[];
+  media: Media[];
   price: number;
   maxGuests: number;
 }
@@ -19,12 +22,20 @@ interface VenuesContextType {
 
 const VenuesContext = createContext<VenuesContextType | undefined>(undefined);
 
-export const VenuesProvider = ({ children }: { children: ReactNode }) => {
-  const [venues, setVenues] = useState<Venue[]>([]);
+interface VenuesProviderProps {
+  children: ReactNode;
+}
 
-  const addVenue = (venue: Venue) => {
-    setVenues(prev => [venue, ...prev]);
-  };
+export const VenuesProvider: React.FC<VenuesProviderProps> = ({ children }) => {
+  const [venues, setVenuesState] = useState<Venue[]>([]);
+
+  const setVenues = useCallback((newVenues: Venue[]) => {
+    setVenuesState(newVenues);
+  }, []);
+
+  const addVenue = useCallback((venue: Venue) => {
+    setVenuesState(prev => [venue, ...prev]);
+  }, []);
 
   return (
     <VenuesContext.Provider value={{ venues, setVenues, addVenue }}>
@@ -33,7 +44,7 @@ export const VenuesProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useVenues = () => {
+export const useVenues = (): VenuesContextType => {
   const context = useContext(VenuesContext);
   if (!context) throw new Error("useVenues must be used within a VenuesProvider");
   return context;
