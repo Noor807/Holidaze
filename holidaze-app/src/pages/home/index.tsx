@@ -5,19 +5,21 @@ import VenueCardSkeleton from "../../components/venueCardSkeleton";
 import { fetchVenues } from "../../api/fetchVenues";
 import type { Venue } from "../../types/venue";
 
-const Home = () => {
+const Home: React.FC = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadVenues = async () => {
       try {
-        const { venues } = await fetchVenues(1, 12);
-        setVenues(venues);
+        setLoading(true);
+        const { venues: fetchedVenues } = await fetchVenues(1, 12);
+        setVenues(fetchedVenues);
+        setError("");
       } catch (err: any) {
-        setError(err.message || "Error fetching venues");
+        setError(err?.message || "Error fetching venues");
       } finally {
         setLoading(false);
       }
@@ -78,9 +80,7 @@ const Home = () => {
       </h2>
       {loading && <VenueCardSkeleton />}
       {error && <p className="text-red-500 text-center">{error}</p>}
-      {!loading && !error && venues.length > 0 && (
-        <VenueCarousel venues={venues} />
-      )}
+      {!loading && !error && venues.length > 0 && <VenueCarousel venues={venues} />}
 
       {/* Categories */}
       <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mt-8 sm:mt-12 mb-4 text-gray-700">
