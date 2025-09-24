@@ -1,3 +1,12 @@
+/**
+ * Skeleton loader for the {@link VenueCard} component.
+ *
+ * This placeholder is displayed while venue data is being fetched,
+ * providing a visual indication of the layout and reducing content shifting.
+ *
+ * @component
+ * @returns {JSX.Element} A skeleton UI resembling the VenueCard
+ */
 const VenueCardSkeleton = () => (
   <div
     className="rounded-lg bg-white shadow hover:shadow-lg overflow-hidden flex flex-col animate-pulse w-full max-w-80"
