@@ -64,7 +64,10 @@ const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
             />
           </svg>
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/50" />
+
+        {/* Bottom-only gradient */}
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent" />
+
         <div className="absolute bottom-0 left-0 right-0 px-2 z-10 flex justify-between items-center">
           {/* Rating */}
           <div className="flex items-center">{renderStars()}</div>
