@@ -6,13 +6,13 @@ import { API_PROFILES } from "../../constants/apiEndpoints";
 import { useAuth } from "../../context/authContext";
 import { getAuthHeaders } from "../../api/api";
 
-// Type for location state
+/** Type for location state passed via react-router */
 interface LocationState {
   from?: string;
   selectedDate?: string;
 }
 
-// Profile fetch response type
+/** Type for avatar response in user profile */
 interface ProfileResponse {
   data?: {
     avatar?: {
@@ -22,16 +22,40 @@ interface ProfileResponse {
   };
 }
 
+/**
+ * LoginPage component allows users to log in with email and password.
+ *
+ * - Handles API login and fetches user avatar
+ * - Shows loading state with a spinner
+ * - Displays error messages via toast and inline
+ * - Redirects user after login based on location state
+ *
+ * @component
+ * @returns {JSX.Element} Login page
+ */
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: LocationState };
 
+  /** Email input state */
   const [email, setEmail] = useState<string>("");
+
+  /** Password input state */
   const [password, setPassword] = useState<string>("");
+
+  /** Error message state */
   const [error, setError] = useState<string>("");
+
+  /** Loading state for form submission */
   const [loading, setLoading] = useState<boolean>(false);
 
+  /**
+   * Handles form submission for login.
+   * Calls API to authenticate, fetches avatar if available, updates auth context, and redirects user.
+   *
+   * @param {React.FormEvent} e - Form submission event
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -41,7 +65,7 @@ const LoginPage: React.FC = () => {
       // Attempt login
       const user = await loginUser({ email, password });
 
-      // Fetch user avatar if available
+      // Fetch avatar
       try {
         const profileRes = await fetch(`${API_PROFILES}/${user.name}`, {
           headers: getAuthHeaders(user.accessToken),
@@ -50,7 +74,6 @@ const LoginPage: React.FC = () => {
         if (profileRes.ok) {
           const profileJson = (await profileRes.json()) as ProfileResponse;
           const avatarUrl = profileJson?.data?.avatar?.url;
-
           if (avatarUrl) {
             user.avatar = { url: avatarUrl, alt: "Avatar" };
           }
@@ -61,10 +84,9 @@ const LoginPage: React.FC = () => {
 
       // Save login state
       login(user);
-
       toast.success(`Welcome back, ${user.name}!`);
 
-      // Redirect user
+      // Redirect after login
       const redirectTo = location.state?.from || "/";
       navigate(redirectTo, {
         state: { selectedDate: location.state?.selectedDate || undefined },
