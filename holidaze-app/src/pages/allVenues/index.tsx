@@ -6,6 +6,7 @@ import type { Venue } from "../../types/venue";
 import Pagination from "../../components/pagination";
 
 interface AllVenuesProps {
+  /** Optional search term to filter venues */
   searchTerm?: string;
 }
 
@@ -16,6 +17,9 @@ interface FetchVenuesResponse {
 
 const ITEMS_PER_PAGE = 12;
 
+/**
+ * Component to display all venues with pagination, loading skeletons, and search filtering.
+ */
 const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -23,12 +27,18 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  // Fetch venues whenever page or searchTerm changes
+  /**
+   * Fetch venues whenever current page or search term changes.
+   */
   useEffect(() => {
     const loadVenues = async () => {
       try {
         setLoading(true);
-        const data: FetchVenuesResponse = await fetchVenues(currentPage, ITEMS_PER_PAGE, searchTerm);
+        const data: FetchVenuesResponse = await fetchVenues(
+          currentPage,
+          ITEMS_PER_PAGE,
+          searchTerm
+        );
         setVenues(data.venues);
         setTotalPages(data.pageCount);
         setError("");
@@ -38,9 +48,14 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
         setLoading(false);
       }
     };
+
     loadVenues();
   }, [currentPage, searchTerm]);
 
+  /**
+   * Handles pagination page changes.
+   * @param page - The new page number
+   */
   const handlePageChange = useCallback(
     (page: number) => {
       if (page >= 1 && page <= totalPages) {
@@ -51,7 +66,13 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
     [totalPages]
   );
 
-  const showPagination = useMemo(() => !loading && !error && totalPages > 1, [loading, error, totalPages]);
+  /**
+   * Determine if pagination should be shown.
+   */
+  const showPagination = useMemo(
+    () => !loading && !error && totalPages > 1,
+    [loading, error, totalPages]
+  );
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
@@ -60,7 +81,11 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
       {/* Pagination Top */}
       {showPagination && (
         <div className="flex justify-end mb-6">
-          <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
 
@@ -75,14 +100,20 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
       {/* Venue cards or skeletons */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {loading
-          ? Array.from({ length: ITEMS_PER_PAGE }).map((_, idx) => <VenueCardSkeleton key={idx} />)
+          ? Array.from({ length: ITEMS_PER_PAGE }).map((_, idx) => (
+              <VenueCardSkeleton key={idx} />
+            ))
           : venues.map((venue) => <VenueCard key={venue.id} venue={venue} />)}
       </div>
 
       {/* Pagination Bottom */}
       {showPagination && (
         <div className="flex justify-end mt-6">
-          <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>
