@@ -30,7 +30,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className="relative bg-cover bg-center h-[600px] transition-all duration-1000 ease-in-out"
+      className="relative bg-cover bg-center h-[450px] transition-all duration-1000 ease-in-out"
       style={{ backgroundImage: `url(${images[currentImage]})` }}
       role="banner"
     >

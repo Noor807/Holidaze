@@ -119,7 +119,7 @@ const ProfilePage: React.FC = () => {
                   banner: updatedProfile.banner ?? undefined,
                 };
                 setUser({ ...user, ...cleanedProfile });
-                toast.success("Profile updated successfully!");
+                // toast.success("Profile updated successfully!");
                 setIsEditing(false);
               }}
               onClose={() => setIsEditing(false)}

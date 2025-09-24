@@ -100,7 +100,7 @@ const Home: React.FC = () => {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-14">
       {/* New Venues Section */}
-      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 lg:mb-16 text-gray-700">
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4 sm:mb-6 lg:mb-6 text-gray-700">
         Explore Our New Venues
       </h2>
       {loading && <VenueCardSkeleton />}

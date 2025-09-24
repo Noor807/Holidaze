@@ -66,7 +66,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
         <Link to="/" className="flex items-center space-x-2">
           <img src={Logo} alt="Holidaze Logo" className="h-8 w-auto" />
           <span className="text-white text-lg font-semibold hidden sm:inline">
-            Holidaze
+          Holidaze
           </span>
         </Link>
 
