@@ -5,12 +5,34 @@ import VenueCardSkeleton from "../../components/venueCardSkeleton";
 import { fetchVenues } from "../../api/fetchVenues";
 import type { Venue } from "../../types/venue";
 
+/**
+ * Home component renders the landing page with the following sections:
+ * - New venues carousel
+ * - Venue categories
+ * - Popular destinations
+ *
+ * Handles fetching venues, loading states, and navigation for categories/destinations.
+ *
+ * @component
+ * @returns {JSX.Element} Home page component
+ */
 const Home: React.FC = () => {
+  /** Array of fetched venue objects */
   const [venues, setVenues] = useState<Venue[]>([]);
+
+  /** Loading state for fetching venues */
   const [loading, setLoading] = useState<boolean>(true);
+
+  /** Error message if fetching fails */
   const [error, setError] = useState<string>("");
+
+  /** Navigation hook from react-router */
   const navigate = useNavigate();
 
+  /**
+   * Fetch venues from the API on component mount.
+   * Updates loading, error, and venues state accordingly.
+   */
   useEffect(() => {
     const loadVenues = async () => {
       try {
@@ -27,6 +49,7 @@ const Home: React.FC = () => {
     loadVenues();
   }, []);
 
+  /** Static venue categories for homepage display */
   const categories = [
     {
       name: "Hotels",
@@ -50,10 +73,12 @@ const Home: React.FC = () => {
     },
   ];
 
+  /** Static popular destinations for homepage display */
   const destinations = [
     {
       name: "Norway",
-      image: "https://cdn.pixabay.com/photo/2018/01/21/22/17/house-3097664_1280.jpg",
+      image:
+        "https://cdn.pixabay.com/photo/2018/01/21/22/17/house-3097664_1280.jpg",
     },
     {
       name: "France",
@@ -74,15 +99,17 @@ const Home: React.FC = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-14">
-      {/* New Venues */}
+      {/* New Venues Section */}
       <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 lg:mb-16 text-gray-700">
         Explore Our New Venues
       </h2>
       {loading && <VenueCardSkeleton />}
       {error && <p className="text-red-500 text-center">{error}</p>}
-      {!loading && !error && venues.length > 0 && <VenueCarousel venues={venues} />}
+      {!loading && !error && venues.length > 0 && (
+        <VenueCarousel venues={venues} />
+      )}
 
-      {/* Categories */}
+      {/* Categories Section */}
       <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mt-8 sm:mt-12 mb-4 text-gray-700">
         Explore by Category
       </h2>
@@ -107,7 +134,7 @@ const Home: React.FC = () => {
         ))}
       </div>
 
-      {/* Destinations */}
+      {/* Destinations Section */}
       <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mt-8 sm:mt-12 mb-4 text-gray-700">
         Popular Destinations
       </h2>
