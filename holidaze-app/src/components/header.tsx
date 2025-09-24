@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./searchBar";
 
+/** Array of rotating header background images */
 const images = [
   "https://media.cntraveller.com/photos/611befdb69410e829d87e766/16:9/w_3200,h_1800,c_limit/rome.jpg",
   "https://cdn.pixabay.com/photo/2015/03/19/14/30/las-vegas-680953_1280.jpg",
   "https://cdn.pixabay.com/photo/2020/06/14/10/58/london-5297395_1280.jpg",
 ];
 
+/**
+ * Header component displaying a rotating background image, search bar, and CTA button.
+ * Rotates images every 5 seconds and provides navigation to the "All Venues" page.
+ */
 const Header: React.FC = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const navigate = useNavigate();
@@ -20,6 +25,7 @@ const Header: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  /** Navigate to the "All Venues" page */
   const handleShowAll = () => navigate("/venues");
 
   return (
@@ -34,7 +40,7 @@ const Header: React.FC = () => {
         </h1>
 
         {/* Search bar */}
-        <div className="w-full text-white max-w-md bg-black/30 ">
+        <div className="w-full text-white max-w-md bg-black/30">
           <SearchBar />
         </div>
 
