@@ -1,47 +1,59 @@
 import { useState, useCallback } from "react";
 
+/** Contact form fields */
 interface ContactForm {
   name: string;
   email: string;
   message: string;
 }
 
+/** Initial state for the contact form */
 const INITIAL_FORM_STATE: ContactForm = { name: "", email: "", message: "" };
 
+/**
+ * Contact page component with a simple form and success modal.
+ */
 const ContactPage: React.FC = () => {
   const [form, setForm] = useState<ContactForm>(INITIAL_FORM_STATE);
   const [loading, setLoading] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
+  /**
+   * Handles changes to form inputs
+   * @param e - The change event from input or textarea
+   */
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
-      setForm(prev => ({ ...prev, [name]: value }));
+      setForm((prev) => ({ ...prev, [name]: value }));
     },
     []
   );
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setLoading(true);
+  /**
+   * Handles form submission
+   * @param e - The form submission event
+   */
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
 
-      // Mock submission
-      setTimeout(() => {
-        setLoading(false);
-        setForm(INITIAL_FORM_STATE);
-        setShowSuccess(true);
-      }, 1000);
-    },
-    []
-  );
+    // Simulate async submission
+    setTimeout(() => {
+      setLoading(false);
+      setForm(INITIAL_FORM_STATE);
+      setShowSuccess(true);
+    }, 1000);
+  }, []);
 
+  /** Closes the success modal */
   const closeModal = useCallback(() => setShowSuccess(false), []);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-6 text-center">Contact Us</h1>
 
+      {/* Contact Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-4 bg-gradient-to-r from-green-100 to-blue-100 p-6 rounded-xl shadow-md"
@@ -101,7 +113,9 @@ const ContactPage: React.FC = () => {
       {showSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-green-500">Message Sent!</h2>
+            <h2 className="text-xl font-bold mb-4 text-green-500">
+              Message Sent!
+            </h2>
             <p className="text-gray-700 mb-6">
               Thank you for contacting us. We will get back to you soon.
             </p>
