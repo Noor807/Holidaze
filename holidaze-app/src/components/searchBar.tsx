@@ -95,6 +95,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         onKeyDown={handleKeyDown}
         placeholder="Search venues..."
         aria-autocomplete="list"
+        aria-label="input search"
         aria-controls="search-results"
         aria-activedescendant={highlightedIndex >= 0 ? `search-result-${highlightedIndex}` : undefined}
         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -105,7 +106,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         <button
           type="button"
           onClick={clearInput}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-green-600"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full  hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600"
           aria-label="Clear search"
         >
           ✕
@@ -121,7 +122,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
           id="search-results"
           role="listbox"
           ref={resultsRef}
-          className="absolute w-full bg-white border rounded-lg mt-1 shadow-lg z-50 max-h-60 overflow-auto"
+          className="absolute w-full text-white bg-black/70 border rounded-lg mt-1 shadow-lg z-50 max-h-60 overflow-auto"
         >
           {results.map((venue, index) => (
             <li key={venue.id ?? venue._id} role="none">
@@ -141,7 +142,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
                   alt={venue.name}
                   className="w-12 h-12 object-cover rounded"
                 />
-                <span className="font-semibold text-gray-900">{venue.name}</span>
+                <span className="font-semibold text-white">{venue.name}</span>
               </button>
             </li>
           ))}

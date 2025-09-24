@@ -54,7 +54,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
         {/* Desktop Search */}
         {!isHomePage && (
           <div className="hidden md:flex flex-1 justify-center px-4">
-            <div className="w-full max-w-xl text-white bg-black/30 ">
+            <div className="w-full max-w-xl text-white bg-black/70 ">
               <SearchBar onSearch={onSearch} />
             </div>
           </div>
@@ -104,7 +104,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
                   {user.venueManager && (
                     <>
                       <Link to="/my-venues" role="menuitem" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>My Venues</Link>
-                      <Link to="/my-venues/new" role="menuitem" className="block text-green-700 font-medium hover:bg-green-200 transition text-center mx-2 my-1 rounded" onClick={() => setDropdownOpen(false)}>+ Create Venue</Link>
+                      <Link to="/my-venues/new" role="menuitem" className="block text-green-600 font-semibold hover:bg-green-200 px-4 py-2rounded" onClick={() => setDropdownOpen(false)}>+ Venue</Link>
                     </>
                   )}
 
@@ -120,13 +120,20 @@ const Navbar = ({ onSearch }: NavbarProps) => {
 
       {/* Mobile Search Overlay */}
       {showSearch && (
-        <div className="fixed inset-0 bg-black/30 flex items-start justify-center p-4 z-50" aria-modal="true" role="dialog">
-          <div className="bg-white w-full max-w-md rounded-xl p-4 shadow-lg">
-            <SearchBar onSearch={onSearch} />
-            <button type="button" className="mt-2 text-sm text-gray-500" onClick={() => setShowSearch(false)}>Close</button>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 bg-black/50 z-[1000] flex justify-center items-start">
+    <div className="w-full bg-black/70 text-white rounded-none shadow-lg p-4 pt-6 max-w-md">
+      <SearchBar onSearch={onSearch} />
+      <button
+        type="button"
+        className="mt-2 text-sm text-white"
+        onClick={() => setShowSearch(false)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
     </>
   );
 };
