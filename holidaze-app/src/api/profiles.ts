@@ -1,13 +1,17 @@
 import { API_BASE } from "../constants/apiEndpoints";
 
-// -------------------------
-// Types
-// -------------------------
+/**
+ * Represents media content such as an avatar or banner.
+ */
 export interface Media {
   url: string;
+
   alt?: string;
 }
 
+/**
+ * Response returned when fetching or updating a user profile.
+ */
 export interface ProfileResponse {
   id: string;
   name: string;
@@ -18,6 +22,9 @@ export interface ProfileResponse {
   venueManager: boolean;
 }
 
+/**
+ * Data that can be used to update a user profile.
+ */
 export interface UserProfileUpdate {
   bio?: string;
   avatar?: Media;
@@ -25,9 +32,15 @@ export interface UserProfileUpdate {
   venueManager?: boolean;
 }
 
-// -------------------------
-// Update user profile
-// -------------------------
+/**
+ * Updates the profile of a given user.
+ *
+ * @param username - The username of the profile to update
+ * @param token - User's authentication token
+ * @param data - Fields to update in the profile
+ * @returns The updated ProfileResponse
+ * @throws Error if the API request fails or network error occurs
+ */
 export const updateUserProfile = async (
   username: string,
   token: string,
@@ -62,5 +75,5 @@ export const updateUserProfile = async (
   }
 };
 
-// Alias for consistency
+/** Alias for consistency */
 export type UserProfile = ProfileResponse;
