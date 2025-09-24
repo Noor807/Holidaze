@@ -1,29 +1,52 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
-import { getUserBookingsWithVenue, type BookingWithVenue } from "../../api/bookings";
+import {
+  getUserBookingsWithVenue,
+  type BookingWithVenue,
+} from "../../api/bookings";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import ProfileForm from "../../components/profileForm";
 import { PencilIcon } from "lucide-react";
 
-const ProfilePage = () => {
+/**
+ * ProfilePage component displays user profile information including:
+ * - Banner and avatar
+ * - Name and bio
+ * - Edit profile modal
+ * - Upcoming bookings
+ */
+const ProfilePage: React.FC = () => {
   const { user, setUser } = useAuth();
+
+  /** User's upcoming bookings */
   const [bookings, setBookings] = useState<BookingWithVenue[]>([]);
+
+  /** Loading state for fetching bookings */
   const [loadingBookings, setLoadingBookings] = useState(true);
+
+  /** Modal state for editing profile */
   const [isEditing, setIsEditing] = useState(false);
 
+  /** Default placeholder images */
   const defaultBanner = "https://via.placeholder.com/1200x300?text=Banner";
   const defaultAvatar = "https://via.placeholder.com/150?text=Avatar";
 
+  /**
+   * Fetch user's bookings when user is available
+   */
   useEffect(() => {
     if (!user) return;
 
     const fetchBookings = async () => {
       setLoadingBookings(true);
       try {
-        const data = await getUserBookingsWithVenue(user.name, user.accessToken);
+        const data = await getUserBookingsWithVenue(
+          user.name,
+          user.accessToken
+        );
         setBookings(data);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error(err);
         toast.error("Failed to load bookings");
       } finally {
@@ -35,7 +58,9 @@ const ProfilePage = () => {
   }, [user]);
 
   if (!user) {
-    return <p className="text-center mt-20">Please log in to view your profile</p>;
+    return (
+      <p className="text-center mt-20">Please log in to view your profile</p>
+    );
   }
 
   return (
@@ -115,7 +140,8 @@ const ProfilePage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {bookings.map((booking) => {
-              const venueImage = booking.venue?.media?.[0]?.url ?? defaultBanner;
+              const venueImage =
+                booking.venue?.media?.[0]?.url ?? defaultBanner;
               const venueName = booking.venue?.name ?? "Venue";
 
               return (
