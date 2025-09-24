@@ -4,7 +4,13 @@ import type { Venue } from "../types/venue";
 import VenueCard from "./venueCard";
 import VenueCardSkeleton from "./venueCardSkeleton";
 
-// Custom Left Arrow
+/**
+ * Custom previous arrow button for the carousel.
+ *
+ * @param {Object} props
+ * @param {() => void} [props.onClick] - Callback when the button is clicked
+ * @returns {JSX.Element} A styled button with a left chevron icon
+ */
 const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   <div
     className="absolute -left-6 sm:-left-8 md:-left-10 top-1/2 -translate-y-1/2 z-20 
@@ -17,7 +23,13 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   </div>
 );
 
-
+/**
+ * Custom next arrow button for the carousel.
+ *
+ * @param {Object} props
+ * @param {() => void} [props.onClick] - Callback when the button is clicked
+ * @returns {JSX.Element} A styled button with a right chevron icon
+ */
 const NextArrow = ({ onClick }: { onClick?: () => void }) => (
   <div
     className="absolute -right-6 sm:-right-8 md:-right-10 top-1/2 -translate-y-1/2 z-20 
@@ -31,17 +43,34 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
 );
 
 interface Props {
+  /** List of venues to display in the carousel */
   venues: Venue[];
+  /** Whether the carousel is in loading state (skeletons shown) */
   loading?: boolean;
-  skeletonCount?: number; 
+  /** Number of skeleton cards to render while loading */
+  skeletonCount?: number;
 }
 
-const VenueCarousel = ({ venues, loading = false, skeletonCount = 4 }: Props) => {
+/**
+ * Responsive carousel for displaying {@link VenueCard} components.
+ *
+ * Uses `react-slick` under the hood and supports autoplay, responsive
+ * breakpoints, and skeleton placeholders while data is loading.
+ *
+ * @component
+ * @param {Props} props
+ * @returns {JSX.Element} A carousel of venue cards
+ */
+const VenueCarousel = ({
+  venues,
+  loading = false,
+  skeletonCount = 4,
+}: Props) => {
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 4, 
+    slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
@@ -50,14 +79,12 @@ const VenueCarousel = ({ venues, loading = false, skeletonCount = 4 }: Props) =>
     responsive: [
       { breakpoint: 1536, settings: { slidesToShow: 3 } }, // xl
       { breakpoint: 1024, settings: { slidesToShow: 3 } }, // lg
-      { breakpoint: 768, settings: { slidesToShow: 2 } },  // sm
-      { breakpoint: 640, settings: { slidesToShow: 1 } },  // mobile
+      { breakpoint: 768, settings: { slidesToShow: 2 } }, // sm
+      { breakpoint: 640, settings: { slidesToShow: 1 } }, // mobile
     ],
   };
 
-  const items = loading
-    ? Array.from({ length: skeletonCount })
-    : venues;
+  const items = loading ? Array.from({ length: skeletonCount }) : venues;
 
   return (
     <div className="relative px-2 sm:px-4 lg:px-6">
