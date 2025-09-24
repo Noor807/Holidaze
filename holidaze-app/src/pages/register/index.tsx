@@ -3,16 +3,41 @@ import { registerUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [bio, setBio] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [banner, setBanner] = useState("");
-  const [error, setError] = useState("");
+/**
+ * Props for registration function
+ */
+interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  venueManager: boolean;
+  bio?: string;
+  avatar?: string;
+  banner?: string;
+}
+
+/**
+ * RegisterPage component provides registration form for:
+ * - Customer
+ * - Venue Manager
+ *
+ * Handles validation, registration API call, and redirects.
+ */
+const RegisterPage: React.FC = () => {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
+  const [banner, setBanner] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
+  /**
+   * Checks if a string is a valid URL
+   * @param url string
+   * @returns boolean
+   */
   const isValidUrl = (url: string) => {
     try {
       new URL(url);
@@ -22,6 +47,11 @@ const RegisterPage = () => {
     }
   };
 
+  /**
+   * Handles form submission for both customer and venue manager
+   * @param e React.FormEvent
+   * @param isVenueManager boolean
+   */
   const handleSubmit = async (e: React.FormEvent, isVenueManager: boolean) => {
     e.preventDefault();
     setError("");
@@ -38,7 +68,6 @@ const RegisterPage = () => {
       return;
     }
 
-    // Warn if password lacks special character
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
       toast.warn("Consider adding special characters (!@#$ etc.) to your password");
     }
@@ -53,17 +82,18 @@ const RegisterPage = () => {
       return;
     }
 
-    try {
-      await registerUser({
-        name,
-        email,
-        password,
-        venueManager: isVenueManager,
-        bio: bio || undefined,
-        avatar: avatar || undefined,
-        banner: banner || undefined,
-      });
+    const payload: RegisterPayload = {
+      name,
+      email,
+      password,
+      venueManager: isVenueManager,
+      bio: bio || undefined,
+      avatar: avatar || undefined,
+      banner: banner || undefined,
+    };
 
+    try {
+      await registerUser(payload);
       toast.success("Registration successful! Please log in.");
       navigate("/login");
     } catch (err: any) {
@@ -124,7 +154,7 @@ const RegisterPage = () => {
           <input
             type="url"
             placeholder="Avatar image URL"
-            aria-label="image input"
+            aria-label="avatar input"
             value={avatar}
             onChange={(e) => setAvatar(e.target.value)}
             className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
