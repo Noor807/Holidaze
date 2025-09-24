@@ -6,6 +6,7 @@ import { FaChevronDown, FaUser, FaChild, FaBaby, FaPaw } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+/** Represents the number of guests per type */
 interface Guests {
   adults: number;
   children: number;
@@ -13,6 +14,7 @@ interface Guests {
   pets: number;
 }
 
+/** Props for the BookingForm component */
 interface Props {
   venueId: string;
   venueOwner: string;
@@ -20,12 +22,14 @@ interface Props {
   unavailableDates?: Date[];
 }
 
+/** Option for a guest type with icon */
 interface GuestOption {
   type: keyof Guests;
   label: string;
   icon: JSX.Element;
 }
 
+/** Predefined guest options with labels and icons */
 const guestOptions: GuestOption[] = [
   { type: "adults", label: "Adults", icon: <FaUser /> },
   { type: "children", label: "Children", icon: <FaChild /> },
@@ -33,6 +37,15 @@ const guestOptions: GuestOption[] = [
   { type: "pets", label: "Pets", icon: <FaPaw /> },
 ];
 
+/**
+ * Controls for incrementing or decrementing guest counts.
+ *
+ * @param label - Display label for the guest type
+ * @param value - Current count
+ * @param icon - Icon representing the guest type
+ * @param onIncrement - Callback to increase the value
+ * @param onDecrement - Callback to decrease the value
+ */
 const GuestControl = ({
   label,
   value,
@@ -70,6 +83,16 @@ const GuestControl = ({
   </div>
 );
 
+/**
+ * Booking form component for a venue.
+ *
+ * Handles date selection, guest counts, pricing, and booking submission.
+ *
+ * @param venueId - ID of the venue to book
+ * @param venueOwner - Owner username of the venue
+ * @param pricePerNight - Base price per night
+ * @param unavailableDates - Optional dates that cannot be booked
+ */
 const BookingForm = ({
   venueId,
   venueOwner,
@@ -95,13 +118,14 @@ const BookingForm = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
   const lastFocused = useRef<HTMLElement | null>(null);
 
-  // Responsive months
+  // Adjust months shown in date picker based on window width
   useEffect(() => {
     const handleResize = () => setMonthsToShow(window.innerWidth >= 768 ? 2 : 1);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  /** Calculate number of nights */
   const nights = useMemo(() => {
     if (startDate && endDate) {
       return Math.max(
@@ -112,19 +136,29 @@ const BookingForm = ({
     return 1;
   }, [startDate, endDate]);
 
+  /** Calculate total number of guests */
   const totalGuests = useMemo(() => Object.values(guests).reduce((a, b) => a + b, 0), [guests]);
+
+  /** Base price before guest fee */
   const basePrice = useMemo(() => nights * pricePerNight, [nights, pricePerNight]);
+
+  /** Extra fee for additional guests beyond the first */
   const guestFee = useMemo(() => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0), [totalGuests]);
+
+  /** Total booking price including guest fees */
   const totalPrice = basePrice + guestFee;
 
+  /** Increment a specific guest type */
   const handleIncrement = useCallback((type: keyof Guests) => {
     setGuests(prev => ({ ...prev, [type]: prev[type] + 1 }));
   }, []);
 
+  /** Decrement a specific guest type */
   const handleDecrement = useCallback((type: keyof Guests) => {
     setGuests(prev => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
   }, []);
 
+  /** Confirm booking and submit to API */
   const handleConfirmBooking = useCallback(async () => {
     if (!user) return toast.error("Please log in to book.");
     if (user.name && user.name === venueOwner) return toast.error("You cannot book your own venue.");
@@ -154,17 +188,19 @@ const BookingForm = ({
     }
   }, [user, venueOwner, startDate, endDate, totalGuests, totalPrice, venueId]);
 
+  /** Open booking modal and save last focused element */
   const openModal = useCallback(() => {
     lastFocused.current = document.activeElement as HTMLElement;
     setShowModal(true);
   }, []);
 
+  /** Close booking modal and restore focus */
   const closeModal = useCallback(() => {
     setShowModal(false);
     lastFocused.current?.focus();
   }, []);
 
-  // Trap focus in modal
+  // Trap focus inside modal for accessibility
   useEffect(() => {
     if (!showModal || !modalRef.current) return;
     const focusable = modalRef.current.querySelectorAll<HTMLElement>(
@@ -194,9 +230,7 @@ const BookingForm = ({
   return (
     <main className="max-w-5xl mx-auto px-4 py-8 bg-gradient-to-r from-green-200 to-blue-200">
       <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
-        {/* Dates & Guests */}
         <section className="space-y-6 w-full">
-          {/* Calendar */}
           <div className="bg-white p-4 gap-0 flex flex-col rounded-2xl shadow-md custom-datepicker">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Select Dates</h2>
             <DatePicker
@@ -217,7 +251,6 @@ const BookingForm = ({
             />
           </div>
 
-          {/* Guests */}
           <div className="bg-white p-4 rounded-2xl shadow-md">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Guests</h2>
             <button
@@ -247,7 +280,6 @@ const BookingForm = ({
           </div>
         </section>
 
-        {/* Booking Summary */}
         <aside className="bg-white p-4 rounded-2xl shadow-md sticky top-6 space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">Booking Summary</h2>
           <div className="space-y-2">
@@ -268,7 +300,6 @@ const BookingForm = ({
         </aside>
       </form>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div

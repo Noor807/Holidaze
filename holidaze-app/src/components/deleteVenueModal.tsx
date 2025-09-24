@@ -4,13 +4,22 @@ import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+/** Props for the DeleteVenueButton component */
 interface Props {
+  /** ID of the venue to delete */
   id: string;
-  redirectAfterDelete?: boolean; 
-  onDeleted?: () => void; 
-  className?: string;       
+  /** Whether to redirect to /venues after deletion */
+  redirectAfterDelete?: boolean;
+  /** Callback triggered after deletion if not redirecting */
+  onDeleted?: () => void;
+  /** Additional CSS classes for the button */
+  className?: string;
 }
 
+/**
+ * Button component that handles deleting a venue with confirmation modal.
+ * Supports optional redirect or callback after deletion.
+ */
 const DeleteVenueButton: React.FC<Props> = ({
   id,
   redirectAfterDelete = false,
@@ -24,7 +33,11 @@ const DeleteVenueButton: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // --- Delete handler ---
+  /**
+   * Handles deleting the venue.
+   * Shows toast messages for success/error.
+   * Redirects or triggers callback depending on props.
+   */
   const handleDelete = useCallback(async () => {
     if (!token) {
       toast.error("Please log in to delete venues.");
@@ -51,7 +64,6 @@ const DeleteVenueButton: React.FC<Props> = ({
 
   return (
     <>
-      {/* Delete button */}
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -60,7 +72,6 @@ const DeleteVenueButton: React.FC<Props> = ({
         Delete
       </button>
 
-      {/* Confirmation Modal */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -70,11 +81,15 @@ const DeleteVenueButton: React.FC<Props> = ({
           aria-describedby="delete-venue-desc"
         >
           <div className="bg-black/70 p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 id="delete-venue-title" className="text-lg text-gray-300 font-semibold mb-3">
+            <h2
+              id="delete-venue-title"
+              className="text-lg text-gray-300 font-semibold mb-3"
+            >
               Delete Venue
             </h2>
             <p id="delete-venue-desc" className="text-gray-300 mb-6">
-              Are you sure you want to delete this venue? This action cannot be undone.
+              Are you sure you want to delete this venue? This action cannot be
+              undone.
             </p>
 
             <div className="flex justify-end gap-3">
