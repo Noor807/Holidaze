@@ -1,34 +1,63 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
-import { getUserBookingsWithVenue, type BookingWithVenue } from "../../api/bookings";
+import {
+  getUserBookingsWithVenue,
+  type BookingWithVenue,
+} from "../../api/bookings";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import VenueCardSkeleton from "../../components/venueCardSkeleton";
 
+/**
+ * MyBookingsPage component displays all bookings of the logged-in user.
+ *
+ * Features:
+ * - Fetches bookings from the API when user is available
+ * - Supports sorting by latest or previous bookings
+ * - Shows loading skeletons while fetching
+ * - Handles empty state and errors
+ *
+ * @component
+ * @returns {JSX.Element} My Bookings Page
+ */
 const MyBookingsPage: React.FC = () => {
   const { user } = useAuth();
+
+  /** State holding fetched bookings */
   const [bookings, setBookings] = useState<BookingWithVenue[]>([]);
+
+  /** Loading state for API calls */
   const [loading, setLoading] = useState<boolean>(true);
+
+  /** Sorting state: true = latest first, false = previous first */
   const [sortLatest, setSortLatest] = useState<boolean>(true);
 
+  /** Default image if venue has no media */
   const defaultImage = "https://via.placeholder.com/300?text=No+Image";
 
-  // Fetch bookings when user is available
+  /**
+   * Fetch user bookings when the user is available.
+   * Sorts bookings by latest by default.
+   */
   useEffect(() => {
     if (!user) return;
 
     const fetchBookings = async () => {
       setLoading(true);
       try {
-        const data = await getUserBookingsWithVenue(user.name, user.accessToken);
+        const data = await getUserBookingsWithVenue(
+          user.name,
+          user.accessToken
+        );
 
-        // Sort by latest by default
         const sorted = [...data].sort(
-          (a, b) => new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
+          (a, b) =>
+            new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
         );
         setBookings(sorted);
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to fetch bookings";
+        const message =
+          err instanceof Error ? err.message : "Failed to fetch bookings";
         console.error(err);
         toast.error(message);
       } finally {
@@ -39,7 +68,11 @@ const MyBookingsPage: React.FC = () => {
     fetchBookings();
   }, [user]);
 
-  // Sorting function
+  /**
+   * Sorts bookings by latest or previous.
+   *
+   * @param {boolean} latest - Whether to sort by latest first
+   */
   const sortBookings = (latest: boolean) => {
     setSortLatest(latest);
     setBookings((prev) =>
@@ -61,14 +94,16 @@ const MyBookingsPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Header */}
+      {/* Header with sorting */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Bookings</h1>
         <div className="flex gap-3">
           <button
             onClick={() => sortBookings(true)}
             className={`px-4 py-2 rounded transition ${
-              sortLatest ? "bg-gray-600 text-white" : "bg-gray-200 text-gray-700"
+              sortLatest
+                ? "bg-gray-600 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
           >
             Latest
@@ -76,7 +111,9 @@ const MyBookingsPage: React.FC = () => {
           <button
             onClick={() => sortBookings(false)}
             className={`px-4 py-2 rounded transition ${
-              !sortLatest ? "bg-gray-600 text-white" : "bg-gray-200 text-gray-700"
+              !sortLatest
+                ? "bg-gray-600 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
           >
             Previous
@@ -84,7 +121,7 @@ const MyBookingsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Bookings */}
+      {/* Bookings grid */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, idx) => (
@@ -129,7 +166,9 @@ const MyBookingsPage: React.FC = () => {
 
                 {/* Booking details */}
                 <div className="p-4">
-                  <h2 className="text-xl font-semibold mb-1">{venue?.name || "Unknown Venue"}</h2>
+                  <h2 className="text-xl font-semibold mb-1">
+                    {venue?.name || "Unknown Venue"}
+                  </h2>
                   <p className="text-gray-600">
                     <span className="font-medium">Check In:</span>{" "}
                     {new Date(booking.dateFrom).toLocaleDateString()}
