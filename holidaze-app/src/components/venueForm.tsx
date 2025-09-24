@@ -127,7 +127,7 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-500 transition z-10"
+        className="absolute top-4 left-4 px-3 py-1 text-gray-600 font-semibold rounded hover:bg-gray-200 transition z-10"
       >
         ← Back
       </button>

@@ -32,6 +32,14 @@ export interface BookingWithVenue {
 // -------------------------
 // Helpers
 // -------------------------
+
+/**
+ * Handles fetch API responses and throws an error if the response is not ok.
+ *
+ * @param res - The fetch Response object
+ * @returns The parsed JSON object
+ * @throws Error if response is not ok
+ */
 const handleResponse = async (res: Response) => {
   const json = await res.json();
   if (!res.ok) {
@@ -43,10 +51,16 @@ const handleResponse = async (res: Response) => {
 // -------------------------
 // Create a new booking
 // -------------------------
-export const createBooking = async (
-  data: BookingPayload,
-  token: string
-) => {
+
+/**
+ * Creates a new booking for a venue.
+ *
+ * @param data - Booking information
+ * @param token - User authentication token
+ * @returns The created booking object
+ * @throws Error if no token is provided or API request fails
+ */
+export const createBooking = async (data: BookingPayload, token: string) => {
   if (!token) throw new Error("No API token provided");
 
   const res = await fetch(API_BOOKINGS, {
@@ -61,6 +75,15 @@ export const createBooking = async (
 // -------------------------
 // Get all bookings of a user WITH venue info
 // -------------------------
+
+/**
+ * Fetches all bookings of a user including venue details.
+ *
+ * @param username - Username of the user
+ * @param token - User authentication token
+ * @returns Array of BookingWithVenue objects
+ * @throws Error if no token is provided or API request fails
+ */
 export const getUserBookingsWithVenue = async (
   username: string,
   token: string
