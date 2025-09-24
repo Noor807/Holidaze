@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+/**
+ * Represents the number of guests in a booking.
+ */
 export interface Guests {
   adults: number;
   children: number;
@@ -7,19 +10,37 @@ export interface Guests {
   pets: number;
 }
 
+/**
+ * Props for the GuestSelector component.
+ */
 interface GuestSelectorProps {
+  /** Current guest counts */
   guests: Guests;
+  /** Maximum allowed adults + children */
   maxGuests: number;
+  /** Callback triggered when guest counts change */
   onChange: (newGuests: Guests) => void;
 }
 
-const GuestSelector: React.FC<GuestSelectorProps> = ({ guests, maxGuests, onChange }) => {
+/**
+ * GuestSelector component allows selecting the number of adults, children, infants, and pets.
+ * Prevents exceeding maxGuests for adults + children.
+ */
+const GuestSelector: React.FC<GuestSelectorProps> = ({
+  guests,
+  maxGuests,
+  onChange,
+}) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const totalAdultsChildren = guests.adults + guests.children;
 
   const increment = (type: keyof Guests) => {
-    if ((type === "adults" || type === "children") && totalAdultsChildren >= maxGuests) return;
+    if (
+      (type === "adults" || type === "children") &&
+      totalAdultsChildren >= maxGuests
+    )
+      return;
     onChange({ ...guests, [type]: guests[type] + 1 });
   };
 
@@ -30,7 +51,8 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({ guests, maxGuests, onChan
     }
   };
 
-  const guestSummary = `${totalAdultsChildren} adults/children` +
+  const guestSummary =
+    `${totalAdultsChildren} adults/children` +
     (guests.infants ? `, ${guests.infants} infants` : "") +
     (guests.pets ? `, ${guests.pets} pets` : "");
 
@@ -52,31 +74,35 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({ guests, maxGuests, onChan
           role="menu"
           aria-label="Select number of guests"
         >
-          {(["adults", "children", "infants", "pets"] as (keyof Guests)[]).map((type) => (
-            <div key={type} className="flex items-center justify-between">
-              <span className="capitalize">{type}</span>
-              <div className="flex items-center space-x-2">
-                <button
-                  type="button"
-                  onClick={() => decrement(type)}
-                  disabled={type === "adults" ? guests.adults <= 1 : guests[type] <= 0}
-                  className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label={`Decrease ${type}`}
-                >
-                  -
-                </button>
-                <span aria-live="polite">{guests[type]}</span>
-                <button
-                  type="button"
-                  onClick={() => increment(type)}
-                  className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label={`Increase ${type}`}
-                >
-                  +
-                </button>
+          {(["adults", "children", "infants", "pets"] as (keyof Guests)[]).map(
+            (type) => (
+              <div key={type} className="flex items-center justify-between">
+                <span className="capitalize">{type}</span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => decrement(type)}
+                    disabled={
+                      type === "adults" ? guests.adults <= 1 : guests[type] <= 0
+                    }
+                    className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label={`Decrease ${type}`}
+                  >
+                    -
+                  </button>
+                  <span aria-live="polite">{guests[type]}</span>
+                  <button
+                    type="button"
+                    onClick={() => increment(type)}
+                    className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label={`Increase ${type}`}
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       )}
     </div>

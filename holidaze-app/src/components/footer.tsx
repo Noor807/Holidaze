@@ -1,20 +1,22 @@
 import { Link } from "react-router-dom";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 
+/**
+ * Footer component for the website.
+ * Displays site info, navigation links, support links, and social media.
+ */
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white py-8 px-4 md:px-12 mt-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-        
-        {/* About Section */}
         <div>
           <h3 className="font-semibold text-lg mb-3">About Holidaze</h3>
           <p className="text-gray-400 text-sm">
-            Holidaze helps travelers find and book amazing venues around the world.
+            Holidaze helps travelers find and book amazing venues around the
+            world.
           </p>
         </div>
 
-        {/* Quick Links */}
         <nav aria-label="Quick links">
           <h3 className="font-semibold text-lg mb-3">Quick Links</h3>
           <ul className="space-y-2 text-gray-400 text-sm">
@@ -33,7 +35,6 @@ const Footer = () => {
           </ul>
         </nav>
 
-        {/* Support */}
         <nav aria-label="Support links">
           <h3 className="font-semibold text-lg mb-3">Support</h3>
           <ul className="space-y-2 text-gray-400 text-sm">
@@ -51,7 +52,6 @@ const Footer = () => {
           </ul>
         </nav>
 
-        {/* Social Media */}
         <div>
           <h3 className="font-semibold text-lg mb-3">Follow Us</h3>
           <div className="flex space-x-6">
@@ -77,7 +77,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom row */}
       <div className="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500 text-sm">
         &copy; {new Date().getFullYear()} Holidaze. Made by Noor Irfan.
       </div>
