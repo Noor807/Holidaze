@@ -1,24 +1,54 @@
 import { useNavigate } from "react-router-dom";
-import { FaStar, FaStarHalfAlt, FaRegStar, FaUserFriends } from "react-icons/fa";
+import {
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+  FaUserFriends,
+} from "react-icons/fa";
 import { type Venue } from "../types/venue";
 
+/**
+ * Props for the VenueCard component.
+ */
 interface VenueCardProps {
+  /** Venue data to display */
   venue: Venue;
+  /** Optional callback triggered when the edit button is clicked */
   onEdit?: () => void;
+  /** Optional callback triggered when the delete button is clicked */
   onDelete?: () => void;
 }
 
+/**
+ * A card component for displaying venue details such as image, rating, price,
+ * description, and optional edit/delete controls.
+ *
+ * @component
+ * @param {VenueCardProps} props - Props for the VenueCard
+ * @returns {JSX.Element} The rendered venue card
+ */
 const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
   const navigate = useNavigate();
 
+  /**
+   * Navigate to the venue detail page when the card is clicked.
+   */
   const handleClick = () => {
     navigate(`/venues/${venue.id}`);
   };
 
-  // Render stars for rating
+  /**
+   * Render star rating icons based on the venue's rating.
+   *
+   * - Full star for each whole rating point
+   * - Half star for .5 rating
+   * - Empty star for remaining slots up to 5
+   *
+   * @returns {JSX.Element[]} Array of star icons
+   */
   const renderStars = () => {
     const stars = [];
-    const rating = Math.round((venue.rating ?? 0) * 2) / 2; // default to 0
+    const rating = Math.round((venue.rating ?? 0) * 2) / 2; // Round to nearest half
     for (let i = 1; i <= 5; i++) {
       if (i <= rating) {
         stars.push(<FaStar key={i} className="text-yellow-400" />);
@@ -82,7 +112,9 @@ const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
         <p className="text-green-700 absolute top-4 right-4 flex items-center gap-1 font-semibold">
           {venue.maxGuests} <FaUserFriends />
         </p>
-        <h2 className="text-lg font-semibold mt-5 mb-1 truncate">{venue.name}</h2>
+        <h2 className="text-lg font-semibold mt-5 mb-1 truncate">
+          {venue.name}
+        </h2>
         <p className="text-gray-600 line-clamp-3">{venue.description}</p>
       </div>
 

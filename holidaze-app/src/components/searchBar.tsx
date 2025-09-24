@@ -1,18 +1,46 @@
-import { useState, useEffect, useRef, type ChangeEvent, type KeyboardEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../constants/apiEndpoints";
 
+/**
+ * Venue interface for search results.
+ */
 interface Venue {
+  /** Venue unique identifier */
   id?: string;
+  /** Optional MongoDB-style identifier */
   _id?: string;
+  /** Venue name */
   name: string;
+  /** Array of media objects with image URLs */
   media?: { url: string }[];
 }
 
+/**
+ * Props for the SearchBar component.
+ */
 interface SearchBarProps {
-  onSearch?: (query: string) => void; 
+  /**
+   * Optional callback triggered when a search query is entered.
+   * @param query - The search string
+   */
+  onSearch?: (query: string) => void;
 }
 
+/**
+ * A search bar component that allows users to search venues by name,
+ * displays autocomplete suggestions, and supports keyboard navigation.
+ *
+ * @component
+ * @param {SearchBarProps} props - Props for the SearchBar
+ * @returns {JSX.Element} The rendered search bar
+ */
 const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [value, setValue] = useState("");
   const [results, setResults] = useState<Venue[]>([]);
@@ -21,7 +49,9 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
   const resultsRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
 
-  // Debounced search effect
+  /**
+   * Debounced effect to fetch venues from API when the input value changes.
+   */
   useEffect(() => {
     if (!value) {
       setResults([]);
@@ -33,14 +63,16 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
     const timeout = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/holidaze/venues/search?q=${encodeURIComponent(value)}`);
+        const res = await fetch(
+          `${API_BASE}/holidaze/venues/search?q=${encodeURIComponent(value)}`
+        );
         if (!res.ok) throw new Error("Failed to fetch venues");
 
         const json = await res.json();
         const venues: Venue[] = json.data ?? [];
         setResults(venues);
         setHighlightedIndex(-1);
-        onSearch?.(value); 
+        onSearch?.(value);
       } catch (err) {
         console.error(err);
         setResults([]);
@@ -52,15 +84,28 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
     return () => clearTimeout(timeout);
   }, [value, onSearch]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  /**
+   * Handles text input changes.
+   * @param e - Input change event
+   */
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setValue(e.target.value);
 
+  /**
+   * Handles selecting a venue from the results.
+   * @param venue - The selected venue
+   */
   const handleSelect = (venue: Venue) => {
     setValue("");
     setResults([]);
     navigate(`/venues/${venue.id ?? venue._id}`);
-    onSearch?.(""); 
+    onSearch?.("");
   };
 
+  /**
+   * Handles keyboard navigation for search results.
+   * @param e - Keyboard event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (results.length === 0) return;
 
@@ -69,7 +114,9 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
       setHighlightedIndex((prev) => (prev + 1) % results.length);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setHighlightedIndex((prev) => (prev - 1 + results.length) % results.length);
+      setHighlightedIndex(
+        (prev) => (prev - 1 + results.length) % results.length
+      );
     } else if (e.key === "Enter") {
       e.preventDefault();
       if (highlightedIndex >= 0) handleSelect(results[highlightedIndex]);
@@ -79,6 +126,9 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
     }
   };
 
+  /**
+   * Clears the input and resets results.
+   */
   const clearInput = () => {
     setValue("");
     setResults([]);
@@ -97,7 +147,11 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         aria-autocomplete="list"
         aria-label="input search"
         aria-controls="search-results"
-        aria-activedescendant={highlightedIndex >= 0 ? `search-result-${highlightedIndex}` : undefined}
+        aria-activedescendant={
+          highlightedIndex >= 0
+            ? `search-result-${highlightedIndex}`
+            : undefined
+        }
         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600"
       />
 
@@ -106,7 +160,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         <button
           type="button"
           onClick={clearInput}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full  hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600"
           aria-label="Clear search"
         >
           ✕
@@ -134,7 +188,9 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
                 onMouseLeave={() => setHighlightedIndex(-1)}
                 onClick={() => handleSelect(venue)}
                 className={`w-full text-left p-2 flex items-center gap-2 ${
-                  index === highlightedIndex ? "bg-green-600 text-white" : "hover:bg-gray-100"
+                  index === highlightedIndex
+                    ? "bg-green-600 text-white"
+                    : "hover:bg-gray-100"
                 }`}
               >
                 <img

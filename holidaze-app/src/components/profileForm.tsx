@@ -1,17 +1,42 @@
 import { useState } from "react";
-import { updateUserProfile, type Media, type UserProfileUpdate } from "../api/profiles";
+import {
+  updateUserProfile,
+  type Media,
+  type UserProfileUpdate,
+} from "../api/profiles";
 import { toast } from "react-toastify";
 
+/**
+ * Props for the ProfileForm component.
+ */
 interface ProfileFormProps {
+  /** The username of the profile being updated */
   userName: string;
+  /** Authentication token for API requests */
   token: string;
+  /** Initial biography text (optional) */
   initialBio?: string;
+  /** Initial avatar image (optional) */
   initialAvatar?: Media;
+  /** Initial banner image (optional) */
   initialBanner?: Media;
+  /**
+   * Callback fired when the profile is successfully updated.
+   * @param updatedProfile - Updated profile data (bio, avatar, banner).
+   */
   onUpdate: (updatedProfile: UserProfileUpdate) => void;
+  /** Callback fired when the form is closed without saving */
   onClose: () => void;
 }
 
+/**
+ * A form that allows users to update their profile details,
+ * including bio, avatar, and banner.
+ *
+ * @component
+ * @param {ProfileFormProps} props - Props for the ProfileForm component
+ * @returns {JSX.Element} The rendered form for updating the user profile
+ */
 const ProfileForm = ({
   userName,
   token,
@@ -26,6 +51,11 @@ const ProfileForm = ({
   const [banner, setBanner] = useState<Media | undefined>(initialBanner);
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Handles form submission to update the user's profile.
+   *
+   * @param e - Form submission event
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -56,9 +86,11 @@ const ProfileForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Bio */}
+      {/* Bio Field */}
       <div>
-        <label htmlFor="bio" className="block mb-1 font-medium">Bio</label>
+        <label htmlFor="bio" className="block mb-1 font-medium">
+          Bio
+        </label>
         <textarea
           id="bio"
           value={bio}
@@ -68,9 +100,11 @@ const ProfileForm = ({
         />
       </div>
 
-      {/* Avatar URL */}
+      {/* Avatar Field */}
       <div>
-        <label htmlFor="avatar" className="block mb-1 font-medium">Avatar URL</label>
+        <label htmlFor="avatar" className="block mb-1 font-medium">
+          Avatar URL
+        </label>
         <input
           id="avatar"
           type="text"
@@ -88,9 +122,11 @@ const ProfileForm = ({
         )}
       </div>
 
-      {/* Banner URL */}
+      {/* Banner Field */}
       <div>
-        <label htmlFor="banner" className="block mb-1 font-medium">Banner URL</label>
+        <label htmlFor="banner" className="block mb-1 font-medium">
+          Banner URL
+        </label>
         <input
           id="banner"
           type="text"
