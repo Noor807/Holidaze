@@ -7,19 +7,39 @@ import { useNavigate, useLocation } from "react-router-dom";
 import DeleteVenueButton from "../../components/deleteVenueModal";
 import VenueCardSkeleton from "../../components/venueCardSkeleton";
 
+/**
+ * MyVenuesPage component displays venues created by the logged-in user.
+ *
+ * Features:
+ * - Fetches user's venues from the API
+ * - Handles Create/Edit updates via navigation state
+ * - Shows loading skeletons while fetching
+ * - Supports editing and deleting venues
+ *
+ * @component
+ * @returns {JSX.Element} My Venues Page
+ */
 const MyVenuesPage: React.FC = () => {
   const { user } = useAuth();
   const token = user?.accessToken;
   const navigate = useNavigate();
   const location = useLocation();
+
+  /** Array of user's venues */
   const [venues, setVenues] = useState<Venue[]>([]);
+
+  /** Loading state for venues */
   const [loadingVenues, setLoadingVenues] = useState<boolean>(true);
 
+  /** Default image if venue has no media */
   const defaultImage = "https://via.placeholder.com/300?text=No+Image";
 
-  // Handle updated venue from Create/Edit page
+  /**
+   * Handle updated venue from Create/Edit page via location state
+   */
   useEffect(() => {
-    const updatedVenue = (location.state as { updatedVenue?: Venue })?.updatedVenue;
+    const updatedVenue = (location.state as { updatedVenue?: Venue })
+      ?.updatedVenue;
     if (updatedVenue) {
       setVenues((prev) => {
         const exists = prev.find((v) => v.id === updatedVenue.id);
@@ -31,7 +51,9 @@ const MyVenuesPage: React.FC = () => {
     }
   }, [location.state, navigate]);
 
-  // Fetch venues
+  /**
+   * Fetches venues for the logged-in user.
+   */
   const fetchVenues = useCallback(async () => {
     if (!token || !user) return;
     setLoadingVenues(true);
@@ -39,24 +61,27 @@ const MyVenuesPage: React.FC = () => {
       const data = await getMyVenues(user.name, token);
       setVenues(data);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to fetch venues";
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch venues";
       toast.error(message);
     } finally {
       setLoadingVenues(false);
     }
   }, [token, user]);
 
+  /** Fetch venues when component mounts or token/user changes */
   useEffect(() => {
     fetchVenues();
   }, [fetchVenues]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Venues</h1>
         <button
           onClick={() => navigate("/my-venues/new")}
-          className="px-4 py-2  font-semibold border-2 bg-white text-gray-600 rounded hover:bg-green-400 transition"
+          className="px-4 py-2 font-semibold border-2 bg-white text-gray-600 rounded hover:bg-green-400 transition"
         >
           + Venue
         </button>
@@ -107,19 +132,20 @@ const MyVenuesPage: React.FC = () => {
                     ${venue.price.toLocaleString()} / night
                   </p>
 
-                  {/* Footer buttons matching skeleton */}
+                  {/* Footer buttons */}
                   <div className="flex justify-end gap-2 p-2 border-t mt-auto">
                     <button
                       onClick={() => navigate(`/my-venues/${venue.id}/edit`)}
-                      className="h-9 w-18 px-3 py-1 bg-green-600
-                       text-white border-1 text-sm font-semibold rounded hover:bg-green-400 transition"
+                      className="h-9 w-18 px-3 py-1 bg-green-600 text-white border-1 text-sm font-semibold rounded hover:bg-green-400 transition"
                     >
                       Edit
                     </button>
                     <DeleteVenueButton
                       id={venue.id}
                       onDeleted={() =>
-                        setVenues((prev) => prev.filter((v) => v.id !== venue.id))
+                        setVenues((prev) =>
+                          prev.filter((v) => v.id !== venue.id)
+                        )
                       }
                       className="h-6 w-16 bg-gray-300 text-white text-sm rounded hover:bg-gray-600 transition"
                     />
