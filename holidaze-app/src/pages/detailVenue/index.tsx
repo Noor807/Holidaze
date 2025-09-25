@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   FaWifi,
@@ -18,8 +18,8 @@ import type { Venue } from "../../types/venue";
 const DEFAULT_MAP_COORDS = { lat: 51.505, lng: -0.09 };
 
 /**
- * ImagePlaceholder component for loading skeletons or missing images.
- * @param size - Size of the placeholder ("lg" for large, "sm" for small)
+ * Placeholder component for venue images while loading or missing media.
+ * @param size - Determines the size of the placeholder ("lg" or "sm").
  */
 const ImagePlaceholder: React.FC<{ size?: "lg" | "sm" }> = ({
   size = "lg",
@@ -48,9 +48,9 @@ const ImagePlaceholder: React.FC<{ size?: "lg" | "sm" }> = ({
 );
 
 /**
- * Custom hook to fetch venue details including bookings and owner info.
- * @param id - Venue ID from the URL params
- * @returns venue data, loading state, error, and unavailable dates
+ * Custom hook to fetch a venue by ID including bookings and owner info.
+ * @param id - Venue ID.
+ * @returns Venue data, loading state, error, and unavailable dates.
  */
 const useVenue = (id: string | undefined) => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -89,7 +89,7 @@ const useVenue = (id: string | undefined) => {
           );
           setUnavailableDates(dates);
         }
-      } catch (err: any) {
+      } catch (err) {
         setError("Failed to load venue details");
         toast.error("Failed to load venue details");
       } finally {
@@ -104,8 +104,8 @@ const useVenue = (id: string | undefined) => {
 };
 
 /**
- * RenderStars component renders the star rating for a venue.
- * @param rating - Number of stars (0-5)
+ * Render star rating for a venue.
+ * @param rating - Rating number (0-5).
  */
 const RenderStars: React.FC<{ rating: number }> = ({ rating }) => (
   <div
@@ -123,8 +123,8 @@ const RenderStars: React.FC<{ rating: number }> = ({ rating }) => (
 );
 
 /**
- * VenueImages component renders the main venue image and gallery.
- * @param media - Array of media objects for the venue
+ * Display venue images with grid for additional images.
+ * @param media - Array of media objects from venue.
  */
 const VenueImages: React.FC<{ media: Venue["media"] }> = ({ media }) => (
   <div className="space-y-4">
@@ -163,8 +163,8 @@ const VenueImages: React.FC<{ media: Venue["media"] }> = ({ media }) => (
 );
 
 /**
- * VenueInfo component renders venue title, rating, price, and owner info.
- * @param venue - Venue object
+ * Display detailed venue info including owner and bookings.
+ * @param venue - Venue object.
  */
 const VenueInfo: React.FC<{ venue: Venue }> = ({ venue }) => (
   <div className="space-y-2">
@@ -195,8 +195,8 @@ const VenueInfo: React.FC<{ venue: Venue }> = ({ venue }) => (
 );
 
 /**
- * VenueAmenities component renders the list of venue amenities.
- * @param meta - Venue meta object containing amenities
+ * Display venue amenities as a list of icons and labels.
+ * @param meta - Venue meta information.
  */
 const VenueAmenities: React.FC<{ meta: Venue["meta"] }> = ({ meta }) => (
   <section aria-label="Amenities" className="space-y-2">
@@ -209,26 +209,26 @@ const VenueAmenities: React.FC<{ meta: Venue["meta"] }> = ({ meta }) => (
     <ul className="space-y-2 text-gray-800 text-base sm:text-base">
       {meta?.wifi && (
         <li className="flex items-center space-x-2">
-          <FaWifi aria-hidden="true" />
-          <span>WiFi</span>
+          <FaWifi />
+          WiFi
         </li>
       )}
       {meta?.parking && (
         <li className="flex items-center space-x-2">
-          <FaParking aria-hidden="true" />
-          <span>Parking</span>
+          <FaParking />
+          Parking
         </li>
       )}
       {meta?.breakfast && (
         <li className="flex items-center space-x-2">
-          <FaCoffee aria-hidden="true" />
-          <span>Breakfast</span>
+          <FaCoffee />
+          Breakfast
         </li>
       )}
       {meta?.pets && (
         <li className="flex items-center space-x-2">
-          <FaPaw aria-hidden="true" />
-          <span>Pets allowed</span>
+          <FaPaw />
+          Pets allowed
         </li>
       )}
     </ul>
@@ -236,61 +236,8 @@ const VenueAmenities: React.FC<{ meta: Venue["meta"] }> = ({ meta }) => (
 );
 
 /**
- * VenueBooking component renders the booking form or login/register prompt.
- * @param isLoggedIn - Whether the user is logged in
- * @param isOwner - Whether the user is the venue owner
- * @param venue - Venue object
- * @param unavailableDates - Dates that cannot be booked
- */
-const VenueBooking: React.FC<{
-  isLoggedIn: boolean;
-  isOwner: boolean;
-  venue: Venue;
-  unavailableDates: Date[];
-}> = ({ isLoggedIn, isOwner, venue, unavailableDates }) => (
-  <section aria-label="Booking Form" className="space-y-4">
-    {isLoggedIn ? (
-      isOwner ? (
-        <p className="text-red-600 font-semibold">
-          You cannot book your own venue.
-        </p>
-      ) : (
-        <BookingForm
-          venueId={venue.id}
-          venueOwner={venue.owner?.name || ""}
-          pricePerNight={venue.price}
-          unavailableDates={unavailableDates}
-        />
-      )
-    ) : (
-      <div className="p-6 bg-emerald-100 rounded-lg shadow space-y-4">
-        <h3 className="text-gray-800 text-xl font-semibold">
-          Log in or register to book this venue
-        </h3>
-        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-          <Link
-            to="/login"
-            aria-label="Log in to book this venue"
-            className="flex-1 px-4 py-2 border border-black bg-white text-black rounded hover:bg-gray-300 text-center"
-          >
-            Log in
-          </Link>
-          <Link
-            to="/register"
-            aria-label="Register to book this venue"
-            className="flex-1 px-4 py-2 bg-black text-white rounded hover:bg-gray-700 text-center"
-          >
-            Register
-          </Link>
-        </div>
-      </div>
-    )}
-  </section>
-);
-
-/**
- * VenueLocation component renders a map showing the venue's location.
- * @param venue - Venue object
+ * Display a map of the venue's location.
+ * @param venue - Venue object with location info.
  */
 const VenueLocation: React.FC<{ venue: Venue }> = ({ venue }) => {
   const mapLat = venue.location?.lat || DEFAULT_MAP_COORDS.lat;
@@ -309,38 +256,34 @@ const VenueLocation: React.FC<{ venue: Venue }> = ({ venue }) => {
 };
 
 /**
- * DetailedVenuePage component renders the entire venue details page.
- * It shows images, title, rating, price, description, booking form, amenities, and map.
+ * Detailed venue page including booking form, images, amenities, and location.
  */
 const DetailedVenuePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
-  const { venue, loading, error, unavailableDates } = useVenue(id);
+  const {
+    venue,
+    loading,
+    error,
+    unavailableDates: initialUnavailableDates,
+  } = useVenue(id);
 
-  const isLoggedIn = useMemo(() => Boolean(user), [user]);
+  const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  useEffect(() => {
+    if (initialUnavailableDates) setUnavailableDates(initialUnavailableDates);
+  }, [initialUnavailableDates]);
+
   const isOwner = useMemo(
     () => user?.name === venue?.owner?.name,
     [user, venue]
   );
 
-  // Loading skeleton for full page
   if (loading)
-    return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <ImagePlaceholder size="lg" />
-        <div className="space-y-2">
-          <div className="h-6 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/6 animate-pulse"></div>
-          <div className="h-5 bg-gray-200 rounded w-1/4 animate-pulse"></div>
-        </div>
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
-        </div>
-      </div>
-    );
-
+    return <div className="max-w-4xl mx-auto px-4 py-8">Loading...</div>;
   if (error || !venue)
     return (
       <p className="text-center text-red-600 mt-10">
@@ -353,7 +296,6 @@ const DetailedVenuePage: React.FC = () => {
       <VenueImages media={venue.media} />
       <VenueInfo venue={venue} />
 
-      {/* Description */}
       <section className="space-y-2">
         <h2 className="text-lg sm:text-xl text-gray-700 font-semibold">
           About This Venue
@@ -363,15 +305,55 @@ const DetailedVenuePage: React.FC = () => {
         </p>
       </section>
 
-      <VenueBooking
-        isLoggedIn={isLoggedIn}
-        isOwner={isOwner}
-        venue={venue}
+      <BookingForm
+        venueId={venue.id}
+        venueOwner={venue.owner?.name || ""}
+        pricePerNight={venue.price}
         unavailableDates={unavailableDates}
+        isDisabled={isOwner}
+        onBookingSuccess={(bookedDates: Date[]) =>
+          setUnavailableDates((prev) => [...prev, ...bookedDates])
+        }
+        onRequireLogin={() => setShowAuthModal(true)}
       />
 
       <VenueAmenities meta={venue.meta} />
       <VenueLocation venue={venue} />
+
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm text-center">
+            <h2 className="text-lg font-semibold mb-4">Login or Register</h2>
+            <p className="text-gray-700 mb-6">
+              You need to log in or register to book this venue.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() =>
+                  navigate("/login", { state: { from: location } })
+                }
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                Login
+              </button>
+              <button
+                onClick={() =>
+                  navigate("/register", { state: { from: location } })
+                }
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Register
+              </button>
+            </div>
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="mt-6 text-gray-600 hover:text-gray-800 underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
