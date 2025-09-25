@@ -16,6 +16,7 @@
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "google-map-react": "^2.2.5",
+    "keen-slider": "^6.8.6",
     "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-date-range": "^2.0.1",

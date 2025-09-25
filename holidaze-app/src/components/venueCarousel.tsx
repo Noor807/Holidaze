@@ -1,98 +1,96 @@
-import Slider from "react-slick";
+import { useKeenSlider } from "keen-slider/react";
+import type { KeenSliderInstance } from "keen-slider";
+import "keen-slider/keen-slider.min.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import type { Venue } from "../types/venue";
 import VenueCard from "./venueCard";
 import VenueCardSkeleton from "./venueCardSkeleton";
 
-/**
- * Custom previous arrow button for the carousel.
- *
- * @param {Object} props
- * @param {() => void} [props.onClick] - Callback when the button is clicked
- * @returns {JSX.Element} A styled button with a left chevron icon
- */
-const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
-  <div
-    className="absolute -left-6 sm:-left-8 md:-left-10 top-1/2 -translate-y-1/2 z-20 
-               bg-black rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
-               flex items-center justify-center shadow-md cursor-pointer 
-               hover:bg-blue-400 transition"
-    onClick={onClick}
-  >
-    <FaChevronLeft className="text-white w-4 h-4 sm:w-5 sm:h-5" />
-  </div>
-);
-
-/**
- * Custom next arrow button for the carousel.
- *
- * @param {Object} props
- * @param {() => void} [props.onClick] - Callback when the button is clicked
- * @returns {JSX.Element} A styled button with a right chevron icon
- */
-const NextArrow = ({ onClick }: { onClick?: () => void }) => (
-  <div
-    className="absolute -right-6 sm:-right-8 md:-right-10 top-1/2 -translate-y-1/2 z-20 
-               bg-black rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
-               flex items-center justify-center shadow-md cursor-pointer 
-               hover:bg-gray-700 transition"
-    onClick={onClick}
-  >
-    <FaChevronRight className="text-white w-4 h-4 sm:w-5 sm:h-5" />
-  </div>
-);
-
 interface Props {
-  /** List of venues to display in the carousel */
+  /** Array of venues to display in the carousel */
   venues: Venue[];
-  /** Whether the carousel is in loading state (skeletons shown) */
+  /** Whether the data is still loading */
   loading?: boolean;
-  /** Number of skeleton cards to render while loading */
+  /** Number of skeleton cards to show while loading */
   skeletonCount?: number;
 }
 
 /**
- * Responsive carousel for displaying {@link VenueCard} components.
+ * Keen Slider Autoplay plugin.
+ * Automatically moves to the next slide every 3 seconds.
  *
- * Uses `react-slick` under the hood and supports autoplay, responsive
- * breakpoints, and skeleton placeholders while data is loading.
+ * @param slider - The KeenSlider instance
+ */
+function Autoplay(slider: KeenSliderInstance) {
+  let timeout: ReturnType<typeof setTimeout>;
+  let mouseOver = false;
+
+  const clearNextTimeout = () => clearTimeout(timeout);
+
+  const nextTimeout = () => {
+    clearTimeout(timeout);
+    if (mouseOver) return;
+    timeout = setTimeout(() => {
+      slider.next();
+    }, 3000);
+  };
+
+  slider.on("created", () => {
+    slider.container.addEventListener("mouseenter", () => {
+      mouseOver = true;
+      clearNextTimeout();
+    });
+    slider.container.addEventListener("mouseleave", () => {
+      mouseOver = false;
+      nextTimeout();
+    });
+    nextTimeout();
+  });
+
+  slider.on("dragStarted", clearNextTimeout);
+  slider.on("animationEnded", nextTimeout);
+  slider.on("updated", nextTimeout);
+}
+
+/**
+ * VenueCarousel component displays a horizontal carousel of Venue cards.
  *
- * @component
- * @param {Props} props
- * @returns {JSX.Element} A carousel of venue cards
+ * @param venues - Array of venues to display
+ * @param loading - Whether the carousel is in loading state
+ * @param skeletonCount - Number of skeleton placeholders to show while loading
  */
 const VenueCarousel = ({
   venues,
   loading = false,
   skeletonCount = 4,
 }: Props) => {
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    responsive: [
-      { breakpoint: 1536, settings: { slidesToShow: 3 } }, // xl
-      { breakpoint: 1024, settings: { slidesToShow: 3 } }, // lg
-      { breakpoint: 768, settings: { slidesToShow: 2 } }, // sm
-      { breakpoint: 640, settings: { slidesToShow: 1 } }, // mobile
-    ],
-  };
+  const [sliderRef, slider] = useKeenSlider<HTMLDivElement>(
+    {
+      loop: true,
+      slides: {
+        perView: 4,
+        spacing: 8,
+      },
+      breakpoints: {
+        "(max-width: 1536px)": { slides: { perView: 3, spacing: 8 } },
+        "(max-width: 1024px)": { slides: { perView: 3, spacing: 8 } },
+        "(max-width: 768px)": { slides: { perView: 2, spacing: 8 } },
+        "(max-width: 640px)": { slides: { perView: 1, spacing: 8 } },
+      },
+    },
+    [Autoplay]
+  );
 
   const items = loading ? Array.from({ length: skeletonCount }) : venues;
 
   return (
     <div className="relative px-2 sm:px-4 lg:px-6">
-      <Slider {...settings}>
+      {/* Slider container */}
+      <div ref={sliderRef} className="keen-slider">
         {items.map((item, index) => (
           <div
             key={loading ? `skeleton-${index}` : (item as Venue).id}
-            className="px-1 sm:px-2"
+            className="keen-slider__slide px-1 sm:px-2"
           >
             {loading ? (
               <VenueCardSkeleton />
@@ -101,7 +99,31 @@ const VenueCarousel = ({
             )}
           </div>
         ))}
-      </Slider>
+      </div>
+
+      {/* Prev arrow */}
+      <button
+        type="button"
+        onClick={() => slider.current?.prev()}
+        className="absolute -left-6 sm:-left-8 md:-left-10 top-1/2 -translate-y-1/2 z-20 
+                   bg-black rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
+                   flex items-center justify-center shadow-md cursor-pointer 
+                   hover:bg-blue-400 transition"
+      >
+        <FaChevronLeft className="text-white w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
+
+      {/* Next arrow */}
+      <button
+        type="button"
+        onClick={() => slider.current?.next()}
+        className="absolute -right-6 sm:-right-8 md:-right-10 top-1/2 -translate-y-1/2 z-20 
+                   bg-black rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
+                   flex items-center justify-center shadow-md cursor-pointer 
+                   hover:bg-gray-700 transition"
+      >
+        <FaChevronRight className="text-white w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
     </div>
   );
 };
