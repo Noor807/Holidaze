@@ -6,10 +6,13 @@ import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 
 interface Props {
+  /** Optional existing venue data for editing */
   initialData?: Venue;
+  /** Callback invoked after venue is successfully created/updated */
   onSubmit?: (venue: Venue) => void;
 }
 
+/** Shape of local form state for creating or editing a venue */
 interface FormState {
   name: string;
   description: string;
@@ -34,14 +37,26 @@ interface FormState {
   };
 }
 
+/**
+ * VenueForm component.
+ *
+ * Renders a responsive form to create or edit a venue. Handles local state,
+ * validation, and submission to the API.
+ *
+ * @param {Props} props - Component props
+ * @returns {JSX.Element} Venue form
+ */
 const VenueForm = ({ initialData, onSubmit }: Props) => {
   const { user } = useAuth();
   const token = user?.accessToken;
   const navigate = useNavigate();
 
-  if (!token) return <p className="text-red-500">Please login to manage venues.</p>;
+  if (!token)
+    return <p className="text-red-500">Please login to manage venues.</p>;
 
   const [loading, setLoading] = useState(false);
+
+  /** Local form state */
   const [form, setForm] = useState<FormState>({
     name: initialData?.name ?? "",
     description: initialData?.description ?? "",
@@ -68,10 +83,28 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
     },
   });
 
-  const handleChange = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+  /**
+   * Update a specific key in the form state
+   *
+   * @template K
+   * @param {K} key - Form field key
+   * @param {FormState[K]} value - New value for the field
+   */
+  const handleChange = <K extends keyof FormState>(
+    key: K,
+    value: FormState[K]
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  /**
+   * Handle form submission
+   *
+   * Creates or updates a venue via the API, displays toast messages,
+   * and calls onSubmit callback.
+   *
+   * @param {React.FormEvent} e - Form submit event
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -99,7 +132,11 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
         ? await updateVenue(initialData.id, payload, token)
         : await createVenue(payload, token);
 
-      toast.success(initialData ? "Venue updated successfully!" : "Venue created successfully!");
+      toast.success(
+        initialData
+          ? "Venue updated successfully!"
+          : "Venue created successfully!"
+      );
       onSubmit?.(venue);
       navigate(`/venues/${venue.id}`);
     } catch (err: any) {
@@ -117,9 +154,8 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
 
   return (
     <div className="relative max-w-4xl mx-auto p-4 sm:p-6 bg-white rounded shadow-md">
-
-      {/* Header with back button always on left */}
-      <div className="relative mb-6 ">
+      {/* Header with back button */}
+      <div className="relative mb-6">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -133,9 +169,8 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
         </h1>
       </div>
 
-      {/* Form */}
+      {/* Venue form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-
         {/* Name */}
         <input
           type="text"
@@ -171,7 +206,9 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
               placeholder={label}
               aria-label={label}
               value={form[key as keyof FormState] as number}
-              onChange={(e) => handleChange(key as keyof FormState, Number(e.target.value))}
+              onChange={(e) =>
+                handleChange(key as keyof FormState, Number(e.target.value))
+              }
               required={required}
               className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 text-sm border border-gray-400 bg-white rounded-lg 
                          focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -188,7 +225,10 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
                 type="checkbox"
                 checked={form.meta[key]}
                 onChange={(e) =>
-                  setForm({ ...form, meta: { ...form.meta, [key]: e.target.checked } })
+                  setForm({
+                    ...form,
+                    meta: { ...form.meta, [key]: e.target.checked },
+                  })
                 }
               />
               {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -200,7 +240,10 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
         <div>
           <h3 className="font-semibold text-gray-600 mb-2">Media</h3>
           {form.media.map((m, idx) => (
-            <div key={idx} className="flex flex-col sm:flex-row gap-2 mb-2 items-stretch sm:items-center">
+            <div
+              key={idx}
+              className="flex flex-col sm:flex-row gap-2 mb-2 items-stretch sm:items-center"
+            >
               <input
                 type="url"
                 placeholder="Image URL"
@@ -228,7 +271,10 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
               <button
                 type="button"
                 onClick={() =>
-                  setForm({ ...form, media: form.media.filter((_, i) => i !== idx) })
+                  setForm({
+                    ...form,
+                    media: form.media.filter((_, i) => i !== idx),
+                  })
                 }
                 className="px-2 py-1 bg-red-500 text-white rounded"
               >
@@ -238,7 +284,9 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
           ))}
           <button
             type="button"
-            onClick={() => setForm({ ...form, media: [...form.media, { url: "", alt: "" }] })}
+            onClick={() =>
+              setForm({ ...form, media: [...form.media, { url: "", alt: "" }] })
+            }
             className="px-3 font-semibold py-1 bg-green-500 text-white rounded"
           >
             + Add Image
@@ -247,26 +295,34 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
 
         {/* Location */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(["address", "city", "zip", "country", "continent"] as const).map((key) => (
-            <input
-              key={key}
-              type="text"
-              placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-              aria-label={key}
-              value={form.location[key]}
-              onChange={(e) =>
-                setForm({ ...form, location: { ...form.location, [key]: e.target.value } })
-              }
-              className="p-2 text-gray-500 bg-white border border-gray-400 rounded"
-            />
-          ))}
+          {(["address", "city", "zip", "country", "continent"] as const).map(
+            (key) => (
+              <input
+                key={key}
+                type="text"
+                placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                aria-label={key}
+                value={form.location[key]}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    location: { ...form.location, [key]: e.target.value },
+                  })
+                }
+                className="p-2 text-gray-500 bg-white border border-gray-400 rounded"
+              />
+            )
+          )}
           <input
             type="number"
             placeholder="Latitude"
             aria-label="Latitude"
             value={form.location.lat}
             onChange={(e) =>
-              setForm({ ...form, location: { ...form.location, lat: Number(e.target.value) } })
+              setForm({
+                ...form,
+                location: { ...form.location, lat: Number(e.target.value) },
+              })
             }
             className="p-2 text-gray-500 bg-white border border-gray-400 rounded"
           />
@@ -276,7 +332,10 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
             aria-label="Longitude"
             value={form.location.lng}
             onChange={(e) =>
-              setForm({ ...form, location: { ...form.location, lng: Number(e.target.value) } })
+              setForm({
+                ...form,
+                location: { ...form.location, lng: Number(e.target.value) },
+              })
             }
             className="p-2 text-gray-500 bg-white border border-gray-400 rounded"
           />
@@ -289,10 +348,13 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
             disabled={loading}
             className="px-4 py-2 font-semibold bg-green-500 text-white rounded hover:bg-green-600 transition w-full sm:w-auto"
           >
-            {loading ? "Saving..." : initialData ? "Update Venue" : "Create Venue"}
+            {loading
+              ? "Saving..."
+              : initialData
+              ? "Update Venue"
+              : "Create Venue"}
           </button>
         </div>
-
       </form>
     </div>
   );
