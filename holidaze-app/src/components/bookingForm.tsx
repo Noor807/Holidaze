@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, useCallback, useMemo, type JSX } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  type JSX,
+} from "react";
 import { useAuth } from "../context/authContext";
 import { createBooking } from "../api/bookings";
 import { toast } from "react-toastify";
@@ -60,7 +67,10 @@ const GuestControl = ({
   onDecrement: () => void;
 }) => (
   <div className="flex justify-between items-center">
-    <span className="flex items-center gap-1">{icon}{label}</span>
+    <span className="flex items-center gap-1">
+      {icon}
+      {label}
+    </span>
     <div className="flex gap-2">
       <button
         type="button"
@@ -83,16 +93,6 @@ const GuestControl = ({
   </div>
 );
 
-/**
- * Booking form component for a venue.
- *
- * Handles date selection, guest counts, pricing, and booking submission.
- *
- * @param venueId - ID of the venue to book
- * @param venueOwner - Owner username of the venue
- * @param pricePerNight - Base price per night
- * @param unavailableDates - Optional dates that cannot be booked
- */
 const BookingForm = ({
   venueId,
   venueOwner,
@@ -112,7 +112,7 @@ const BookingForm = ({
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [monthsToShow, setMonthsToShow] = useState(
-    typeof window !== "undefined" && window.innerWidth >= 768 ? 2 : 1
+    typeof window !== "undefined" && window.innerWidth >= 1024 ? 2 : 1
   );
 
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -120,7 +120,9 @@ const BookingForm = ({
 
   // Adjust months shown in date picker based on window width
   useEffect(() => {
-    const handleResize = () => setMonthsToShow(window.innerWidth >= 768 ? 2 : 1);
+    const handleResize = () => {
+      setMonthsToShow(window.innerWidth >= 1024 ? 2 : 1);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -137,32 +139,43 @@ const BookingForm = ({
   }, [startDate, endDate]);
 
   /** Calculate total number of guests */
-  const totalGuests = useMemo(() => Object.values(guests).reduce((a, b) => a + b, 0), [guests]);
+  const totalGuests = useMemo(
+    () => Object.values(guests).reduce((a, b) => a + b, 0),
+    [guests]
+  );
 
   /** Base price before guest fee */
-  const basePrice = useMemo(() => nights * pricePerNight, [nights, pricePerNight]);
+  const basePrice = useMemo(
+    () => nights * pricePerNight,
+    [nights, pricePerNight]
+  );
 
   /** Extra fee for additional guests beyond the first */
-  const guestFee = useMemo(() => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0), [totalGuests]);
+  const guestFee = useMemo(
+    () => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0),
+    [totalGuests]
+  );
 
   /** Total booking price including guest fees */
   const totalPrice = basePrice + guestFee;
 
   /** Increment a specific guest type */
   const handleIncrement = useCallback((type: keyof Guests) => {
-    setGuests(prev => ({ ...prev, [type]: prev[type] + 1 }));
+    setGuests((prev) => ({ ...prev, [type]: prev[type] + 1 }));
   }, []);
 
   /** Decrement a specific guest type */
   const handleDecrement = useCallback((type: keyof Guests) => {
-    setGuests(prev => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
+    setGuests((prev) => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
   }, []);
 
   /** Confirm booking and submit to API */
   const handleConfirmBooking = useCallback(async () => {
     if (!user) return toast.error("Please log in to book.");
-    if (user.name && user.name === venueOwner) return toast.error("You cannot book your own venue.");
-    if (!startDate || !endDate) return toast.error("Please select a valid date range.");
+    if (user.name && user.name === venueOwner)
+      return toast.error("You cannot book your own venue.");
+    if (!startDate || !endDate)
+      return toast.error("Please select a valid date range.");
 
     setLoading(true);
     try {
@@ -232,7 +245,9 @@ const BookingForm = ({
       <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
         <section className="space-y-6 w-full">
           <div className="bg-white p-4 gap-0 flex flex-col rounded-2xl shadow-md custom-datepicker">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Select Dates</h2>
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+              Select Dates
+            </h2>
             <DatePicker
               className="w-full"
               inline
@@ -258,9 +273,12 @@ const BookingForm = ({
               onClick={() => setShowGuests(!showGuests)}
               className="w-full border px-4 py-2 rounded-lg bg-white text-left flex justify-between items-center shadow-sm text-gray-900"
             >
-              Guests: {totalGuests} ({guests.adults} adults, {guests.children} children)
+              Guests: {totalGuests} ({guests.adults} adults, {guests.children}{" "}
+              children)
               <FaChevronDown
-                className={`ml-2 transition-transform ${showGuests ? "rotate-180" : ""}`}
+                className={`ml-2 transition-transform ${
+                  showGuests ? "rotate-180" : ""
+                }`}
               />
             </button>
             {showGuests && (
@@ -281,13 +299,25 @@ const BookingForm = ({
         </section>
 
         <aside className="bg-white p-4 rounded-2xl shadow-md sticky top-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Booking Summary</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Booking Summary
+          </h2>
           <div className="space-y-2">
-            <div className="flex justify-between"><span>Adults</span><span>{guests.adults}</span></div>
-            <div className="flex justify-between"><span>Children</span><span>{guests.children}</span></div>
-            <div className="flex justify-between"><span>Nights</span><span>{nights}</span></div>
+            <div className="flex justify-between">
+              <span>Adults</span>
+              <span>{guests.adults}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Children</span>
+              <span>{guests.children}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Nights</span>
+              <span>{nights}</span>
+            </div>
             <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
-              <span>Total</span><span>${totalPrice}</span>
+              <span>Total</span>
+              <span>${totalPrice}</span>
             </div>
           </div>
           <button
@@ -309,7 +339,9 @@ const BookingForm = ({
             aria-modal="true"
             tabIndex={-1}
           >
-            <h2 className="text-2xl font-bold text-green-600">Confirm Booking</h2>
+            <h2 className="text-2xl font-bold text-green-600">
+              Confirm Booking
+            </h2>
             <div className="space-y-1">
               <p>Adults: {guests.adults}</p>
               <p>Children: {guests.children}</p>
