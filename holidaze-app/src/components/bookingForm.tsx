@@ -225,10 +225,10 @@ const BookingForm = ({
   return (
     <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
       {/* Date & Guests section */}
-      <section className="w-full lg:space:y-6 md:space-y-4">
+      <section className="w-full sm:space-y-4 lg:space-y-6 md:space-y-6 ">
         {/* Date Picker */}
-        <div className="bg-white rounded-2xl w-full shadow-md custom-datepicker flex flex-col">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2 p-2 text-center">
+        <div className="bg-gradient-to-r from-green-200 to-blue-200 rounded-2xl shadow-md custom-datepicker flex flex-col p-4">
+          <h2 className="text-xl font-semibold text-gray-700 mb-2 text-center">
             Select Dates
           </h2>
           <DatePicker
@@ -249,7 +249,7 @@ const BookingForm = ({
         </div>
 
         {/* Guests */}
-        <div className="bg-white p-4 rounded-2xl shadow-md">
+        <div className="bg-gradient-to-r from-green-200 to-blue-200  p-4 rounded-2xl shadow-md">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Guests</h2>
           <button
             type="button"
@@ -282,7 +282,7 @@ const BookingForm = ({
       </section>
 
       {/* Booking Summary */}
-      <aside className="bg-white p-4 rounded-2xl shadow-md sticky top-6 space-y-4">
+      <aside className="bg-gradient-to-r from-green-200 to-blue-200  p-4 rounded-2xl shadow-md sticky top-6 space-y-4">
         <h2 className="text-lg font-semibold text-gray-900">Booking Summary</h2>
         <div className="space-y-2">
           <div className="flex justify-between">
