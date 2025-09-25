@@ -64,7 +64,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto mt-8">
+    <div className="max-w-6xl mx-auto mt-2">
       {/* Banner */}
       <div className="relative w-full h-72 bg-gray-200">
         <img

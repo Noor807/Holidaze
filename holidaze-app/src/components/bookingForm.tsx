@@ -6,6 +6,7 @@ import { FaChevronDown, FaUser, FaChild, FaBaby, FaPaw } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+/** Guests object type */
 interface Guests {
   adults: number;
   children: number;
@@ -13,6 +14,7 @@ interface Guests {
   pets: number;
 }
 
+/** Props for BookingForm */
 interface Props {
   venueId: string;
   venueOwner: string;
@@ -23,12 +25,14 @@ interface Props {
   onRequireLogin?: () => void;
 }
 
+/** Guest option metadata */
 interface GuestOption {
   type: keyof Guests;
   label: string;
   icon: JSX.Element;
 }
 
+/** Options for guest selection */
 const guestOptions: GuestOption[] = [
   { type: "adults", label: "Adults", icon: <FaUser /> },
   { type: "children", label: "Children", icon: <FaChild /> },
@@ -37,7 +41,7 @@ const guestOptions: GuestOption[] = [
 ];
 
 /**
- * Guest control component for incrementing/decrementing guest counts.
+ * GuestControl component for incrementing/decrementing guest counts
  */
 const GuestControl = ({
   label,
@@ -53,12 +57,15 @@ const GuestControl = ({
   onDecrement: () => void;
 }) => (
   <div className="flex justify-between items-center">
-    <span className="flex items-center gap-1">{icon} {label}</span>
+    <span className="flex items-center gap-2">
+      {icon} {label}
+    </span>
     <div className="flex gap-2">
       <button
         type="button"
         onClick={onDecrement}
-        className="px-2 py-1 bg-gray-800 text-white rounded"
+        disabled={value <= 0}
+        className="bg-gray-200 text-gray-800 rounded px-3 py-1 hover:bg-gray-300 disabled:opacity-50"
       >
         -
       </button>
@@ -66,7 +73,7 @@ const GuestControl = ({
       <button
         type="button"
         onClick={onIncrement}
-        className="px-2 py-1 bg-gray-800 text-white rounded"
+        className="bg-gray-200 text-gray-800 rounded px-3 py-1 hover:bg-gray-300"
       >
         +
       </button>
@@ -75,7 +82,7 @@ const GuestControl = ({
 );
 
 /**
- * Booking form component with date selection, guest management, and booking summary.
+ * BookingForm component with date selection, guest management, and booking summary
  */
 const BookingForm = ({
   venueId,
@@ -90,37 +97,70 @@ const BookingForm = ({
 
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const [guests, setGuests] = useState<Guests>({ adults: 1, children: 0, infants: 0, pets: 0 });
+  const [guests, setGuests] = useState<Guests>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    pets: 0,
+  });
   const [showGuests, setShowGuests] = useState(false);
   const [loading, setLoading] = useState(false);
   const [monthsToShow, setMonthsToShow] = useState(
     typeof window !== "undefined" && window.innerWidth >= 1024 ? 2 : 1
   );
 
+  /** Update months to show on resize */
   useEffect(() => {
-    const handleResize = () => setMonthsToShow(window.innerWidth >= 1024 ? 2 : 1);
+    const handleResize = () =>
+      setMonthsToShow(window.innerWidth >= 1024 ? 2 : 1);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  /** Calculate number of nights */
   const nights = useMemo(() => {
     if (!startDate || !endDate) return 1;
-    return Math.max((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1, 1);
+    return Math.max(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1,
+      1
+    );
   }, [startDate, endDate]);
 
-  const totalGuests = useMemo(() => Object.values(guests).reduce((a, b) => a + b, 0), [guests]);
-  const basePrice = useMemo(() => nights * pricePerNight, [nights, pricePerNight]);
-  const guestFee = useMemo(() => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0), [totalGuests]);
+  /** Calculate total number of guests */
+  const totalGuests = useMemo(
+    () => Object.values(guests).reduce((a, b) => a + b, 0),
+    [guests]
+  );
+
+  /** Calculate base price based on nights */
+  const basePrice = useMemo(
+    () => nights * pricePerNight,
+    [nights, pricePerNight]
+  );
+
+  /** Guest fee: $20 for each guest above 1 */
+  const guestFee = useMemo(
+    () => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0),
+    [totalGuests]
+  );
+
+  /** Total booking price */
   const totalPrice = basePrice + guestFee;
 
   const handleIncrement = useCallback((type: keyof Guests) => {
-    setGuests(prev => ({ ...prev, [type]: prev[type] + 1 }));
+    setGuests((prev) => ({ ...prev, [type]: prev[type] + 1 }));
   }, []);
 
   const handleDecrement = useCallback((type: keyof Guests) => {
-    setGuests(prev => ({ ...prev, [type]: Math.max(0, prev[type]) }));
+    setGuests((prev) => {
+      const newValue = Math.max(0, prev[type] - 1); // Prevent negative values
+      return { ...prev, [type]: newValue };
+    });
   }, []);
 
+  /**
+   * Handle booking submission
+   */
   const handleBookNow = async () => {
     if (isDisabled) {
       toast.info("Booking not allowed for this user");
@@ -147,19 +187,30 @@ const BookingForm = ({
 
     try {
       await createBooking(
-        { venueId, dateFrom: startDate.toISOString(), dateTo: endDate.toISOString(), guests: totalGuests },
+        {
+          venueId,
+          dateFrom: startDate.toISOString(),
+          dateTo: endDate.toISOString(),
+          guests: totalGuests,
+        },
         user.accessToken
       );
 
       toast.success(`Booking successful! Total: $${totalPrice}`);
 
+      // Generate booked dates array
       const bookedDates: Date[] = [];
-      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      for (
+        let d = new Date(startDate);
+        d <= endDate;
+        d.setDate(d.getDate() + 1)
+      ) {
         bookedDates.push(new Date(d));
       }
 
       onBookingSuccess?.(bookedDates);
 
+      // Reset form
       setStartDate(new Date());
       setEndDate(new Date());
       setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
@@ -173,9 +224,13 @@ const BookingForm = ({
 
   return (
     <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
-      <section className="space-y-6 w-full">
-        <div className="bg-white p-4 rounded-2xl shadow-md custom-datepicker">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Select Dates</h2>
+      {/* Date & Guests section */}
+      <section className="w-full lg:space:y-6 md:space-y-4">
+        {/* Date Picker */}
+        <div className="bg-white rounded-2xl w-full shadow-md custom-datepicker flex flex-col">
+          <h2 className="text-lg font-semibold text-gray-700 mb-2 p-2 text-center">
+            Select Dates
+          </h2>
           <DatePicker
             className="w-full"
             inline
@@ -193,6 +248,7 @@ const BookingForm = ({
           />
         </div>
 
+        {/* Guests */}
         <div className="bg-white p-4 rounded-2xl shadow-md">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Guests</h2>
           <button
@@ -200,8 +256,13 @@ const BookingForm = ({
             onClick={() => setShowGuests(!showGuests)}
             className="w-full border px-4 py-2 rounded-lg bg-white text-left flex justify-between items-center shadow-sm text-gray-900"
           >
-            Guests: {totalGuests} ({guests.adults} adults, {guests.children} children)
-            <FaChevronDown className={`ml-2 transition-transform ${showGuests ? "rotate-180" : ""}`} />
+            Guests: {totalGuests} ({guests.adults} adults, {guests.children}{" "}
+            children)
+            <FaChevronDown
+              className={`ml-2 transition-transform ${
+                showGuests ? "rotate-180" : ""
+              }`}
+            />
           </button>
           {showGuests && (
             <div className="mt-3 space-y-2">
@@ -220,6 +281,7 @@ const BookingForm = ({
         </div>
       </section>
 
+      {/* Booking Summary */}
       <aside className="bg-white p-4 rounded-2xl shadow-md sticky top-6 space-y-4">
         <h2 className="text-lg font-semibold text-gray-900">Booking Summary</h2>
         <div className="space-y-2">
