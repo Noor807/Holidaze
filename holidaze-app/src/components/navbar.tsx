@@ -98,13 +98,13 @@ const Navbar = ({ onSearch }: NavbarProps) => {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2 text-white hover:shadow-md transition font-medium"
+                className="px-4 py-2 text-white hover:shadow-md transition font-semibold hover:text-green-400"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2 rounded-full border text-white hover:opacity-90 transition font-medium"
+                className="px-4 py-2 font-semibold bg-green-600 rounded-full border text-white hover:bg-green-400 hover:opacity-90 transition"
               >
                 Host
               </Link>

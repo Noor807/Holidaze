@@ -134,7 +134,7 @@ const RegisterPage: React.FC = () => {
 
           <input
             type="password"
-            placeholder="Password (min 8 chars)"
+            placeholder="Password ( 8 characters)"
             aria-label="password input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
