@@ -20,7 +20,7 @@ interface Props {
   unavailableDates?: Date[];
   isDisabled?: boolean;
   onBookingSuccess?: (bookedDates: Date[]) => void;
-  onRequireLogin?: () => void; // ✅ added for login/register modal
+  onRequireLogin?: () => void;
 }
 
 interface GuestOption {
@@ -36,6 +36,9 @@ const guestOptions: GuestOption[] = [
   { type: "pets", label: "Pets", icon: <FaPaw /> },
 ];
 
+/**
+ * Guest control component for incrementing/decrementing guest counts.
+ */
 const GuestControl = ({
   label,
   value,
@@ -71,6 +74,9 @@ const GuestControl = ({
   </div>
 );
 
+/**
+ * Booking form component with date selection, guest management, and booking summary.
+ */
 const BookingForm = ({
   venueId,
   venueOwner,
@@ -78,88 +84,70 @@ const BookingForm = ({
   unavailableDates = [],
   isDisabled = false,
   onBookingSuccess,
-  onRequireLogin, // ✅ modal trigger
+  onRequireLogin,
 }: Props) => {
   const { user } = useAuth();
 
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const [guests, setGuests] = useState<Guests>({
-    adults: 1,
-    children: 0,
-    infants: 0,
-    pets: 0,
-  });
+  const [guests, setGuests] = useState<Guests>({ adults: 1, children: 0, infants: 0, pets: 0 });
   const [showGuests, setShowGuests] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [monthsToShow, setMonthsToShow] = useState(
     typeof window !== "undefined" && window.innerWidth >= 1024 ? 2 : 1
   );
 
   useEffect(() => {
-    const handleResize = () =>
-      setMonthsToShow(window.innerWidth >= 1024 ? 2 : 1);
+    const handleResize = () => setMonthsToShow(window.innerWidth >= 1024 ? 2 : 1);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const nights = useMemo(
-    () =>
-      startDate && endDate
-        ? Math.max(
-            (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1,
-            1
-          )
-        : 1,
-    [startDate, endDate]
-  );
+  const nights = useMemo(() => {
+    if (!startDate || !endDate) return 1;
+    return Math.max((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1, 1);
+  }, [startDate, endDate]);
 
-  const totalGuests = useMemo(
-    () => Object.values(guests).reduce((a, b) => a + b, 0),
-    [guests]
-  );
-  const basePrice = useMemo(
-    () => nights * pricePerNight,
-    [nights, pricePerNight]
-  );
-  const guestFee = useMemo(
-    () => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0),
-    [totalGuests]
-  );
+  const totalGuests = useMemo(() => Object.values(guests).reduce((a, b) => a + b, 0), [guests]);
+  const basePrice = useMemo(() => nights * pricePerNight, [nights, pricePerNight]);
+  const guestFee = useMemo(() => (totalGuests > 1 ? (totalGuests - 1) * 20 : 0), [totalGuests]);
   const totalPrice = basePrice + guestFee;
 
   const handleIncrement = useCallback((type: keyof Guests) => {
-    setGuests((prev) => ({ ...prev, [type]: prev[type] + 1 }));
+    setGuests(prev => ({ ...prev, [type]: prev[type] + 1 }));
   }, []);
 
   const handleDecrement = useCallback((type: keyof Guests) => {
-    setGuests((prev) => ({ ...prev, [type]: Math.max(0, prev[type]) }));
+    setGuests(prev => ({ ...prev, [type]: Math.max(0, prev[type]) }));
   }, []);
 
   const handleBookNow = async () => {
-    if (isDisabled) return toast.info("Booking not allowed for this user");
-
-    if (!user) {
-      toast.error("You must be logged in to book.");
-      onRequireLogin?.(); // ✅ open modal
+    if (isDisabled) {
+      toast.info("Booking not allowed for this user");
       return;
     }
 
-    if (!startDate || !endDate)
-      return toast.error("Please select valid dates.");
-    if (user.name === venueOwner)
-      return toast.error("You cannot book your own venue.");
+    if (!user) {
+      toast.error("You must be logged in to book.");
+      onRequireLogin?.();
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      toast.error("Please select valid dates.");
+      return;
+    }
+
+    if (user.name === venueOwner) {
+      toast.error("You cannot book your own venue.");
+      return;
+    }
 
     setLoading(true);
+
     try {
       await createBooking(
-        {
-          venueId,
-          dateFrom: startDate.toISOString(),
-          dateTo: endDate.toISOString(),
-          guests: totalGuests,
-        },
+        { venueId, dateFrom: startDate.toISOString(), dateTo: endDate.toISOString(), guests: totalGuests },
         user.accessToken
       );
 
@@ -177,7 +165,7 @@ const BookingForm = ({
       setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
       setShowGuests(false);
     } catch (err: any) {
-      toast.error(err.message || "Booking failed");
+      toast.error(err?.message || "Booking failed");
     } finally {
       setLoading(false);
     }
@@ -187,9 +175,7 @@ const BookingForm = ({
     <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
       <section className="space-y-6 w-full">
         <div className="bg-white p-4 rounded-2xl shadow-md custom-datepicker">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">
-            Select Dates
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-2">Select Dates</h2>
           <DatePicker
             className="w-full"
             inline
@@ -215,9 +201,7 @@ const BookingForm = ({
             className="w-full border px-4 py-2 rounded-lg bg-white text-left flex justify-between items-center shadow-sm text-gray-900"
           >
             Guests: {totalGuests} ({guests.adults} adults, {guests.children} children)
-            <FaChevronDown
-              className={`ml-2 transition-transform ${showGuests ? "rotate-180" : ""}`}
-            />
+            <FaChevronDown className={`ml-2 transition-transform ${showGuests ? "rotate-180" : ""}`} />
           </button>
           {showGuests && (
             <div className="mt-3 space-y-2">
