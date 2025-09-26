@@ -206,27 +206,27 @@ const VenueAmenities: React.FC<{ meta: Venue["meta"] }> = ({ meta }) => (
     <p className="text-base text-gray-600">
       This venue offers the following amenities for a comfortable stay:
     </p>
-    <ul className="space-y-2 text-gray-800 text-base sm:text-base">
+    <ul className="gap-2 text-gray-800 text-base sm:text-base">
       {meta?.wifi && (
-        <li className="flex items-center space-x-2">
+        <li className="flex items-center gap-2">
           <FaWifi />
           WiFi
         </li>
       )}
       {meta?.parking && (
-        <li className="flex items-center space-x-2">
+        <li className="flex items-center gap-2">
           <FaParking />
           Parking
         </li>
       )}
       {meta?.breakfast && (
-        <li className="flex items-center space-x-2">
+        <li className="flex items-center gap-2">
           <FaCoffee />
           Breakfast
         </li>
       )}
       {meta?.pets && (
-        <li className="flex items-center space-x-2">
+        <li className="flex items-center gap-2">
           <FaPaw />
           Pets allowed
         </li>
