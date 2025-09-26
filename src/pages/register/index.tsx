@@ -69,7 +69,9 @@ const RegisterPage: React.FC = () => {
     }
 
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      toast.warn("Consider adding special characters (!@#$ etc.) to your password");
+      toast.warn(
+        "Consider adding special characters (!@#$ etc.) to your password"
+      );
     }
 
     // URL validation
@@ -175,7 +177,7 @@ const RegisterPage: React.FC = () => {
               className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition text-lg font-semibold"
               onClick={(e) => handleSubmit(e, false)}
             >
-              Register as Customer
+              Customer
             </button>
 
             <button
@@ -183,7 +185,7 @@ const RegisterPage: React.FC = () => {
               className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition text-lg font-semibold"
               onClick={(e) => handleSubmit(e, true)}
             >
-              Register as Venue Manager
+              Venue Manager
             </button>
           </div>
 

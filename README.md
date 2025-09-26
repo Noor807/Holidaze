@@ -7,6 +7,8 @@
 
 # 📋 Project Brief
 
+
+
 Holidaze is developed as part of Noroff FED2 Project Exam 2.
 
 The project scope is defined by the official API documentation and includes:
@@ -26,6 +28,8 @@ The project scope is defined by the official API documentation and includes:
 The goal is to deliver a fully functional, user-friendly front-end for browsing, booking, and managing venues.
 🔗 Important Links
 
+
+##
 
 ## 👥 User Stories
 

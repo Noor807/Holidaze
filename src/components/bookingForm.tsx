@@ -223,11 +223,11 @@ const BookingForm = ({
   };
 
   return (
-    <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
+    <form className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8 ">
       {/* Date & Guests section */}
-      <section className="w-full sm:space-y-4 lg:space-y-6 md:space-y-6 ">
+      <section className="w-full sm:space-y-6 lg:space-y-6 md:space-y-6 ">
         {/* Date Picker */}
-        <div className="bg-gradient-to-r from-green-200 to-blue-200 rounded-2xl shadow-md custom-datepicker !gap-2 flex flex-col p-4">
+        <div className="bg-gradient-to-r from-green-200 to-blue-200 rounded-2xl shadow-md custom-datepicker mb-4 flex flex-col p-4">
           <h2 className="text-xl font-semibold text-gray-700 mb-2 text-center">
             Select Dates
           </h2>
@@ -249,7 +249,7 @@ const BookingForm = ({
         </div>
 
         {/* Guests */}
-        <div className="bg-gradient-to-r from-green-200 to-blue-200  p-4 rounded-2xl shadow-md">
+        <div className="bg-gradient-to-r from-green-200 to-blue-200 sm:mt-4  p-4 rounded-2xl shadow-md">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Guests</h2>
           <button
             type="button"
