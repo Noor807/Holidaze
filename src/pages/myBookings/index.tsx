@@ -95,7 +95,7 @@ const MyBookingsPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header with sorting */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-10 items-center mb-6 sm:flex-row sm:justify-between">
         <h1 className="text-3xl font-bold">My Bookings</h1>
         <div className="flex gap-3">
           <button

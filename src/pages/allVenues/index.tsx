@@ -75,12 +75,12 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
   );
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-3xl font-bold mb-6">All Venues</h1>
+    <div className="w-full max-w-7xl mx-auto px-4 py-6 ">
+      <h1 className="text-4xl font-bold mb-4 flex justify-center">All Venues</h1>
 
       {/* Pagination Top */}
       {showPagination && (
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-center mb-6">
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -98,7 +98,7 @@ const AllVenues: React.FC<AllVenuesProps> = ({ searchTerm = "" }) => {
       )}
 
       {/* Venue cards or skeletons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 place-content-center">
         {loading
           ? Array.from({ length: ITEMS_PER_PAGE }).map((_, idx) => (
               <VenueCardSkeleton key={idx} />

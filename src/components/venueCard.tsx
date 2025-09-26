@@ -67,7 +67,7 @@ const VenueCard = ({ venue, onEdit, onDelete }: VenueCardProps) => {
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={(e) => e.key === "Enter" && handleClick()}
-      className="rounded-lg bg-white my-1 w-full max-w-80 shadow hover:shadow-lg overflow-hidden flex flex-col cursor-pointer transition"
+      className="rounded-lg bg-white my-1 w-full max-w-80 shadow hover:shadow-lg overflow-hidden flex flex-col cursor-pointer transition mx-auto"
       aria-label={`View details for ${venue.name}`}
     >
       {/* Image */}

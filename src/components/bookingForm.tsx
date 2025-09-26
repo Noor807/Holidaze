@@ -227,7 +227,7 @@ const BookingForm = ({
       {/* Date & Guests section */}
       <section className="w-full sm:space-y-6 lg:space-y-6 md:space-y-6 ">
         {/* Date Picker */}
-        <div className="bg-gradient-to-r from-green-200 to-blue-200 rounded-2xl shadow-md custom-datepicker mb-4 flex flex-col p-4">
+        <div className="bg-gradient-to-r from-green-200 to-blue-200 rounded-2xl shadow-md custom-datepicker !gap-2 mb-4 flex flex-col p-4">
           <h2 className="text-xl font-semibold text-gray-700 mb-2 text-center">
             Select Dates
           </h2>
