@@ -194,25 +194,31 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
         />
 
         {/* Price, Max Guests, Rating */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           {[
-            { key: "price", label: "Price per night", required: true },
+            { key: "price", label: "Price / night", required: true },
             { key: "maxGuests", label: "Max Guests", required: true },
             { key: "rating", label: "Rating", required: false },
           ].map(({ key, label, required }) => (
-            <input
-              key={key}
-              type="number"
-              placeholder={label}
-              aria-label={label}
-              value={form[key as keyof FormState] as number}
-              onChange={(e) =>
-                handleChange(key as keyof FormState, Number(e.target.value))
-              }
-              required={required}
-              className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 text-sm border border-gray-400 bg-white rounded-lg 
+            <div className="flex flex-col w-full">
+              <label className="text-gray-600" htmlFor={key}>
+                {label}
+              </label>
+              <input
+                id={key}
+                key={key}
+                type="number"
+                placeholder={label}
+                aria-label={label}
+                value={form[key as keyof FormState] as number}
+                onChange={(e) =>
+                  handleChange(key as keyof FormState, Number(e.target.value))
+                }
+                required={required}
+                className="w-full p-2 text-sm border border-gray-400 bg-white rounded-lg 
                          focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              />
+            </div>
           ))}
         </div>
 
