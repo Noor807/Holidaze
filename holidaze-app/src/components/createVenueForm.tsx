@@ -153,7 +153,7 @@ const VenueForm = ({ initialData, onSubmit }: Props) => {
   };
 
   return (
-    <div className="relative max-w-4xl mx-auto p-4 sm:p-6 bg-white rounded shadow-md">
+    <div className="relative max-w-4xl mx-auto p-4 sm:p-6 bg-gradient-to-r from-green-200 to-blue-200  rounded shadow-md">
       {/* Header with back button */}
       <div className="relative mb-6">
         <button
