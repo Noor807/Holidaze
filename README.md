@@ -13,12 +13,18 @@
 
 Holidaze is developed as part of Noroff FED2 Project Exam 2.The project scope is defined by the official API documentation and includes:
 
-### 📋 Project Highlights
+## 📋 Project Highlights
 - 📌 Kanban board (GitHub Projects) for task management
 - 🎨 Figma style guide & prototypes (desktop + mobile)
 - 🖥️ Error-free, modular front-end using React, TypeScript, and TailwindCSS
 - ✅ Testing of user stories and accessibility validation (WAVE)
 - 🚀 Deployment on Netlify
+
+###  User Roles
+
+- Visitor: Browse/search venues
+- Customer: Register, login, book venues, update profile
+- Venue Manager: Manage venues & view bookings
 --------------------------------------------
 
 
@@ -50,17 +56,9 @@ Holidaze is developed as part of Noroff FED2 Project Exam 2.The project scope is
 
 ----------------------
 
-
+# Goal
 The goal is to deliver a fully functional, user-friendly front-end for browsing, booking, and managing venues.
-🔗 Important Links
-
-
-
-
-## ✨ Features
-
-
-
+- 🔗 Figma Style Guide
 
 
 -----------
