@@ -4,6 +4,7 @@ import SearchBar from "./searchBar";
 
 /** Array of rotating header background images */
 const images = [
+  "https://cdn.pixabay.com/photo/2017/06/17/18/35/beach-2413081_1280.jpg",
   "https://media.cntraveller.com/photos/611befdb69410e829d87e766/16:9/w_3200,h_1800,c_limit/rome.jpg",
   "https://cdn.pixabay.com/photo/2015/03/19/14/30/las-vegas-680953_1280.jpg",
   "https://cdn.pixabay.com/photo/2020/06/14/10/58/london-5297395_1280.jpg",
