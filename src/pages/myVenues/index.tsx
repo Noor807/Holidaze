@@ -73,6 +73,13 @@ const MyVenuesPage: React.FC = () => {
   useEffect(() => {
     fetchVenues();
   }, [fetchVenues]);
+  if (!user || !user.venueManager) {
+    return (
+      <section className="text-red-500 h-[50vh] flex items-center justify-center text-2xl mx-auto w-full max-w-2xl">
+        <h1>Be a Host to visit this page</h1>
+      </section>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
