@@ -73,16 +73,17 @@ Holidaze is a modern web application that allows users to discover and book uniq
 The goal is to deliver a fully functional, user-friendly front-end for browsing, booking, and managing venues.
 
 ---
-
 # 🔗 Project Links
 
-[![Figma Style Guide](https://img.shields.io/badge/Figma-Style%20Guide-orange?style=for-the-badge&logo=figma)](https://www.figma.com/file/your-figma-style-guide-link)  
-[![Figma Mobile Prototype](https://img.shields.io/badge/Figma-Mobile%20Prototype-orange?style=for-the-badge&logo=figma)](https://www.figma.com/file/your-figma-mobile-prototype-link)  
-[![Figma Desktop Prototype](https://img.shields.io/badge/Figma-Desktop%20Prototype-orange?style=for-the-badge&logo=figma)](https://www.figma.com/file/your-figma-desktop-prototype-link)  
+[![Figma Style Guide](https://img.shields.io/badge/Figma-Style%20Guide-orange?style=for-the-badge&logo=figma)](https://www.figma.com/design/TYUPsjCuBunEid09N8fft0/Holidaze?node-id=124-1831&p=f&t=joks5uCKYt3e0mPc-0)  
+[![Figma Desktop Prototype](https://img.shields.io/badge/Figma-Desktop%20Prototype-orange?style=for-the-badge&logo=figma)](https://www.figma.com/proto/TYUPsjCuBunEid09N8fft0/Holidaze?node-id=2-2&p=f&t=9ckuuhpDHWop8yVf-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2&show-proto-sidebar=1)  
+[![Figma Mobile Prototype](https://img.shields.io/badge/Figma-Mobile%20Prototype-orange?style=for-the-badge&logo=figma)](https://www.figma.com/proto/TYUPsjCuBunEid09N8fft0/Holidaze?node-id=22-395&p=f&t=gg7lU2JM1RsrohRw-1&scaling=scale-down&content-scaling=fixed&page-id=17%3A1258&starting-point-node-id=22%3A395&show-proto-sidebar=1)  
+
 [![GitHub Kanban Board](https://img.shields.io/badge/GitHub-Kanban%20Board-blue?style=for-the-badge&logo=github)](https://github.com/users/Noor807/projects/11/views/1)  
 [![GitHub Roadmap](https://img.shields.io/badge/GitHub-RoadMap-blue?style=for-the-badge&logo=github)](https://github.com/users/Noor807/projects/11/views/1)  
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/Noor807/Holidaze)  
 [![Host on Netlify](https://img.shields.io/badge/Netlify-Hosted-green?style=for-the-badge&logo=netlify)](https://noor807holidaze.netlify.app)
+
 
 
 ---
