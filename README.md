@@ -1,118 +1,135 @@
+# HOLIDAZE
 
+<img width="872" height="345" alt="Screenshot 2025-09-27 at 11 27 42" src="https://github.com/user-attachments/assets/0d9c78f3-8337-49f5-a534-406cd25fe85d" />
 
-
-
-
-
+---
 
 # 📋 Project Brief
 
+Holidaze is a modern web application that allows users to discover and book unique venues for short stays. Customers can browse venues, check availability, and make bookings seamlessly, while venue managers can manage their listings and track bookings. Built with React, TypeScript, and TailwindCSS, Holidaze provides a fast, responsive, and user-friendly experience, complete with interactive calendars, maps, and a clean, accessible design.
+
+---
+
+## 📋 Project Highlights
+
+#### Holidaze is developed as part of Noroff FED2 Project Exam 2. The project scope is defined by the official API documentation and includes:
+
+- 📌 Kanban board (GitHub Projects) for task management  
+- 🎨 Figma style guide & prototypes (desktop + mobile)  
+- 🖥️ Error-free, modular front-end using React, TypeScript, and TailwindCSS  
+- ✅ Testing of user stories and accessibility validation (WAVE)  
+- 🚀 Deployment on Netlify  
+
+---
+
+### User Roles
+
+- Visitor: Browse/search venues  
+- Customer: Register, login, book venues, update profile  
+- Venue Manager: Manage venues & view bookings  
+
+---
+# 🛠 Tech Stack
+
+<p align="center">
+  <a href="https://reactjs.org"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React" width="50" style="margin:0 40px;" /></a>
+  <a href="https://www.typescriptlang.org"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TypeScript" width="50" style="margin:0 40px;" /></a>
+  <a href="https://vitejs.dev"><img src="https://vitejs.dev/logo.svg" alt="Vite" width="50" style="margin:0 40px;" /></a>
+  <a href="https://tailwindcss.com"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg" alt="TailwindCSS" width="50" style="margin:0 40px;" /></a>
+  <a href="https://www.figma.com"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" alt="Figma" width="50" style="margin:0 40px;" /></a>
+  <a href="https://github.com"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="50" style="margin:0 40px;" /></a>
+  <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML5" width="50" style="margin:0 40px;" /></a>
+
+</p>
 
 
-Holidaze is developed as part of Noroff FED2 Project Exam 2.
-
-The project scope is defined by the official API documentation and includes:
-
-📌 Kanban board (GitHub Projects) for task management
-
-🎨 Figma style guide & prototypes (desktop + mobile)
-
-🖥️ Error-free, modular front-end using React, TypeScript, and TailwindCSS
-
-✅ Testing of user stories and accessibility validation (WAVE)
-
-🚀 Deployment on Netlify
-
-
-
-The goal is to deliver a fully functional, user-friendly front-end for browsing, booking, and managing venues.
-🔗 Important Links
-
-
-##
+---
 
 ## 👥 User Stories
 
-### All Users
+### 🌐 All Users
+- 📄 View Venues  
+- 🔍 Search Venues  
+- 🏷️ View Venue by ID  
+- 📝 Register (Customer/Manager, @stud.noroff.no)  
+- 📅 View calendar  
 
-View a list of Venues.
+### 🙋 Customers
+- 🔑 Log in/out  
+- 🛒 Create booking  
+- 📌 View bookings  
+- 🖼️ Update avatar/profile  
 
-Search for a specific Venue.
+### 🏢 Venue Managers
+- 🔑 Log in/out  
+- ➕✏️🗑️ Manage Venues  
+- 📌 View Venue bookings  
+- 🖼️ Update avatar/profile  
 
-View a Venue page by ID.
+---
 
-Register as a Customer or Venue Manager (using @stud.noroff.no email).
+# Goal
 
-View a calendar with available and booked dates.
+The goal is to deliver a fully functional, user-friendly front-end for browsing, booking, and managing venues.
 
-### Customers
+---
+# 🔗 Project Links
 
-Log in and log out.
+[![Figma Style Guide](https://img.shields.io/badge/Figma-Style%20Guide-orange?style=for-the-badge&logo=figma)](https://www.figma.com/design/TYUPsjCuBunEid09N8fft0/Holidaze?node-id=124-1831&p=f&t=joks5uCKYt3e0mPc-0)  
+[![Figma Desktop Prototype](https://img.shields.io/badge/Figma-Desktop%20Prototype-orange?style=for-the-badge&logo=figma)](https://www.figma.com/proto/TYUPsjCuBunEid09N8fft0/Holidaze?node-id=2-2&p=f&t=9ckuuhpDHWop8yVf-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2&show-proto-sidebar=1)  
+[![Figma Mobile Prototype](https://img.shields.io/badge/Figma-Mobile%20Prototype-orange?style=for-the-badge&logo=figma)](https://www.figma.com/proto/TYUPsjCuBunEid09N8fft0/Holidaze?node-id=22-395&p=f&t=gg7lU2JM1RsrohRw-1&scaling=scale-down&content-scaling=fixed&page-id=17%3A1258&starting-point-node-id=22%3A395&show-proto-sidebar=1)  
 
-Create a booking.
-
-View upcoming bookings.
-
-Update avatar/profile picture.
-
-### Venue Managers
-
-Log in and log out.
-
-Create, edit, and delete a Venue.
-
-View upcoming bookings for the Venues they manage.
-
-Update avatar/profile picture.
-
-
-
-
-## ✨ Features
-
-
+[![GitHub Kanban Board](https://img.shields.io/badge/GitHub-Kanban%20Board-blue?style=for-the-badge&logo=github)](https://github.com/users/Noor807/projects/11/views/1)  
+[![GitHub Roadmap](https://img.shields.io/badge/GitHub-RoadMap-blue?style=for-the-badge&logo=github)](https://github.com/users/Noor807/projects/11/views/1)  
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/Noor807/Holidaze)  
+[![Host on Netlify](https://img.shields.io/badge/Netlify-Hosted-green?style=for-the-badge&logo=netlify)](https://noor807holidaze.netlify.app)
 
 
 
+---
 
+## 📥 Clone the Repository
 
-## 🛠 Tech Stack
+To get started with **Holidaze**, clone the repository to your local machine:
 
-React 18
+```bash
+git clone https://github.com/Noor807/Holidaze.git
+```
 
-TypeScript
+Navigate into the project folder:
 
-Vite
+```
+cd Holidaze
+```
 
-TailwindCSS
+Install the dependencies:
+```
+npm install
+```
+
+Run the development server:
+```
+npm run dev
+```
+
+Your project should now be running locally at 👉 http://localhost:5173 (default Vite URL).
+
+---------------
+
 
 
 ## 📦 Key Packages
 
-📦 Key Packages & Dependencies
-
-⚛️ React & React DOM – Core framework for building UI.
-
-🟦 TypeScript – Type-safe JavaScript development.
-
-⚡ Vite & @tailwindcss/vite – Fast build tool & Tailwind integration.
-
-🧭 React Router DOM – Routing and navigation.
-
-🔔 React Toastify – Toast notifications for user feedback.
-
-📅 React Datepicker – Booking date picker.
-
-🎨 React Icons & Lucide React – Icons library.
-
-🌐 Axios– API requests.
-
-🎞️ Keen Slider & Swiper – Image/content sliders.
-
-🗺️ Google Maps integrations:
-
-🟢 @vis.gl/react-google-maps
-
-🟢 google-map-react
-
-🌍 React Leaflet – Interactive maps for venue locations.
+- ⚛️ React & React DOM – Core framework for building UI  
+- 🟦 TypeScript – Type-safe JavaScript development  
+- ⚡ Vite & @tailwindcss/vite – Fast build tool & Tailwind integration  
+- 🧭 React Router DOM – Routing and navigation  
+- 🔔 React Toastify – Toast notifications  
+- 📅 React Datepicker – Booking date picker  
+- 🎨 React Icons & Lucide React – Icons library  
+- 🌐 Axios – API requests  
+- 🎞️ Keen Slider & Swiper – Image/content sliders  
+- 🗺️ Google Maps integrations:  
+  - 🟢 @vis.gl/react-google-maps  
+  - 🟢 google-map-react  
+- 🌍 React Leaflet – Interactive maps for venue locations
