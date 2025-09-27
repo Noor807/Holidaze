@@ -84,7 +84,38 @@ The goal is to deliver a fully functional, user-friendly front-end for browsing,
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/Noor807/Holidaze)  
 [![Host on Netlify](https://img.shields.io/badge/Netlify-Hosted-green?style=for-the-badge&logo=netlify)](https://noor807holidaze.netlify.app)
 
+
 ---
+
+## 📥 Clone the Repository
+
+To get started with **Holidaze**, clone the repository to your local machine:
+
+```bash
+git clone https://github.com/Noor807/Holidaze.git
+```
+
+Navigate into the project folder:
+
+```
+cd Holidaze
+```
+
+Install the dependencies:
+```
+npm install
+```
+
+Run the development server:
+```
+npm run dev
+```
+
+Your project should now be running locally at 👉 http://localhost:5173 (default Vite URL).
+
+---------------
+
+
 
 ## 📦 Key Packages
 
