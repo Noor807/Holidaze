@@ -137,42 +137,29 @@ Your project should now be running locally at 👉 http://localhost:5173 (defaul
 
 Noor Irfan – Noroff FED2 Student
 
-<section id="contact" class="text-center mt-12 pb-12">
-  <h2 class="text-3xl font-semibold mb-6">Contact Me</h2>
+#### contact here👇
 
-  <div class="flex flex-wrap justify-center gap-4 mb-8">
-    
-     <!-- Portfolio -->
-    <a href="https://noor-irfan-portfolio.netlify.app" target="_blank" rel="noopener noreferrer"
-       class="px-6 py-3 bg-green-600 text-white rounded-full shadow hover:bg-green-700 transition">
-      🌐 Portfolio
-    </a>
+<a href="https://noor-irfan-portfolio.netlify.app" target="_blank" rel="noopener noreferrer"
+   style="display:flex; align-items:center; gap:10px; padding:10px 20px; background-color:#007bff; color:white; border-radius:25px; text-decoration:none;">
+    🌐 <span>Portfolio</span>
+</a>
 
-    <!-- Yahoo mail -->
-    <a href="mailto:iffijan34@yahoo.com"
-       class="px-6 py-3 bg-purple-600 text-white rounded-full shadow hover:bg-purple-700 transition">
-      📩 Email 2
-    </a>
 
-    <!-- LinkedIn -->
-    <a href="https://www.linkedin.com/in/noor-irfan-03b2202a2/" target="_blank" rel="noopener noreferrer"
-       class="px-6 py-3 bg-blue-800 text-white rounded-full shadow hover:bg-blue-900 transition">
-      🔗 LinkedIn
-    </a>
+<a href="https://www.linkedin.com/in/noor-irfan-03b2202a2/" target="_blank" rel="noopener noreferrer"
+   style="display:flex; align-items:center; gap:10px; padding:10px 20px; background-color:#007bff; color:white; border-radius:25px; text-decoration:none;">
+    🔗 <span>LinkedIn</span>
+</a>
 
-    <!-- GitHub -->
-    <a href="https://github.com/Noor807" target="_blank" rel="noopener noreferrer"
-       class="px-6 py-3 bg-gray-800 text-white rounded-full shadow hover:bg-gray-900 transition">
-      🐙 GitHub
-    </a>
+<a href="https://github.com/Noor807" target="_blank" rel="noopener noreferrer"
+   style="display:flex; align-items:center; gap:10px; padding:10px 20px; background-color:#007bff; color:white; border-radius:25px; text-decoration:none;">
+    🐙 <span>GitHub</span>
+</a>
 
-    <!-- Portfolio -->
-    <a href="https://noor-irfan-portfolio.netlify.app" target="_blank" rel="noopener noreferrer"
-       class="px-6 py-3 bg-green-600 text-white rounded-full shadow hover:bg-green-700 transition">
-      🌐 Portfolio
-    </a>
-  </div>
-</section>
+
+
+
+
+
 
 
 
