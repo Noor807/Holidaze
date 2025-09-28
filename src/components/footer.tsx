@@ -12,13 +12,13 @@ const Footer = () => {
         <div>
           <a
             href="/"
-            className="inline-block px-4 py-2 text-white font-semibold rounded-lg shadow hover:text-green-600 transition"
+            className="inline-block text-xl text-white font-semibold rounded-lg shadow hover:text-green-600 transition"
           >
             Holidaze
           </a>
 
           <p className="text-gray-400 text-sm">
-            Holidaze helps travelers find and book amazing venues around the
+            At Holidaze you can find and book venues around the
             world.
           </p>
         </div>
