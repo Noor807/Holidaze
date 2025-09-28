@@ -81,7 +81,7 @@ const PrivacyPolicyPage: React.FC = () => {
       </p>
 
       <p className="mt-8 text-gray-600 text-sm text-center">
-        &copy; {currentYear} Holidaze. All rights reserved.
+        &copy; {currentYear} Holidaze. Find and book amazing venues
       </p>
     </div>
   );
