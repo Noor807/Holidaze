@@ -115,9 +115,10 @@ const Home: React.FC = () => {
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
         {categories.map((cat) => (
-          <div
+          <button
             key={cat.name}
             onClick={() => navigate("/venues")}
+            aria-label={`Explore ${cat.name}`}
             className="relative cursor-pointer rounded-lg overflow-hidden shadow-md transform transition duration-300 hover:shadow-xl hover:-translate-y-1"
           >
             <img
@@ -130,7 +131,7 @@ const Home: React.FC = () => {
                 {cat.name}
               </p>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -140,9 +141,10 @@ const Home: React.FC = () => {
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
         {destinations.map((dest) => (
-          <div
+          <button
             key={dest.name}
             onClick={() => navigate("/venues")}
+            aria-label={`Explore ${dest.name}`}
             className="relative cursor-pointer rounded-lg overflow-hidden shadow-md transform transition duration-300 hover:shadow-xl hover:-translate-y-1"
           >
             <img
@@ -155,7 +157,7 @@ const Home: React.FC = () => {
                 {dest.name}
               </p>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </section>

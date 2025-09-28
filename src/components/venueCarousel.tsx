@@ -105,6 +105,7 @@ const VenueCarousel = ({
       <button
         type="button"
         onClick={() => slider.current?.prev()}
+        aria-label="prev button"
         className="absolute -left-6 sm:-left-8 md:-left-10 top-1/2 -translate-y-1/2 z-20 
                    bg-black rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
                    flex items-center justify-center shadow-md cursor-pointer 
@@ -117,6 +118,7 @@ const VenueCarousel = ({
       <button
         type="button"
         onClick={() => slider.current?.next()}
+        aria-label="next button"
         className="absolute -right-6 sm:-right-8 md:-right-10 top-1/2 -translate-y-1/2 z-20 
                    bg-black rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
                    flex items-center justify-center shadow-md cursor-pointer 
