@@ -116,8 +116,6 @@ Your project should now be running locally at 👉 http://localhost:5173 (defaul
 
 ---------------
 
-
-
 ## 📦 Key Packages
 
 - ⚛️ React & React DOM – Core framework for building UI  
@@ -133,3 +131,14 @@ Your project should now be running locally at 👉 http://localhost:5173 (defaul
   - 🟢 @vis.gl/react-google-maps  
   - 🟢 google-map-react  
 - 🌍 React Leaflet – Interactive maps for venue locations
+---------------------------------
+
+## 👤 Project by
+
+Noor Irfan – Noroff FED2 Student
+
+- 🌐 Portfolio
+-  GitHub
+-  LinkedIn
+-  iffijan34@yahoo.com
+
