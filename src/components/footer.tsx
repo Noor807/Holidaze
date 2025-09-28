@@ -18,8 +18,7 @@ const Footer = () => {
           </a>
 
           <p className="text-gray-400 text-sm">
-            At Holidaze you can find and book venues around the
-            world.
+            Find and book your venues around the world.
           </p>
         </div>
 
