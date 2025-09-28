@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaLinkedin, FaGithub } from "react-icons/fa";
+import { FaLinkedin, FaGithub, FaGlobe } from "react-icons/fa";
 
 /**
  * Footer component for the website.
@@ -10,7 +10,13 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white py-8 px-4 md:px-12 mt-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
         <div>
-          <h3 className="font-semibold text-lg mb-3">About Holidaze</h3>
+          <a
+            href="/"
+            className="inline-block px-4 py-2 text-white font-semibold rounded-lg shadow hover:text-green-600 transition"
+          >
+            Holidaze
+          </a>
+
           <p className="text-gray-400 text-sm">
             Holidaze helps travelers find and book amazing venues around the
             world.
@@ -55,6 +61,18 @@ const Footer = () => {
         <div>
           <h3 className="font-semibold text-lg mb-3">Follow Us</h3>
           <div className="flex space-x-6">
+            {/* Portfolio */}
+            <a
+              href="https://noor-irfan-portfolio.netlify.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Portfolio"
+              className="text-gray-400 hover:text-blue-500 transition"
+            >
+              <FaGlobe size={24} />
+            </a>
+
+            {/* LinkedIn */}
             <a
               href="https://www.linkedin.com/in/noor-irfan-03b2202a2/"
               target="_blank"
@@ -64,6 +82,8 @@ const Footer = () => {
             >
               <FaLinkedin size={24} />
             </a>
+
+            {/* GitHub */}
             <a
               href="https://github.com/Noor807"
               target="_blank"
